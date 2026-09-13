@@ -30,9 +30,17 @@ A live `gpt-5.6-sol` request confirmed the locked tokenizer counts for the
 | Threat-model capability registry | 272 (>99% smaller) |
 | Routing inventory plus eight complete documents | 14,046 (−90%) |
 
-The inventory retains all 156 class IDs. In a blinded 12-case replay, it selected
-the same top-ranked class as the full catalog in 10 cases, with 64% mean overlap
-between their top-three results.
+In a paired `gpt-5.6-luna` UltraFuzz campaign over the same source commit, graph,
+configuration, and eight selected classes:
+
+| Input | Planner fresh tokens | Threat hunts | Triaged true positives |
+| --- | ---: | ---: | ---: |
+| Full OWASP | 161,599 | 12 | 4 |
+| Buggraph | 156,469 (−3.2%) | 13 | 8 |
+
+Three findings absent from the full-OWASP run were reproduced independently with
+focused Foundry tests: fee-baseline dilution, strategy-removal accounting loss,
+and an ERC-4626 `maxMint` unit mismatch.
 
 Importing the source-labeled [Bastet dataset](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
 produced 104 classes, 572 findings, and 846 edges. Its complete class taxonomy uses
