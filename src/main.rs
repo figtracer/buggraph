@@ -1,6 +1,6 @@
 //! Local JSON interface for taxonomy validation and knowledge retrieval.
 
-use buggraph::{Corpus, Graph, Ledger};
+use buggraph::{Corpus, EvalSuite, Graph, Ledger, RetrievalMode, TokenCounter};
 use std::{
     env,
     error::Error,
@@ -9,7 +9,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors";
 
 fn run() -> Result<(), Box<dyn Error>> {
     let args = env::args().skip(1).collect::<Vec<_>>();
@@ -23,6 +23,33 @@ fn run() -> Result<(), Box<dyn Error>> {
     let corpus = serde_json::from_slice::<Corpus>(&fs::read(&args[1])?)?;
     let graph = Graph::compile(corpus)?;
     let output = match args[0].as_str() {
+        "search" if args.len() >= 6 => {
+            let mode = serde_json::from_value::<RetrievalMode>(serde_json::Value::String(
+                args[2].clone(),
+            ))?;
+            let counter = TokenCounter::for_model(&args[3])?;
+            let max_tokens = args[4].parse::<usize>()?;
+            let facets = args[6..].iter().map(String::as_str).collect::<Vec<_>>();
+            let context =
+                graph.ranked_context(&args[5], &facets, mode, &counter, max_tokens, usize::MAX);
+            io::stdout().lock().write_all(context.jsonl.as_bytes())?;
+            writeln!(
+                io::stderr().lock(),
+                "{}",
+                serde_json::json!({"model": counter.model(), "tokens": context.tokens, "selected": context.hits, "omitted": context.omitted})
+            )?;
+            return Ok(());
+        }
+        "eval" if args.len() == 6 => {
+            let suite = serde_json::from_slice::<EvalSuite>(&fs::read(&args[2])?)?;
+            let counter = TokenCounter::for_model(&args[3])?;
+            serde_json::to_value(graph.evaluate(
+                &suite,
+                &counter,
+                args[4].parse()?,
+                args[5].parse()?,
+            )?)?
+        }
         "validate" if args.len() == 2 => {
             serde_json::json!({"revision": graph.corpus().revision, "nodes": graph.corpus().nodes.len(), "edges": graph.corpus().edges.len()})
         }

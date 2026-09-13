@@ -1,0 +1,728 @@
+{
+  "revision": "scwe-starter-v1",
+  "sources": [
+    {
+      "id": "SCWE-016",
+      "title": "Insufficient Authorization Checks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-016.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-017",
+      "title": "Privileged Role Mismanagement",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-017.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-018",
+      "title": "Use of tx.origin for Authorization",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-018.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-046",
+      "title": "Reentrancy Attacks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-046.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-048",
+      "title": "Unchecked Call Return Value",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-048.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-047",
+      "title": "Integer Overflows and Underflows",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-047.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-005",
+      "title": "Insecure Upgradeable Proxy Design",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-005.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-058",
+      "title": "DoS with Block Gas Limit",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-058.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-028",
+      "title": "Price Oracle Manipulation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-028.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-086",
+      "title": "Missing Validation of Oracle Response Fields (Stale or Incomplete Data)",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-086.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-090",
+      "title": "Missing Slippage Protection in Automated Token Swaps",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-090.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-083",
+      "title": "Failure to Handle Edge Cases",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMP/SCWE-083.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-052",
+      "title": "Transaction Order Dependence",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-052.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-024",
+      "title": "Weak Randomness Sources",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BLOCK/SCWE-024.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-022",
+      "title": "Message Replay Vulnerabilities",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-022.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-054",
+      "title": "Signature Malleability",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-054.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "fm:authorization",
+      "kind": "failure_mode",
+      "summary": "Required permissions are not enforced for a restricted operation.",
+      "definition": "The effective caller can perform an action beyond its intended authority.",
+      "applicability": [
+        "A restricted operation and an explicit permission policy exist."
+      ],
+      "exclusions": [
+        "Public operations intentionally available to everyone are not authorization failures."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:authorization"
+      ],
+      "sources": [
+        "SCWE-016"
+      ],
+      "mappings": [
+        "SCWE-016"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:privileged-roles",
+      "kind": "failure_mode",
+      "summary": "Role assignment grants authority beyond the intended permission policy.",
+      "definition": "The lifecycle or scope of a privileged role exceeds the responsibility assigned to its holder.",
+      "applicability": [
+        "The design assigns or revokes privileged roles."
+      ],
+      "exclusions": [
+        "A documented trusted administrator is not itself evidence of role mismanagement."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:authorization",
+        "operation:role-management"
+      ],
+      "sources": [
+        "SCWE-017"
+      ],
+      "mappings": [
+        "SCWE-017"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:origin-authorization",
+      "kind": "failure_mode",
+      "summary": "Authorization relies on transaction origin rather than the relevant caller identity.",
+      "definition": "The transaction initiator is treated as authority for an interaction across contract boundaries.",
+      "applicability": [
+        "A permission decision uses transaction-origin identity."
+      ],
+      "exclusions": [
+        "Recording transaction origin for telemetry is outside this failure mode."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:authorization",
+        "component:caller-identity"
+      ],
+      "sources": [
+        "SCWE-018"
+      ],
+      "mappings": [
+        "SCWE-018"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:reentrancy",
+      "kind": "failure_mode",
+      "summary": "An external callback observes or changes state before an operation preserves its invariants.",
+      "definition": "Reentrant execution crosses an unfinished state transition whose consistency other operations depend on.",
+      "applicability": [
+        "External interactions can invoke contract behavior during a transition."
+      ],
+      "exclusions": [
+        "A callback that preserves all relevant invariants is not enough to establish this failure."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:reentrancy",
+        "component:external-call"
+      ],
+      "sources": [
+        "SCWE-046"
+      ],
+      "mappings": [
+        "SCWE-046"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:unchecked-call",
+      "kind": "failure_mode",
+      "summary": "Execution continues without accounting for a failed external call.",
+      "definition": "A low-level call reports failure but dependent local behavior proceeds as if the interaction succeeded.",
+      "applicability": [
+        "Subsequent behavior depends on a low-level call succeeding."
+      ],
+      "exclusions": [
+        "Explicit best-effort calls can ignore failure if dependent invariants remain valid."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:error-handling",
+        "component:external-call"
+      ],
+      "sources": [
+        "SCWE-048"
+      ],
+      "mappings": [
+        "SCWE-048"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:integer-wraparound",
+      "kind": "failure_mode",
+      "summary": "Integer arithmetic wraps outside the intended numeric range.",
+      "definition": "An arithmetic result exceeds its representation and is interpreted as a different value.",
+      "applicability": [
+        "Arithmetic uses wrapping semantics, such as unchecked operations or older compiler behavior."
+      ],
+      "exclusions": [
+        "Checked arithmetic reverting on an out-of-range result is not wraparound."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:arithmetic",
+        "component:numeric-representation"
+      ],
+      "sources": [
+        "SCWE-047"
+      ],
+      "mappings": [
+        "SCWE-047"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:upgrade-authorization",
+      "kind": "failure_mode",
+      "summary": "A proxy implementation can change without the required upgrade authority.",
+      "definition": "Upgrade control does not preserve the intended boundary for replacing contract logic.",
+      "applicability": [
+        "Contract logic can be replaced through an upgrade mechanism."
+      ],
+      "exclusions": [
+        "An authorized upgrade under the documented trust policy is outside this narrower class."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:authorization",
+        "operation:upgrade"
+      ],
+      "sources": [
+        "SCWE-005"
+      ],
+      "mappings": [
+        "SCWE-005"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:gas-bound-progress",
+      "kind": "failure_mode",
+      "summary": "Required processing grows beyond the available transaction gas budget.",
+      "definition": "Work that must finish in one transaction exceeds execution limits as the relevant collection grows.",
+      "applicability": [
+        "Progress requires processing a growing collection in a single transaction."
+      ],
+      "exclusions": [
+        "Bounded processing with a valid continuation mechanism does not establish this failure."
+      ],
+      "facets": [
+        "impact:availability",
+        "mechanism:resource-bound",
+        "operation:batch-processing"
+      ],
+      "sources": [
+        "SCWE-058"
+      ],
+      "mappings": [
+        "SCWE-058"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:oracle-price-integrity",
+      "kind": "failure_mode",
+      "summary": "A consumed market price lacks the integrity required by dependent decisions.",
+      "definition": "Contract decisions use a price whose trust or robustness assumptions do not match the application.",
+      "applicability": [
+        "The application bases state changes on externally derived prices."
+      ],
+      "exclusions": [
+        "Using a price only for informational display is outside this decision-integrity class."
+      ],
+      "facets": [
+        "impact:integrity",
+        "component:oracle",
+        "mechanism:data-validity"
+      ],
+      "sources": [
+        "SCWE-028"
+      ],
+      "mappings": [
+        "SCWE-028"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:oracle-response-validity",
+      "kind": "failure_mode",
+      "summary": "Oracle responses are accepted without required freshness or completeness checks.",
+      "definition": "A response may be stale, incomplete, or invalid under the consumer’s documented data requirements.",
+      "applicability": [
+        "External feed responses carry freshness or validity information required by the consumer."
+      ],
+      "exclusions": [
+        "The appropriate validation fields depend on the feed interface and version."
+      ],
+      "facets": [
+        "impact:integrity",
+        "component:oracle",
+        "mechanism:data-validity"
+      ],
+      "sources": [
+        "SCWE-086"
+      ],
+      "mappings": [
+        "SCWE-086"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:swap-output-bound",
+      "kind": "failure_mode",
+      "summary": "A token swap lacks an effective bound on acceptable output.",
+      "definition": "The exchange result need not meet the amount or price constraint expected by the caller.",
+      "applicability": [
+        "A swap is expected to enforce an execution-quality constraint."
+      ],
+      "exclusions": [
+        "An intentionally unconstrained trade is a separate product policy decision."
+      ],
+      "facets": [
+        "impact:value-loss",
+        "operation:swap",
+        "mechanism:output-bound"
+      ],
+      "sources": [
+        "SCWE-090"
+      ],
+      "mappings": [
+        "SCWE-090"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:boundary-state",
+      "kind": "failure_mode",
+      "summary": "Valid boundary inputs or states fall outside the behavior the implementation handles.",
+      "definition": "Exceptional but permitted values expose undefined assumptions about collections, arithmetic, or transitions.",
+      "applicability": [
+        "The documented input or state domain contains boundary cases."
+      ],
+      "exclusions": [
+        "Inputs explicitly outside the supported domain need not be accepted."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:boundary-condition"
+      ],
+      "sources": [
+        "SCWE-083"
+      ],
+      "mappings": [
+        "SCWE-083"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:transaction-order",
+      "kind": "failure_mode",
+      "summary": "Transaction ordering changes an outcome that the design assumes to be order independent.",
+      "definition": "The contract’s intended guarantees depend on assumptions about the relative ordering of pending operations.",
+      "applicability": [
+        "Multiple operations can change shared state before settlement."
+      ],
+      "exclusions": [
+        "Expected order sensitivity alone does not violate a protocol guarantee."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:ordering",
+        "operation:settlement"
+      ],
+      "sources": [
+        "SCWE-052"
+      ],
+      "mappings": [
+        "SCWE-052"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:predictable-randomness",
+      "kind": "failure_mode",
+      "summary": "A random outcome depends on inputs with insufficient unpredictability.",
+      "definition": "The entropy source does not satisfy the unpredictability assumptions of the outcome it selects.",
+      "applicability": [
+        "The application requires a result that participants cannot predict or unduly influence."
+      ],
+      "exclusions": [
+        "Deterministic selection that does not promise unpredictability is outside this class."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:entropy",
+        "operation:selection"
+      ],
+      "sources": [
+        "SCWE-024"
+      ],
+      "mappings": [
+        "SCWE-024"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:message-replay",
+      "kind": "failure_mode",
+      "summary": "A previously accepted authorization message can be accepted beyond its intended use.",
+      "definition": "Message acceptance does not preserve the intended uniqueness or scope of the authorization.",
+      "applicability": [
+        "Signed or relayed messages have bounded use or scope."
+      ],
+      "exclusions": [
+        "A message explicitly designed for repeatable use is not automatically a replay failure."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:replay",
+        "component:message"
+      ],
+      "sources": [
+        "SCWE-022"
+      ],
+      "mappings": [
+        "SCWE-022"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:signature-identity",
+      "kind": "failure_mode",
+      "summary": "Equivalent valid signatures are treated as different authorization identities.",
+      "definition": "Signature representation is mistaken for a unique identity when equivalent encodings can exist.",
+      "applicability": [
+        "A signature representation participates in a uniqueness or identity decision."
+      ],
+      "exclusions": [
+        "Multiple valid representations alone do not imply a replay or authorization failure."
+      ],
+      "facets": [
+        "impact:integrity",
+        "mechanism:signature-identity",
+        "component:message"
+      ],
+      "sources": [
+        "SCWE-054"
+      ],
+      "mappings": [
+        "SCWE-054"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:external-interaction",
+      "kind": "failure_mode",
+      "summary": "An external interaction breaks the guarantees of its surrounding operation.",
+      "definition": "External execution or its result is inconsistent with the local operation’s required behavior.",
+      "facets": [
+        "component:external-call",
+        "impact:integrity"
+      ],
+      "applicability": [
+        "The design promises the corresponding operation or decision guarantee."
+      ],
+      "exclusions": [
+        "Documented limitations must be distinguished from violated guarantees."
+      ],
+      "sources": [
+        "SCWE-046",
+        "SCWE-048"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:data-validity",
+      "kind": "failure_mode",
+      "summary": "A decision consumes data that does not meet its required validity assumptions.",
+      "definition": "The producer or response does not supply the quality required by the consumer.",
+      "facets": [
+        "mechanism:data-validity",
+        "impact:integrity"
+      ],
+      "applicability": [
+        "The design promises the corresponding operation or decision guarantee."
+      ],
+      "exclusions": [
+        "Documented limitations must be distinguished from violated guarantees."
+      ],
+      "sources": [
+        "SCWE-028",
+        "SCWE-086"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:availability",
+      "kind": "failure_mode",
+      "summary": "A required operation cannot make progress under its documented preconditions.",
+      "definition": "A required transition remains unavailable despite satisfying its intended prerequisites.",
+      "facets": [
+        "impact:availability"
+      ],
+      "applicability": [
+        "The design promises the corresponding operation or decision guarantee."
+      ],
+      "exclusions": [
+        "Documented limitations must be distinguished from violated guarantees."
+      ],
+      "sources": [
+        "SCWE-058"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "property:auth",
+      "kind": "property",
+      "summary": "Restricted operations preserve the intended authority boundary.",
+      "review": "draft"
+    },
+    {
+      "id": "property:state",
+      "kind": "property",
+      "summary": "State transitions preserve their documented consistency guarantees.",
+      "review": "draft"
+    },
+    {
+      "id": "property:progress",
+      "kind": "property",
+      "summary": "Required operations can progress under their documented preconditions.",
+      "review": "draft"
+    },
+    {
+      "id": "property:data",
+      "kind": "property",
+      "summary": "Decisions use data with the required validity and quality.",
+      "review": "draft"
+    }
+  ],
+  "edges": [
+    {
+      "relation": "violates",
+      "to": "property:auth",
+      "from": "fm:authorization"
+    },
+    {
+      "relation": "violates",
+      "to": "property:auth",
+      "from": "fm:privileged-roles"
+    },
+    {
+      "relation": "violates",
+      "to": "property:auth",
+      "from": "fm:origin-authorization"
+    },
+    {
+      "relation": "violates",
+      "to": "property:state",
+      "from": "fm:reentrancy"
+    },
+    {
+      "relation": "violates",
+      "to": "property:state",
+      "from": "fm:unchecked-call"
+    },
+    {
+      "relation": "violates",
+      "to": "property:state",
+      "from": "fm:integer-wraparound"
+    },
+    {
+      "relation": "violates",
+      "to": "property:auth",
+      "from": "fm:upgrade-authorization"
+    },
+    {
+      "relation": "violates",
+      "to": "property:progress",
+      "from": "fm:gas-bound-progress"
+    },
+    {
+      "relation": "violates",
+      "to": "property:data",
+      "from": "fm:oracle-price-integrity"
+    },
+    {
+      "relation": "violates",
+      "to": "property:data",
+      "from": "fm:oracle-response-validity"
+    },
+    {
+      "relation": "violates",
+      "to": "property:data",
+      "from": "fm:swap-output-bound"
+    },
+    {
+      "relation": "violates",
+      "to": "property:state",
+      "from": "fm:boundary-state"
+    },
+    {
+      "relation": "violates",
+      "to": "property:state",
+      "from": "fm:transaction-order"
+    },
+    {
+      "relation": "violates",
+      "to": "property:data",
+      "from": "fm:predictable-randomness"
+    },
+    {
+      "relation": "violates",
+      "to": "property:auth",
+      "from": "fm:message-replay"
+    },
+    {
+      "relation": "violates",
+      "to": "property:auth",
+      "from": "fm:signature-identity"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:authorization",
+      "from": "fm:privileged-roles"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:authorization",
+      "from": "fm:origin-authorization"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:authorization",
+      "from": "fm:upgrade-authorization"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:external-interaction",
+      "from": "fm:reentrancy"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:external-interaction",
+      "from": "fm:unchecked-call"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:data-validity",
+      "from": "fm:oracle-price-integrity"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:data-validity",
+      "from": "fm:oracle-response-validity"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:availability",
+      "from": "fm:gas-bound-progress"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:boundary-state",
+      "from": "fm:gas-bound-progress"
+    },
+    {
+      "relation": "specializes",
+      "to": "fm:boundary-state",
+      "from": "fm:integer-wraparound"
+    },
+    {
+      "relation": "related_to",
+      "to": "fm:signature-identity",
+      "from": "fm:message-replay"
+    },
+    {
+      "relation": "related_to",
+      "to": "fm:transaction-order",
+      "from": "fm:swap-output-bound"
+    }
+  ]
+}

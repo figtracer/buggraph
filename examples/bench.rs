@@ -21,11 +21,15 @@ fn main() {
             facets: vec![format!("group:{}", i % 100), format!("type:{}", i % 2)],
             exclusions: Vec::new(),
             sources: Vec::new(),
+            applicability: Vec::new(),
+            mappings: Vec::new(),
+            review: Default::default(),
         })
         .collect();
     let start = Instant::now();
     let graph = Graph::compile(Corpus {
         revision: "synthetic-v1".into(),
+        sources: Vec::new(),
         nodes,
         edges: vec![],
     })

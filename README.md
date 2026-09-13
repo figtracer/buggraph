@@ -1,66 +1,68 @@
-# Buggraph
+# buggraph
 
-Standalone Rust prototype for organizing and retrieving reviewed security knowledge.
-It is a library and a local CLI. Example records are illustrative classifications,
-not verified findings or a populated vulnerability database.
+[![CI](https://github.com/figtracer/buggraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/buggraph/actions/workflows/ci.yml)
 
-## Run
+smart contract failure modes, structured for agents. local retrieval first.
+
+[getting started](#getting-started) · [taxonomy](data/curated.json) · [retrieval](docs/retrieval.md) · [evaluation](docs/evaluation.md) · [agent instructions](AGENTS.md) · [contributing](CONTRIBUTING.md)
+
+Buggraph organizes failure modes into a typed graph, retrieves relevant context within
+a model-token budget, and records assessment coverage separately. A Rust library and
+CLI share the same validated index.
+
+The starter corpus has 19 failure modes, four properties, and 16 pinned OWASP sources.
+The evaluation includes authored diagnostic queries and publishes every result.
+Source checking was AI-assisted; independent expert review is still needed.
+
+## Getting started
+
+Install [Rust](https://rustup.rs), then build with the pinned toolchain:
 
 ```sh
-cargo test --offline
-cargo run --offline -- validate data/example.json
-cargo run --offline -- context data/example.json 4096 operation:liquidation
-cargo run --offline -- show data/example.json fm:liquidation-liveness
-cargo run --offline -- descendants data/example.json fm:liveness
-cargo run --offline -- coverage data/example.json data/ledger.json
-cargo run --offline --release --example bench -- 10000 1000
+git clone https://github.com/figtracer/buggraph.git
+cd buggraph
+cargo install --path . --locked
+
+buggraph validate data/curated.json
+buggraph search data/curated.json bm25 gpt-4o 1024 "stale oracle response"
+buggraph show data/curated.json fm:oracle-response-validity
 ```
 
-`context` writes complete JSONL records to stdout and selection counts to stderr.
-The budget counts actual UTF-8 output bytes, including escaping and newlines.
-It is **not a token budget**. Model-specific token counting belongs in an adapter.
-Other commands emit JSON. Invalid data or arguments exit unsuccessfully.
+The model name selects a local tokenizer. Search makes no model calls and needs no
+API key, database server, or network connection after dependencies are installed.
 
-## Representation
+| Command | What it does |
+| --- | --- |
+| `validate` | Check IDs, source references, edge types, and specialization cycles. |
+| `search` | Rank failure modes and return complete records within a token budget. |
+| `show` | Expand a record with applicability, exclusions, sources, and relationships. |
+| `descendants` | Explore a specialization subtree with shared nodes deduplicated. |
+| `context` | Retrieve facet-filtered summaries within a byte budget. |
+| `coverage` | Count evidence-backed assessment states against an explicit scope. |
+| `eval` | Compare ID ordering, BM25, and BM25 with ancestor expansion. |
 
-JSON is the editable source format. Compilation sorts nodes by stable external ID,
-resolves edges to integer indices for traversal, validates endpoint types, rejects
-duplicate IDs/edges and dangling references, and checks specialization acyclicity
-using iterative topological processing. Other edge types can contain cycles.
+Search writes JSONL to stdout and token counts and ranking metadata to stderr.
+Budgets cover returned text; callers reserve their own message and tool overhead.
+See [retrieval](docs/retrieval.md) for model support and [the schema](docs/schema.md)
+for graph and coverage semantics.
 
-The immutable index stores explicit facet posting lists and pre-encoded summaries.
-AND queries start with the smallest posting list and check the remaining lists.
-Facet absence is not evidence of non-applicability. Facets are not inherited.
-Stable ID ordering makes output deterministic; it is not a relevance model.
-Packing skips records that do not fit and does not promise an optimal subset.
-`show` expands a record with its definition, exclusions, sources, and incident edges.
+## Evaluation
 
-The library can compile once and reuse the graph across queries. Each CLI invocation
-loads JSON and rebuilds its index; cold-start measurements must include that cost.
-No database server, model calls, network access, unsafe code, or async runtime is
-required. The benchmark measures warm filtering only, with identical output checks,
-and reports compilation separately. It does not establish end-to-end agent quality.
+```sh
+buggraph eval data/curated.json data/eval.json gpt-4o 2048 3
+```
 
-## Coverage semantics
+The suite reports precision, recall, MRR, nDCG, negative-query behavior, and context
+tokens. These are small retrieval diagnostics, not vulnerability-detection results.
+See [results and limitations](docs/evaluation.md) and [performance measurements](BENCHMARKS.md).
 
-A ledger binds a scope to a corpus revision and a reviewed design/scope revision.
-Every scoped ID must be a unique failure mode. Missing records remain unassessed.
-Every explicit assessment requires an evidence reference or explanation. Counts
-preserve unresolved applicability and exclusions separately; there is no fabricated
-"percent secure" score. Evidence references are recorded, not independently verified.
-Revision strings are caller supplied, not cryptographic integrity proofs.
+## Development
 
-## Next work, guided by measurements
+```sh
+cargo fmt --all -- --check
+cargo clippy --locked --all-targets -- -D warnings
+cargo test --locked --all-targets
+```
 
-1. Curate a small, reviewed corpus with provenance, licenses, applicability conditions,
-   stable identity rules, and independent findings. Keep examples out of evaluation.
-2. Evaluate retrieval against flat catalogs on held-out, deduplicated published data;
-   measure recall, attribution, unsupported matches, and actual model token cost.
-3. Add a tokenizer adapter and explicit progressive-detail requests when integrating
-   a consumer. Do not couple the taxonomy to automated protocol scanning.
-4. Measure load time and peak memory before choosing a serialized binary index,
-   compressed adjacency, bitmap postings, or memory mapping. Current storage includes
-   both authoring records and cached summaries, trading memory for query work.
-
-This is a working foundation, not evidence of the fastest possible implementation.
-The hard research problem remains consistent concepts and useful, evaluated retrieval.
+CI runs checks on Linux and macOS. Code is MIT; the starter data is CC-BY-SA-4.0.
+See [contributing](CONTRIBUTING.md) and [source attribution](data/ATTRIBUTION.md).

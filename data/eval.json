@@ -1,0 +1,218 @@
+{
+  "revision": "diagnostic-v1",
+  "corpus_revision": "scwe-starter-v1",
+  "description": "AI-authored lexical retrieval diagnostics with disjoint topic groups across dev/test. Labels are not independently reviewed; this is not an audit-finding benchmark.",
+  "cases": [
+    {
+      "id": "auth-01",
+      "group": "authorization",
+      "split": "dev",
+      "query": "permissions restricted operation missing authorization checks",
+      "relevant_ids": [
+        "fm:authorization"
+      ]
+    },
+    {
+      "id": "auth-02",
+      "group": "authorization",
+      "split": "dev",
+      "query": "assigning privileged roles grants excessive authority",
+      "relevant_ids": [
+        "fm:privileged-roles"
+      ]
+    },
+    {
+      "id": "auth-03",
+      "group": "authorization",
+      "split": "dev",
+      "query": "transaction origin used for caller identity",
+      "relevant_ids": [
+        "fm:origin-authorization"
+      ]
+    },
+    {
+      "id": "auth-04",
+      "group": "authorization",
+      "split": "dev",
+      "query": "proxy upgrade changes implementation without permission",
+      "relevant_ids": [
+        "fm:upgrade-authorization"
+      ]
+    },
+    {
+      "id": "call-01",
+      "group": "interaction",
+      "split": "dev",
+      "query": "external callback changes unfinished state transition",
+      "relevant_ids": [
+        "fm:reentrancy",
+        "fm:external-interaction"
+      ]
+    },
+    {
+      "id": "call-02",
+      "group": "interaction",
+      "split": "dev",
+      "query": "failed low level call ignored by dependent operation",
+      "relevant_ids": [
+        "fm:unchecked-call",
+        "fm:external-interaction"
+      ]
+    },
+    {
+      "id": "number-01",
+      "group": "numeric",
+      "split": "dev",
+      "query": "integer overflow wrapping arithmetic range",
+      "relevant_ids": [
+        "fm:integer-wraparound"
+      ]
+    },
+    {
+      "id": "boundary-01",
+      "group": "boundary",
+      "split": "dev",
+      "query": "permitted boundary values are unhandled",
+      "relevant_ids": [
+        "fm:boundary-state"
+      ]
+    },
+    {
+      "id": "oracle-01",
+      "group": "oracle",
+      "split": "test",
+      "query": "stale oracle response freshness incomplete data",
+      "relevant_ids": [
+        "fm:oracle-response-validity",
+        "fm:data-validity"
+      ]
+    },
+    {
+      "id": "oracle-02",
+      "group": "oracle",
+      "split": "test",
+      "query": "market price integrity assumptions in contract decisions",
+      "relevant_ids": [
+        "fm:oracle-price-integrity",
+        "fm:data-validity"
+      ]
+    },
+    {
+      "id": "oracle-03",
+      "group": "oracle",
+      "split": "test",
+      "query": "feed consumer requires response validity information",
+      "relevant_ids": [
+        "fm:oracle-response-validity"
+      ]
+    },
+    {
+      "id": "swap-01",
+      "group": "exchange",
+      "split": "test",
+      "query": "swap output amount is unconstrained",
+      "relevant_ids": [
+        "fm:swap-output-bound"
+      ]
+    },
+    {
+      "id": "swap-02",
+      "group": "exchange",
+      "split": "test",
+      "query": "token exchange expected execution quality bound",
+      "relevant_ids": [
+        "fm:swap-output-bound"
+      ]
+    },
+    {
+      "id": "order-01",
+      "group": "ordering",
+      "split": "test",
+      "query": "pending operations rely on transaction ordering assumptions",
+      "relevant_ids": [
+        "fm:transaction-order"
+      ]
+    },
+    {
+      "id": "gas-01",
+      "group": "availability",
+      "split": "test",
+      "query": "growing collection processing exceeds transaction gas",
+      "relevant_ids": [
+        "fm:gas-bound-progress",
+        "fm:availability"
+      ]
+    },
+    {
+      "id": "gas-02",
+      "group": "availability",
+      "split": "test",
+      "query": "batch processing cannot complete within execution limits",
+      "relevant_ids": [
+        "fm:gas-bound-progress"
+      ]
+    },
+    {
+      "id": "random-01",
+      "group": "entropy",
+      "split": "test",
+      "query": "random selection outcome can be predicted",
+      "relevant_ids": [
+        "fm:predictable-randomness"
+      ]
+    },
+    {
+      "id": "replay-01",
+      "group": "messages",
+      "split": "test",
+      "query": "accepted authorization message reused beyond its scope",
+      "relevant_ids": [
+        "fm:message-replay"
+      ]
+    },
+    {
+      "id": "signature-01",
+      "group": "messages",
+      "split": "test",
+      "query": "equivalent signature representations confused with unique identity",
+      "relevant_ids": [
+        "fm:signature-identity"
+      ]
+    },
+    {
+      "id": "negative-01",
+      "group": "negative-ui",
+      "split": "dev",
+      "query": "stylesheet font alignment",
+      "relevant_ids": []
+    },
+    {
+      "id": "negative-02",
+      "group": "negative-weather",
+      "split": "test",
+      "query": "tomorrow rainfall forecast",
+      "relevant_ids": []
+    },
+    {
+      "id": "negative-03",
+      "group": "negative-language",
+      "split": "test",
+      "query": "traduction fran\u00e7aise de po\u00e9sie",
+      "relevant_ids": []
+    },
+    {
+      "id": "negative-04",
+      "group": "negative-public",
+      "split": "dev",
+      "query": "intentionally public unrestricted operation anyone may call",
+      "relevant_ids": []
+    },
+    {
+      "id": "negative-05",
+      "group": "oracle",
+      "split": "test",
+      "query": "oracle price informational display only",
+      "relevant_ids": []
+    }
+  ]
+}

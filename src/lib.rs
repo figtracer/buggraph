@@ -3,11 +3,19 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 
+mod retrieval;
+pub use retrieval::{Hit, RankedContext, RetrievalMode, TokenCounter};
+
+mod evaluation;
+pub use evaluation::{EvalCase, EvalReport, EvalSuite, Split};
+
 /// Authoring format; revision identifies the exact reviewed corpus snapshot.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Corpus {
     pub revision: String,
+    #[serde(default)]
+    pub sources: Vec<Source>,
     pub nodes: Vec<Node>,
     pub edges: Vec<Edge>,
 }
@@ -27,6 +35,32 @@ pub struct Node {
     pub exclusions: Vec<String>,
     #[serde(default)]
     pub sources: Vec<String>,
+    #[serde(default)]
+    pub applicability: Vec<String>,
+    #[serde(default)]
+    pub mappings: Vec<String>,
+    #[serde(default)]
+    pub review: ReviewStatus,
+}
+
+/// Source checking records provenance, not independent expert validation.
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ReviewStatus {
+    #[default]
+    Draft,
+    SourceChecked,
+}
+
+/// A pinned source and its reuse terms. Nodes refer to its ID.
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Source {
+    pub id: String,
+    pub title: String,
+    pub url: String,
+    pub revision: String,
+    pub license: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -60,7 +94,9 @@ pub struct Graph {
     ids: HashMap<String, usize>,
     facets: HashMap<String, Vec<usize>>,
     children: Vec<Vec<usize>>,
+    parents: Vec<Vec<usize>>,
     summaries: Vec<String>,
+    search: retrieval::SearchIndex,
 }
 
 /// Exact byte-budgeted JSONL. Selection is deterministic ID order, not relevance ranking.
@@ -76,6 +112,24 @@ impl Graph {
             return Err("corpus revision must be nonempty".into());
         }
         corpus.nodes.sort_unstable_by(|a, b| a.id.cmp(&b.id));
+        let mut source_ids = HashMap::new();
+        for source in &corpus.sources {
+            if [
+                source.id.as_str(),
+                &source.title,
+                &source.revision,
+                &source.license,
+            ]
+            .iter()
+            .any(|s| s.trim().is_empty())
+                || !source.url.starts_with("https://")
+                || source_ids.insert(source.id.as_str(), source).is_some()
+            {
+                return Err(
+                    "sources require unique IDs, HTTPS URLs, titles, revisions and licenses".into(),
+                );
+            }
+        }
         let mut ids = HashMap::with_capacity(corpus.nodes.len());
         let mut facets = HashMap::<String, Vec<usize>>::new();
         for (index, node) in corpus.nodes.iter_mut().enumerate() {
@@ -84,6 +138,17 @@ impl Graph {
             }
             if ids.insert(node.id.clone(), index).is_some() {
                 return Err(format!("duplicate ID: {}", node.id));
+            }
+            for source in &node.sources {
+                if !source_ids.contains_key(source.as_str()) {
+                    return Err(format!("unknown source: {source}"));
+                }
+            }
+            if matches!(node.review, ReviewStatus::SourceChecked) && node.sources.is_empty() {
+                return Err(format!(
+                    "source-checked node requires provenance: {}",
+                    node.id
+                ));
             }
             node.facets.sort_unstable();
             node.facets.dedup();
@@ -95,6 +160,7 @@ impl Graph {
             }
         }
         let mut children = vec![Vec::new(); corpus.nodes.len()];
+        let mut parents = vec![Vec::new(); corpus.nodes.len()];
         let mut indegree = vec![0usize; corpus.nodes.len()];
         let mut seen = HashSet::new();
         for edge in &corpus.edges {
@@ -119,6 +185,7 @@ impl Graph {
             }
             if edge.relation == Relation::Specializes {
                 children[to].push(from);
+                parents[from].push(to);
                 indegree[from] += 1;
             }
         }
@@ -140,6 +207,9 @@ impl Graph {
         if visited != corpus.nodes.len() {
             return Err("specialization edges contain a cycle".into());
         }
+        for list in &mut parents {
+            list.sort_unstable();
+        }
         let summaries = corpus
             .nodes
             .iter()
@@ -147,18 +217,23 @@ impl Graph {
                 let mut line = serde_json::to_string(&serde_json::json!({
                     "id": node.id, "kind": node.kind, "summary": node.summary,
                     "facets": node.facets, "revision": corpus.revision,
+                    "sources": node.sources.iter().map(|id| source_ids[id.as_str()].url.as_str()).collect::<Vec<_>>(),
+                    "review": node.review,
                 }))
                 .expect("serializing string fields cannot fail");
                 line.push('\n');
                 line
             })
             .collect();
+        let search = retrieval::SearchIndex::build(&corpus.nodes);
         Ok(Self {
             corpus,
             ids,
             facets,
             children,
+            parents,
             summaries,
+            search,
         })
     }
 

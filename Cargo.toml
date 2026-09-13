@@ -3,11 +3,15 @@ name = "buggraph"
 version = "0.1.0"
 edition = "2024"
 publish = false
+description = "Local taxonomy retrieval and evaluation for smart contract security knowledge"
+license = "MIT"
+repository = "https://github.com/figtracer/buggraph"
+rust-version = "1.98"
 
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
+tiktoken-rs = "0.12.0"
 
 [profile.release]
 lto = "thin"
-

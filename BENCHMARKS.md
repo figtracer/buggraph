@@ -11,9 +11,9 @@ cargo run --offline --release --example bench -- 10000 1000
 | Synthetic records | 10,000 |
 | Queries per implementation | 1,000 |
 | Matching records per query | 100 |
-| Index compilation including summary encoding | 10.801 ms |
-| Flat scan, mean per query | 27.212 µs |
-| Indexed intersection, mean per query | 1.069 µs |
+| Index compilation including lexical indexing and summary encoding | 24.652 ms |
+| Flat scan, mean per query | 22.603 µs |
+| Indexed intersection, mean per query | 1.004 µs |
 
 Both implementations materialize the same matching integer IDs. This single warm
 filtering comparison excludes parsing, process startup, context packing, and model
