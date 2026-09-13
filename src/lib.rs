@@ -1,15 +1,15 @@
-//! A validated, immutable index for reviewed failure-mode knowledge.
+//! A validated, immutable index for source-backed failure-mode knowledge.
 
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 mod retrieval;
-pub use retrieval::{Hit, RankedContext, RetrievalMode, TokenCounter};
+pub use retrieval::{Detail, Hit, RankedContext, RetrievalMode, TokenCounter};
 
 mod evaluation;
 pub use evaluation::{EvalCase, EvalReport, EvalSuite, Split};
 
-/// Authoring format; revision identifies the exact reviewed corpus snapshot.
+/// Authoring format; revision identifies the exact corpus snapshot.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Corpus {
@@ -49,6 +49,8 @@ pub struct Node {
 pub enum ReviewStatus {
     #[default]
     Draft,
+    /// Imported from a pinned source without independent content adjudication.
+    Imported,
     SourceChecked,
 }
 
@@ -144,9 +146,13 @@ impl Graph {
                     return Err(format!("unknown source: {source}"));
                 }
             }
-            if matches!(node.review, ReviewStatus::SourceChecked) && node.sources.is_empty() {
+            if matches!(
+                node.review,
+                ReviewStatus::Imported | ReviewStatus::SourceChecked
+            ) && node.sources.is_empty()
+            {
                 return Err(format!(
-                    "source-checked node requires provenance: {}",
+                    "imported or source-checked node requires provenance: {}",
                     node.id
                 ));
             }

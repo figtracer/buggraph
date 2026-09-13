@@ -1,14 +1,16 @@
 # Data and graph semantics
 
-`data/curated.json` contains a corpus revision, source registry, nodes, and typed edges.
+Both `data/owasp.json` and `data/curated.json` contain a corpus revision, source
+registry, nodes, and typed edges.
 The versioned JSON files are the editable source of truth. Corpus revision labels
 must change when definitions or relationships change; Git identifies exact content.
 
 Nodes have stable IDs, a kind (`failure_mode`, `property`, or `finding`), a summary,
 definition, explicit facets, applicability conditions, exclusions, source IDs,
-external mappings, and a review status. Draft is the default. `source_checked`
-requires resolvable source IDs. It means the adaptation was checked against the
-cited source, not that a human auditor endorsed it.
+external mappings, and a review status. Draft is the default. Both `imported` and
+`source_checked` require resolvable source IDs. `imported` means a source record was transferred without
+independent content adjudication. `source_checked` means the adaptation was checked
+against the cited source, not that a human auditor endorsed it.
 
 Sources identify a title, HTTPS URL, revision, and license. Starter sources link to
 a fixed OWASP Git commit. The engine validates references and required metadata;
@@ -28,6 +30,14 @@ directions when needed. It is not followed by ancestor retrieval.
 Facets use `dimension:value` strings and AND semantics. They are explicit and not
 inherited. Missing facets are not proof of non-applicability. Ancestors must also pass
 the requested facet filters.
+
+The OWASP reference corpus uses canonical `scwe:NNN` IDs and copies upstream
+Description sections. Category facets come from source directories, not inferred
+applicability. It has no inferred specialization edges. Its inventory covers a pinned
+156-entry snapshot, not every smart contract bug class. The separate curated corpus
+retains its existing `fm:` IDs and evaluation labels; the two files are not silently
+merged or deduplicated. Source references link to complete upstream documents,
+including examples that are not embedded in the catalog.
 
 ## Assessment ledger
 

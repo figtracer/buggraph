@@ -40,6 +40,34 @@ The caller must separately reserve messages, instructions, tools, API envelopes,
 completion tokens. See official [token counting guidance](https://developers.openai.com/cookbook/examples/how_to_count_tokens_with_tiktoken).
 The byte-budgeted `context` command retains deterministic ID ordering.
 
+## Compact bundles
+
+`bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [facets ...]` uses the same
+ranking as `search`. `DETAIL` is `summary` or `full`. It returns one compact JSON
+object containing `revision`, `records`, a `sources` array of citation URLs, and
+`omitted` (ranked candidates that did not fit). Each record’s integer `sources`
+values are zero-based indexes into that response’s citation table, not stable IDs.
+Record IDs remain stable. The complete source registry is available through `show`.
+
+The corpus revision and identical citation URLs appear once. Empty optional fields
+are omitted. Full records add complete definitions, applicability, exclusions, and
+external mappings. Relationships appear under `edges` only when both endpoints are
+selected; omission does not establish that no other relationships exist. Graph
+expansion remains opt-in through `bm25_ancestors`. A DAG and semantic similarity
+search are separate concepts; this engine currently uses lexical ranking.
+
+Packing recounts the entire serialized object, including citations, edges, omission
+count, JSON syntax, and trailing newline. Definitions are never truncated. Records
+that do not fit are skipped. If no record matches or fits, stdout is empty. Successful
+bundle calls produce no stderr diagnostics, so ranking metadata cannot silently add
+tokens to the returned context. The library also exposes exact token counts. A single
+record can cost more than legacy JSONL because of the envelope; savings depend on
+record count, repetition, and the selected detail level.
+
+Use a full bundle when the question needs descriptions immediately; a summary bundle
+followed by `show` is useful when only a few records will need expansion. Fetching the
+entire corpus or expanding all ancestors is not inherently token-efficient.
+
 ## Performance boundaries
 
 Packing is greedy, not an optimal relevance-per-token solver. Recounting growing

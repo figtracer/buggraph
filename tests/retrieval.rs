@@ -1,4 +1,4 @@
-use buggraph::{Corpus, EvalSuite, Graph, RetrievalMode, TokenCounter};
+use buggraph::{Corpus, Detail, EvalSuite, Graph, RetrievalMode, TokenCounter};
 use serde_json::{Value, json};
 use std::process::Command;
 
@@ -181,4 +181,149 @@ fn search_cli_obeys_budget_and_unknown_model_fails() {
         .unwrap();
     assert!(!output.status.success());
     assert!(output.stdout.is_empty());
+}
+
+#[test]
+fn bundles_preserve_details_citations_and_edges_with_exact_budgets() {
+    let corpus = json!({"revision":"bundle-v1", "sources":[
+        {"id":"s","title":"Reference","url":"https://example.org/reference","revision":"1","license":"MIT"}
+    ], "nodes":[
+        {"id":"a","kind":"failure_mode","summary":"alpha parent", "sources":["s"],"review":"imported"},
+        {"id":"b","kind":"failure_mode","summary":"alpha child", "sources":["s"],
+         "definition":"A complete description: é 🦀 <|endoftext|>.","applicability":["condition"],
+         "exclusions":["boundary"],"mappings":["external:1"]}
+    ], "edges":[{"from":"b","relation":"specializes","to":"a"}]});
+    let graph = Graph::compile(serde_json::from_value(corpus.clone()).unwrap()).unwrap();
+    for model in ["gpt-4", "gpt-4o"] {
+        let counter = TokenCounter::for_model(model).unwrap();
+        let all = graph.bundle(
+            "alpha",
+            &[],
+            RetrievalMode::Bm25,
+            Detail::Full,
+            &counter,
+            usize::MAX,
+        );
+        let value = serde_json::from_str::<Value>(&all.jsonl).unwrap();
+        assert_eq!(value["sources"], json!(["https://example.org/reference"]));
+        assert_eq!(value["edges"], corpus["edges"]);
+        for record in value["records"].as_array().unwrap() {
+            let node = graph.node(record["id"].as_str().unwrap()).unwrap();
+            assert_eq!(record["sources"], json!([0]));
+            if !node.definition.is_empty() {
+                assert_eq!(record["definition"], node.definition);
+                assert_eq!(record["applicability"], json!(node.applicability));
+                assert_eq!(record["exclusions"], json!(node.exclusions));
+                assert_eq!(record["mappings"], json!(node.mappings));
+            }
+        }
+        for detail in [Detail::Summary, Detail::Full] {
+            for budget in [0, 1, 64, 128, all.tokens - 1, all.tokens] {
+                let result =
+                    graph.bundle("alpha", &[], RetrievalMode::Bm25, detail, &counter, budget);
+                assert!(result.tokens <= budget);
+                assert_eq!(result.tokens, counter.count(&result.jsonl));
+                assert_eq!(result.hits.len() + result.omitted, 2);
+                if !result.jsonl.is_empty() {
+                    let value = serde_json::from_str::<Value>(&result.jsonl).unwrap();
+                    assert_eq!(
+                        value["records"].as_array().unwrap().len(),
+                        result.hits.len()
+                    );
+                    if result.hits.len() == 1 {
+                        assert!(value.get("edges").is_none());
+                    }
+                    if matches!(detail, Detail::Summary) {
+                        assert!(
+                            value["records"]
+                                .as_array()
+                                .unwrap()
+                                .iter()
+                                .all(|record| record.get("definition").is_none())
+                        );
+                    }
+                }
+            }
+        }
+        let exact = graph.bundle(
+            "alpha",
+            &[],
+            RetrievalMode::Bm25,
+            Detail::Full,
+            &counter,
+            all.tokens,
+        );
+        assert_eq!(exact.jsonl, all.jsonl);
+        assert!(
+            graph
+                .bundle(
+                    "zxqv",
+                    &[],
+                    RetrievalMode::Bm25,
+                    Detail::Full,
+                    &counter,
+                    1024
+                )
+                .jsonl
+                .is_empty()
+        );
+    }
+    let mut missing = corpus;
+    missing["nodes"][0]["sources"] = json!([]);
+    assert!(Graph::compile(serde_json::from_value(missing).unwrap()).is_err());
+}
+
+#[test]
+fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
+    let graph =
+        Graph::compile(serde_json::from_str::<Corpus>(include_str!("../data/owasp.json")).unwrap())
+            .unwrap();
+    assert_eq!(graph.corpus().nodes.len(), 156);
+    assert_eq!(graph.corpus().sources.len(), 156);
+    assert!(graph.corpus().edges.is_empty());
+    assert!(
+        graph
+            .corpus()
+            .nodes
+            .iter()
+            .all(|node| !node.definition.is_empty()
+                && matches!(node.review, buggraph::ReviewStatus::Imported))
+    );
+    let output = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+        .args([
+            "bundle",
+            "data/owasp.json",
+            "bm25",
+            "gpt-4o",
+            "1024",
+            "full",
+            "contract architecture",
+            "category:scsvs-arch",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let value = serde_json::from_slice::<Value>(&output.stdout).unwrap();
+    assert!(output.stderr.is_empty());
+    let counter = TokenCounter::for_model("gpt-4o").unwrap();
+    let tokens = counter.count(std::str::from_utf8(&output.stdout).unwrap());
+    assert!(tokens <= 1024);
+    assert!(value["omitted"].is_u64());
+    for record in value["records"].as_array().unwrap() {
+        let node = graph.node(record["id"].as_str().unwrap()).unwrap();
+        assert_eq!(record["definition"], node.definition);
+        assert_eq!(record["facets"], json!(node.facets));
+        let source = &graph
+            .corpus()
+            .sources
+            .iter()
+            .find(|source| source.id == node.sources[0])
+            .unwrap();
+        let slot = record["sources"][0].as_u64().unwrap() as usize;
+        assert_eq!(value["sources"][slot], source.url);
+    }
 }

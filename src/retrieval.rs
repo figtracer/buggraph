@@ -1,6 +1,6 @@
 //! Lexical retrieval and exact model-token budgets for serialized context.
 
-use crate::{Graph, Kind, Node};
+use crate::{Graph, Kind, Node, ReviewStatus};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 use tiktoken_rs::{CoreBPE, bpe_for_model};
@@ -87,6 +87,34 @@ pub enum RetrievalMode {
     Bm25Ancestors,
 }
 
+/// Choose the information returned for each selected record.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Detail {
+    Summary,
+    Full,
+}
+
+#[derive(Serialize)]
+struct BundleRecord<'a> {
+    id: &'a str,
+    kind: Kind,
+    summary: &'a str,
+    review: ReviewStatus,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    sources: Vec<usize>,
+    #[serde(skip_serializing_if = "<[String]>::is_empty")]
+    facets: &'a [String],
+    #[serde(skip_serializing_if = "str::is_empty")]
+    definition: &'a str,
+    #[serde(skip_serializing_if = "<[String]>::is_empty")]
+    applicability: &'a [String],
+    #[serde(skip_serializing_if = "<[String]>::is_empty")]
+    exclusions: &'a [String],
+    #[serde(skip_serializing_if = "<[String]>::is_empty")]
+    mappings: &'a [String],
+}
+
 #[derive(Debug, Serialize)]
 pub struct Hit<'a> {
     pub id: &'a str,
@@ -127,6 +155,99 @@ pub struct RankedContext<'a> {
 }
 
 impl Graph {
+    /// Pack a single JSON object with a shared citation table and corpus revision.
+    /// Full detail retains whole definitions, applicability, and exclusions.
+    /// An empty string means no complete record fitted or no records matched.
+    pub fn bundle(
+        &self,
+        query: &str,
+        facets: &[&str],
+        mode: RetrievalMode,
+        detail: Detail,
+        counter: &TokenCounter,
+        max_tokens: usize,
+    ) -> RankedContext<'_> {
+        let ranked = self.rank(query, facets, mode);
+        let total = ranked.len();
+        let source_urls = self
+            .corpus
+            .sources
+            .iter()
+            .map(|source| (source.id.as_str(), source.url.as_str()))
+            .collect::<HashMap<_, _>>();
+        let mut selected = Vec::new();
+        let mut result = RankedContext {
+            jsonl: String::new(),
+            hits: Vec::new(),
+            tokens: 0,
+            omitted: 0,
+        };
+        for hit in ranked {
+            selected.push(&self.corpus.nodes[self.ids[hit.id]]);
+            let mut sources = Vec::new();
+            let mut source_slots = HashMap::new();
+            let records = selected
+                .iter()
+                .map(|node| {
+                    let citations = node
+                        .sources
+                        .iter()
+                        .map(|id| {
+                            let url = source_urls[id.as_str()];
+                            *source_slots.entry(url).or_insert_with(|| {
+                                sources.push(url);
+                                sources.len() - 1
+                            })
+                        })
+                        .collect::<Vec<_>>();
+                    let full = matches!(detail, Detail::Full);
+                    BundleRecord {
+                        id: &node.id,
+                        kind: node.kind,
+                        summary: &node.summary,
+                        review: node.review,
+                        sources: citations,
+                        facets: &node.facets,
+                        definition: if full { &node.definition } else { "" },
+                        applicability: if full { &node.applicability } else { &[] },
+                        exclusions: if full { &node.exclusions } else { &[] },
+                        mappings: if full { &node.mappings } else { &[] },
+                    }
+                })
+                .collect::<Vec<_>>();
+            let ids = selected
+                .iter()
+                .map(|node| node.id.as_str())
+                .collect::<HashSet<_>>();
+            let edges = self
+                .corpus
+                .edges
+                .iter()
+                .filter(|edge| ids.contains(edge.from.as_str()) && ids.contains(edge.to.as_str()))
+                .collect::<Vec<_>>();
+            let mut value = serde_json::json!({
+                "revision": self.corpus.revision,
+                "sources": sources,
+                "records": records,
+                "omitted": total - selected.len(),
+            });
+            if !edges.is_empty() {
+                value["edges"] = serde_json::to_value(edges).expect("serializable edges");
+            }
+            let text = format!("{value}\n");
+            let tokens = counter.count(&text);
+            if tokens <= max_tokens {
+                result.jsonl = text;
+                result.tokens = tokens;
+                result.hits.push(hit);
+            } else {
+                selected.pop();
+            }
+        }
+        result.omitted = total - result.hits.len();
+        result
+    }
+
     /// Rank only failure modes. Ancestors are explicit structural context and keep
     /// the originating lexical score; they are not independent semantic matches.
     pub fn rank(&self, query: &str, facets: &[&str], mode: RetrievalMode) -> Vec<Hit<'_>> {

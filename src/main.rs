@@ -1,6 +1,6 @@
 //! Local JSON interface for taxonomy validation and knowledge retrieval.
 
-use buggraph::{Corpus, EvalSuite, Graph, Ledger, RetrievalMode, TokenCounter};
+use buggraph::{Corpus, Detail, EvalSuite, Graph, Ledger, RetrievalMode, TokenCounter};
 use std::{
     env,
     error::Error,
@@ -9,7 +9,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...]\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 fn run() -> Result<(), Box<dyn Error>> {
     let args = env::args().skip(1).collect::<Vec<_>>();
@@ -23,16 +23,36 @@ fn run() -> Result<(), Box<dyn Error>> {
     let corpus = serde_json::from_slice::<Corpus>(&fs::read(&args[1])?)?;
     let graph = Graph::compile(corpus)?;
     let output = match args[0].as_str() {
-        "search" if args.len() >= 6 => {
+        "search" | "bundle" if args.len() >= 6 => {
             let mode = serde_json::from_value::<RetrievalMode>(serde_json::Value::String(
                 args[2].clone(),
             ))?;
             let counter = TokenCounter::for_model(&args[3])?;
             let max_tokens = args[4].parse::<usize>()?;
-            let facets = args[6..].iter().map(String::as_str).collect::<Vec<_>>();
-            let context =
-                graph.ranked_context(&args[5], &facets, mode, &counter, max_tokens, usize::MAX);
+            let bundled = args[0] == "bundle";
+            let (query, facet_start, detail) = if bundled {
+                if args.len() < 7 {
+                    return Err(USAGE.into());
+                }
+                let detail =
+                    serde_json::from_value::<Detail>(serde_json::Value::String(args[5].clone()))?;
+                (&args[6], 7, detail)
+            } else {
+                (&args[5], 6, Detail::Summary)
+            };
+            let facets = args[facet_start..]
+                .iter()
+                .map(String::as_str)
+                .collect::<Vec<_>>();
+            let context = if bundled {
+                graph.bundle(query, &facets, mode, detail, &counter, max_tokens)
+            } else {
+                graph.ranked_context(query, &facets, mode, &counter, max_tokens, usize::MAX)
+            };
             io::stdout().lock().write_all(context.jsonl.as_bytes())?;
+            if bundled {
+                return Ok(());
+            }
             writeln!(
                 io::stderr().lock(),
                 "{}",
@@ -61,7 +81,13 @@ fn run() -> Result<(), Box<dyn Error>> {
                 .iter()
                 .filter(|edge| edge.from == node.id || edge.to == node.id)
                 .collect::<Vec<_>>();
-            serde_json::json!({"revision": graph.corpus().revision, "node": node, "edges": edges})
+            let sources = graph
+                .corpus()
+                .sources
+                .iter()
+                .filter(|source| node.sources.contains(&source.id))
+                .collect::<Vec<_>>();
+            serde_json::json!({"revision": graph.corpus().revision, "node": node, "edges": edges, "sources": sources})
         }
         "descendants" if args.len() == 3 => serde_json::to_value(graph.descendants(&args[2])?)?,
         "context" if args.len() >= 3 => {

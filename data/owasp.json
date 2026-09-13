@@ -1,0 +1,3908 @@
+{
+  "revision": "owasp-scwe-fefd476b-v1",
+  "nodes": [
+    {
+      "id": "scwe:001",
+      "kind": "failure_mode",
+      "summary": "Improper Contract Architecture",
+      "definition": "Improper contract architecture refers to the flawed design of a smart contract’s structure, which compromises its security, scalability, and maintainability. This often occurs due to monolithic designs, inefficient inheritance structures, and poor separation of concerns. Such flaws create challenges in managing, upgrading, and auditing the contract. Key issues associated with improper architecture include:\n\n- Difficulty in upgrading the contract without introducing risks.\n- Increased complexity leading to hidden attack surfaces.\n- Lack of flexibility in contract logic, making it hard to isolate bugs or exploits.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-001"
+      ],
+      "mappings": [
+        "SCWE-001"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:002",
+      "kind": "failure_mode",
+      "summary": "Excessive Contract Complexity",
+      "definition": "Excessive contract complexity refers to situations where the design or implementation of a smart contract becomes overly complicated, making it difficult to understand, audit, and maintain. Such complexity increases the likelihood of introducing bugs and vulnerabilities that may not be apparent during development or testing. It often arises from:\n\n- Overuse of complex inheritance structures or external libraries.\n- Too many functions, interdependencies, and conditions within the contract.\n- Unnecessarily convoluted logic that could be simplified.\n\nThe more complex the code, the higher the chance that mistakes are made, especially if future developers or auditors need to interact with the contract. Complexity can lead to hidden vulnerabilities that may be exploited over time.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-002"
+      ],
+      "mappings": [
+        "SCWE-002"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:003",
+      "kind": "failure_mode",
+      "summary": "Lack of Modularity",
+      "definition": "Lack of modularity refers to a design flaw where a system's components are not sufficiently separated into independent, reusable modules. This deficiency leads to tightly coupled code, making the system difficult to understand, maintain, and extend. In the context of smart contracts, this manifests as monolithic contracts where all functionalities are bundled together, increasing complexity and the potential for errors.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-003"
+      ],
+      "mappings": [
+        "SCWE-003"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:004",
+      "kind": "failure_mode",
+      "summary": "Uncaught Exceptions",
+      "definition": "Uncaught exceptions occur when a smart contract fails to properly handle errors, leading to unintended behaviors, lost funds, or denial of service (DoS). In Solidity, low-level calls such as `call()`, `delegatecall()`, and `send()` return a boolean instead of reverting automatically, requiring explicit checks. Ignoring return values or using `assert()` instead of `require()` can result in vulnerabilities that attackers can exploit.\n\nCommon issues with uncaught exceptions:\n- Ignoring return values of `call()`, `delegatecall()`, `send()`\n- Unchecked external contract calls\n- Incorrect use of `assert()` instead of `require()`\n- Failure to catch errors in `try/catch` blocks",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-004"
+      ],
+      "mappings": [
+        "SCWE-004"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:005",
+      "kind": "failure_mode",
+      "summary": "Insecure Upgradeable Proxy Design",
+      "definition": "Insecure upgradeable proxy designs occur when a smart contract implements an upgradeable proxy pattern without properly securing or validating upgrades. This may allow unauthorized actors to change the contract’s logic, possibly introducing malicious behavior. It often happens when the upgrade functionality lacks proper access controls or when there is no timelock to delay the upgrade, giving malicious actors an opportunity to exploit the contract.\n\nThis vulnerability can lead to critical failures, including the redirection of contract calls to malicious logic or unauthorized updates that compromise the integrity of the contract.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-005"
+      ],
+      "mappings": [
+        "SCWE-005"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:006",
+      "kind": "failure_mode",
+      "summary": "Inconsistent Inheritance Hierarchy",
+      "definition": "Inconsistent inheritance hierarchies occur when a contract inherits from multiple contracts or libraries in an inconsistent or contradictory way. This leads to unexpected behavior or errors due to conflicting function implementations, state variables, or access controls. A proper and consistent inheritance structure is essential for clear logic and predictable contract execution.\n\nSome common issues in inheritance hierarchies include:\n- Ambiguous function overrides.\n- Conflicting variable definitions.\n- Misuse of multiple inheritance, which can lead to the diamond problem.\n\nInconsistent inheritance can significantly compromise a contract’s functionality and security, especially when multiple contracts or libraries with similar function names are used.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-006"
+      ],
+      "mappings": [
+        "SCWE-006"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:007",
+      "kind": "failure_mode",
+      "summary": "Presence of Unused Variables",
+      "definition": "The presence of unused variables in smart contracts refers to variables that are declared but never utilized in the contract logic. These variables consume storage or memory space unnecessarily, potentially wasting gas when deployed or executed. This situation often arises due to incomplete code, forgotten variables, or code that was intended for future use but never implemented. The presence of such variables increases the attack surface by making it harder to understand the contract and opens up potential vulnerabilities.\n\nSome common risks include:\n- Wasted gas due to storage and memory consumption.\n- Increased complexity and difficulty in understanding contract behavior.\n- Potential confusion for auditors or future developers working on the contract.\n\nUnused variables can also hide logic errors or indicate that parts of the contract are not functioning as intended.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-007"
+      ],
+      "mappings": [
+        "SCWE-007"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:008",
+      "kind": "failure_mode",
+      "summary": "Hardcoded Constants",
+      "definition": "Hardcoded constants refer to values that are embedded directly into the code and cannot be easily changed without modifying the code itself. These constants may include critical parameters, addresses, or settings that could be subject to change based on external factors or evolving needs. Hardcoding these values in the code introduces several issues:\n\n- **Lack of flexibility**: Once the contract is deployed, these hardcoded values cannot be changed without deploying a new version, leading to inefficiency and reduced adaptability.\n- **Security risks**: Hardcoded values may expose sensitive information or create vulnerabilities if they are not properly protected.\n- **Upgrade challenges**: Contracts with hardcoded constants cannot easily evolve to support new functionality or parameters without requiring costly redeployment.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-008"
+      ],
+      "mappings": [
+        "SCWE-008"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:009",
+      "kind": "failure_mode",
+      "summary": "Deprecated Variable and Function Usage",
+      "definition": "The use of deprecated variables and functions refers to employing code elements that are no longer recommended for use, either due to obsolescence, security concerns, or the introduction of better alternatives. Using such elements can cause issues, including reduced compatibility, poor maintainability, and security vulnerabilities. Specific concerns related to deprecated usage are:\n\n- **Security risks**: Deprecated functions may have known vulnerabilities or might not be patched.\n- **Compatibility issues**: Newer compiler versions and environments may not support deprecated code.\n- **Maintenance difficulties**: Continuing to use deprecated code increases the complexity of codebase management and prevents clean upgrades.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-009"
+      ],
+      "mappings": [
+        "SCWE-009"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:010",
+      "kind": "failure_mode",
+      "summary": "Shadowing Variables and Functions",
+      "definition": "Shadowing variables or functions is a scenario where a local variable or function shares the same name as one in a larger or outer scope. This can cause ambiguity and lead to unexpected behavior or bugs, as the inner variable or function hides the outer one. This problem is especially tricky in Solidity due to its inheritance model, where a child contract might unintentionally override parent contract variables or functions.\n\n### Key issues:\n- **Ambiguity**: The developer might not be aware that a variable or function is being hidden.\n- **Unintentional logic errors**: It may lead to the wrong variable being accessed, or the wrong function being called.\n- **Difficulty in debugging**: Shadowing makes the code harder to understand and trace, especially in complex contracts or when inheritance is involved.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-010"
+      ],
+      "mappings": [
+        "SCWE-010"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:011",
+      "kind": "failure_mode",
+      "summary": "Insecure ABI Encoding and Decoding",
+      "definition": "Insecure ABI encoding and decoding occur when a smart contract improperly handles data serialization and deserialization, leading to vulnerabilities such as data corruption, type confusion, or reentrancy attacks. Solidity provides ABI encoding functions like `abi.encode()`, `abi.encodePacked()`, and `abi.decode()`, but improper usage can cause unexpected behavior.\n\nCommon issues with insecure ABI handling:\n- **Collision Risks in `abi.encodePacked()`**: Multiple concatenated parameters can lead to ambiguous encoding, making it vulnerable to hash collisions.\n- **Unchecked Decoding**: Improper use of `abi.decode()` can result in unintended memory corruption or type confusion.\n- **Lack of Input Validation**: Encoding user inputs without verification can introduce security flaws.\n- **Mismatched Data Types**: Decoding an incorrectly encoded data structure can lead to invalid memory access.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-011"
+      ],
+      "mappings": [
+        "SCWE-011"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:012",
+      "kind": "failure_mode",
+      "summary": "Lack of Multisig Governance",
+      "definition": "Lack of multisig governance occurs when critical smart contract functions, such as upgrades, fund withdrawals, or parameter changes, are controlled by a single entity. This creates a **single point of failure**, increasing the risk of **compromise, insider abuse, or unauthorized access**. Without multisig governance, attackers or malicious actors can easily exploit privileged functions if the private key of a single administrator is compromised.\n\nKey risks associated with missing multisig governance:\n- **Centralization Risk**: A single entity can control and modify key contract parameters.\n- **Single Point of Failure**: Loss or compromise of the owner's private key can result in catastrophic consequences.\n- **Unauthorized Access**: An attacker gaining control of the private key can execute privileged functions without approval.\n- **Lack of Accountability**: Decisions are made unilaterally, reducing transparency and security.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-012"
+      ],
+      "mappings": [
+        "SCWE-012"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:013",
+      "kind": "failure_mode",
+      "summary": "Unauthorized Parameter Changes",
+      "definition": "Unauthorized parameter changes occur when privileged smart contract parameters—such as fees, governance rules, withdrawal limits, or security configurations—can be modified by a single entity or an unauthorized user. This can lead to **unexpected behavior, security risks, or financial loss** if an attacker gains access to the privileged account.\n\nKey risks associated with unauthorized parameter changes:\n- **Single Point of Control**: A centralized owner can unilaterally alter critical parameters, leading to governance concerns.\n- **Malicious Modifications**: Attackers who exploit an access control flaw may change key parameters, resulting in stolen funds or manipulated contract logic.\n- **Lack of Transparency**: Hidden or undocumented parameter changes can mislead users and investors, reducing trust.\n- **Impact on DeFi Protocols**: Unauthorized changes to liquidity pool fees, interest rates, or reward mechanisms can disrupt incentives and harm protocol users.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-013"
+      ],
+      "mappings": [
+        "SCWE-013"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:014",
+      "kind": "failure_mode",
+      "summary": "Lack of Emergency Stop Mechanism",
+      "definition": "A Lack of Emergency Stop Mechanism refers to the absence of a built-in feature in a smart contract that allows for halting or pausing critical operations during emergencies. This mechanism is essential for mitigating risks like a discovered vulnerability, unexpected behavior, or a malicious attack. Without this safeguard, the contract may continue executing malicious actions or suffer irreversible damage. The ability to stop critical functions provides an important recovery measure in scenarios where an exploit is detected or control needs to be regained.\n\nKey risks:\n- Continuous execution of harmful or malicious actions without control.\n- Difficulty in recovering from unexpected failures.\n- Increased vulnerability to hacks or exploitation.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-014"
+      ],
+      "mappings": [
+        "SCWE-014"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:015",
+      "kind": "failure_mode",
+      "summary": "Poor Governance Documentation",
+      "definition": "Poor governance documentation refers to the **lack of clear, transparent, and publicly accessible records** regarding a smart contract system’s decision-making processes, upgrade mechanisms, and role-based permissions. Without proper documentation, **users, developers, and auditors struggle to understand the governance model**, leading to **reduced trust, misconfigurations, and potential security vulnerabilities**.\n\nKey risks associated with poor governance documentation:\n- **Unclear Decision-Making Process**: Users may not understand how governance proposals are initiated, approved, or executed.\n- **Hidden Centralization Risks**: Critical governance powers may be concentrated in a small group without public awareness.\n- **Lack of Upgradeability Transparency**: If upgrade procedures are not well-documented, malicious or unintended changes may go unnoticed.\n- **Poor Incident Response Handling**: Without clear emergency protocols, governance failures can lead to slow or inadequate responses to attacks.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-015"
+      ],
+      "mappings": [
+        "SCWE-015"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:016",
+      "kind": "failure_mode",
+      "summary": "Insufficient Authorization Checks",
+      "definition": "Insufficient authorization occurs when the contract does not verify whether a user has the appropriate permissions to perform specific actions. This vulnerability arises when there are missing or improperly implemented authorization checks, allowing unauthorized users to access functions they should not have access to.\n\nCommon causes of insufficient authorization include:\n- Missing access control modifiers or incorrect configuration.\n- Failure to validate roles before granting access to sensitive functions.\n- Poor handling of user permissions, which could lead to privilege escalation.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-016"
+      ],
+      "mappings": [
+        "SCWE-016"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:017",
+      "kind": "failure_mode",
+      "summary": "Privileged Role Mismanagement",
+      "definition": "Privileged role mismanagement occurs when a smart contract incorrectly assigns roles or permissions, granting excessive privileges to certain users. This can lead to users obtaining permissions beyond what is necessary for their intended function, creating a potential for privilege escalation or unauthorized actions. In the context of smart contracts, improper privilege management can lead to critical vulnerabilities such as unauthorized contract changes, malicious interactions, or loss of funds.\n\nCommon causes include:\n- Insufficient checks for users attempting to access privileged functions.\n- Roles being dynamically assigned without validation.\n- Inadequate access control mechanisms for sensitive contract functions.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-017"
+      ],
+      "mappings": [
+        "SCWE-017"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:018",
+      "kind": "failure_mode",
+      "summary": "Use of tx.origin for Authorization",
+      "definition": "The use of `tx.origin` for authorization is a security vulnerability in which a smart contract checks the origin of the transaction to determine if a user is authorized to perform an action. This approach is flawed because `tx.origin` can be exploited by an attacker through a chain of transactions, allowing unauthorized users to interact with the contract. An attacker could trick the contract into performing an action on behalf of the victim by utilizing another contract in the transaction chain.\n\n**Key Issues**:\n- Allows unauthorized transactions by using the `tx.origin` variable instead of `msg.sender`.\n- Vulnerable to phishing and reentrancy attacks, where attackers can use contracts to impersonate the victim.\n- Mismanagement of roles and improper transaction flow handling.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-018"
+      ],
+      "mappings": [
+        "SCWE-018"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:019",
+      "kind": "failure_mode",
+      "summary": "Insecure Signature Verification",
+      "definition": "Insecure signature verification occurs when a contract improperly verifies a cryptographic signature or fails to securely validate signatures, allowing attackers to forge or manipulate them. This vulnerability can allow unauthorized transactions or the bypassing of important security mechanisms, potentially leading to fraud, unauthorized access, or other attacks.\n\nCommon causes of insecure signature verification include:\n- Not validating the signer's address.\n- Using weak or outdated cryptographic libraries.\n- Failing to check signature validity before processing actions.\n- Incorrectly handling the signature format.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-019"
+      ],
+      "mappings": [
+        "SCWE-019"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:020",
+      "kind": "failure_mode",
+      "summary": "Absence of Time-Locked Functions",
+      "definition": "Absence of time-locked functions occurs when smart contracts do not implement mechanisms to delay certain critical functions or actions based on time conditions. This can result in the contract allowing actions that should be restricted or postponed for a certain period, such as emergency fund withdrawals or sensitive administrative actions. Without time-locking mechanisms, malicious actors or faulty logic could trigger these actions at the wrong time, leading to undesired outcomes.\n\nTime-locking is commonly used in scenarios like:\n- Delaying admin or owner functions to prevent immediate misuse.\n- Ensuring withdrawal or fund transfer happens only after a predefined delay.\n- Enabling emergency actions only after a certain time or under specific conditions.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-020"
+      ],
+      "mappings": [
+        "SCWE-020"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:021",
+      "kind": "failure_mode",
+      "summary": "Unsecured Data Transmission",
+      "definition": "Unsecured data transmission refers to the transmission of sensitive information, such as private keys or user data, without encryption. This can lead to:\n- Interception of sensitive data by malicious actors.\n- Exploitation of vulnerabilities in the contract.\n- Loss of funds or data.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-021"
+      ],
+      "mappings": [
+        "SCWE-021"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:022",
+      "kind": "failure_mode",
+      "summary": "Message Replay Vulnerabilities",
+      "definition": "Message replay vulnerabilities occur when an attacker can reuse a valid message or transaction to perform unauthorized actions. This can lead to:\n- Unauthorized access to sensitive functions.\n- Loss of funds or data.\n- Exploitation of the contract's logic.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-022"
+      ],
+      "mappings": [
+        "SCWE-022"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:023",
+      "kind": "failure_mode",
+      "summary": "Lack of Communication Authenticity",
+      "definition": "Lack of communication authenticity refers to the failure to verify the authenticity of messages or transactions. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of the contract's logic.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-023"
+      ],
+      "mappings": [
+        "SCWE-023"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:024",
+      "kind": "failure_mode",
+      "summary": "Weak Randomness Sources",
+      "definition": "Weak randomness sources refer to the use of predictable or insecure sources of randomness, such as block timestamps or block hashes. This can lead to:\n- Exploitation of the contract's logic.\n- Loss of funds or data.\n- Reduced trust in the contract's security.",
+      "facets": [
+        "category:scsvs-block"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-024"
+      ],
+      "mappings": [
+        "SCWE-024"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:025",
+      "kind": "failure_mode",
+      "summary": "Improper Cryptographic Key Management",
+      "definition": "Improper cryptographic key management refers to the failure to securely generate, store, or use cryptographic keys. This can lead to:\n- Unauthorized access to sensitive data.\n- Exploitation of the contract's logic.\n- Loss of funds or data.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-025"
+      ],
+      "mappings": [
+        "SCWE-025"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:026",
+      "kind": "failure_mode",
+      "summary": "Insufficient Hash Verification",
+      "definition": "Insufficient hash verification refers to the failure to properly verify hashes, such as message hashes or transaction hashes. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of the contract's logic.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-026"
+      ],
+      "mappings": [
+        "SCWE-026"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:027",
+      "kind": "failure_mode",
+      "summary": "Vulnerable Cryptographic Algorithms",
+      "definition": "Vulnerable cryptographic algorithms refer to the use of outdated or insecure cryptographic algorithms, such as MD5 or SHA-1. This can lead to:\n- Exploitation of the contract’s logic.\n- Loss of funds or data.\n- Reduced trust in the contract’s security.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-027"
+      ],
+      "mappings": [
+        "SCWE-027"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:028",
+      "kind": "failure_mode",
+      "summary": "Price Oracle Manipulation",
+      "definition": "Price Oracle manipulation refers to the exploitation of vulnerabilities in price oracles to manipulate contract logic. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of the contract's logic.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-028"
+      ],
+      "mappings": [
+        "SCWE-028"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:029",
+      "kind": "failure_mode",
+      "summary": "Lack of Decentralized Oracle Sources",
+      "definition": "Lack of decentralized oracle sources refers to the reliance on a single oracle for critical data, which can be manipulated or compromised. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of the contract's logic.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-029"
+      ],
+      "mappings": [
+        "SCWE-029"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:030",
+      "kind": "failure_mode",
+      "summary": "Insecure Oracle Data Updates",
+      "definition": "Insecure oracle data updates refer to the failure to properly validate or secure updates to oracle data. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of the contract's logic.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-030"
+      ],
+      "mappings": [
+        "SCWE-030"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:031",
+      "kind": "failure_mode",
+      "summary": "Insecure use of Block Variables",
+      "definition": "In blockchain networks like Ethereum, block variables `(block.timestamp, block.number, block.difficulty` / `block.prevrandao` post-merge, etc.) provide information about the current state of the blockchain. However, these values are not fully deterministic and can be manipulated by validators (or miners on PoW chains), leading to vulnerabilities in smart contracts.\n\nBlock timestamps are not guaranteed to be accurate or consistent, and validators (or miners on PoW chains) can influence them within a certain range. This can cause issues when contracts depend on precise timing for critical functionality, such as token distribution, access control, or other time-sensitive events.\n\nPotential issues that arise from insecure timestamp usage include:\n\n- Timestamp Manipulation: Validators (or miners on PoW) can slightly alter `block.timestamp` to influence time-sensitive logic (e.g., auctions, token distributions, staking rewards).\n- Predictable Randomness: Using `block.number` or `block.difficulty` as a source of randomness allows attackers to predict and manipulate outcomes.\n- Exploitable Access Control: Contracts that rely on block timestamps for permissions or actions may be bypassed if timestamps are adjusted.",
+      "facets": [
+        "category:scsvs-block"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-031"
+      ],
+      "mappings": [
+        "SCWE-031"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:032",
+      "kind": "failure_mode",
+      "summary": "Dependency on Block Gas Limit",
+      "definition": "Dependency on block gas limit refers to the reliance on the Ethereum block gas limit for contract operations, which can lead to:\n- Failed transactions if gas limits are exceeded.\n- Exploitation of vulnerabilities in gas-intensive operations.\n- Loss of funds or data.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-032"
+      ],
+      "mappings": [
+        "SCWE-032"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:033",
+      "kind": "failure_mode",
+      "summary": "Chain Split Risks",
+      "definition": "Chain split risks refer to vulnerabilities that arise when a blockchain splits into multiple chains, such as during a hard fork. This can lead to:\n- Confusion or inconsistencies in contract logic.\n- Loss of funds or data.\n- Exploitation of vulnerabilities in cross-chain operations.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-033"
+      ],
+      "mappings": [
+        "SCWE-033"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:034",
+      "kind": "failure_mode",
+      "summary": "Insecure Cross-Chain Messaging",
+      "definition": "Insecure cross-chain messaging refers to vulnerabilities that arise when communicating between different blockchains. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of vulnerabilities in cross-chain logic.\n\n- Economic inconsistencies due to unvalidated msg.value in message handlers.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-034"
+      ],
+      "mappings": [
+        "SCWE-034"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:035",
+      "kind": "failure_mode",
+      "summary": "Insecure Delegatecall Usage",
+      "definition": "Insecure delegatecall usage refers to vulnerabilities that arise when using `delegatecall` to execute code from another contract. This can lead to:\n- Unauthorized access to sensitive functions.\n- Exploitation of vulnerabilities in the called contract.\n- Loss of funds or data.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-035"
+      ],
+      "mappings": [
+        "SCWE-035"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:036",
+      "kind": "failure_mode",
+      "summary": "Inadequate Gas Limit Handling",
+      "definition": "Inadequate gas limit handling occurs when a contract fails to manage gas constraints efficiently, leading to performance bottlenecks and denial-of-service (DoS) risks. Poor gas handling can result in:\n- Unoptimized execution: Unnecessary gas-heavy computations increasing costs.\n- DoS vulnerabilities: Transactions failing due to excessive gas usage, blocking operations.\n- Inefficient batch processing: Overloaded loops or storage updates causing out-of-gas (OOG) errors.\n\nUnlike **SCWE-032**, which focuses on the protocol-level block gas limit, this issue arises due to poor gas management at the smart contract level.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-036"
+      ],
+      "mappings": [
+        "SCWE-036"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:037",
+      "kind": "failure_mode",
+      "summary": "Insufficient Protection Against Front-Running",
+      "definition": "Insufficient protection against front-running refers to vulnerabilities that allow malicious actors to exploit the order of transactions for profit. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of the contract’s logic.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-037"
+      ],
+      "mappings": [
+        "SCWE-037"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:038",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of Selfdestruct",
+      "definition": "Insecure use of selfdestruct refers to vulnerabilities that arise when the `selfdestruct` function is used without proper safeguards. This can lead to:\n- Unauthorized destruction of the contract.\n- Loss of funds or data.\n- Exploitation of vulnerabilities in contract logic.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-038"
+      ],
+      "mappings": [
+        "SCWE-038"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:039",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of Inline Assembly",
+      "definition": "Insecure use of inline assembly refers to vulnerabilities that arise when low-level assembly code is used improperly. This can lead to:\n- Incorrect type conversions or casts.\n- Exploitation of vulnerabilities in low-level operations.\n- Loss of funds or data.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-039"
+      ],
+      "mappings": [
+        "SCWE-039"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:040",
+      "kind": "failure_mode",
+      "summary": "Incorrect Storage Packing",
+      "definition": "Incorrect storage packing in Solidity occurs when storage variables are not efficiently packed within a single storage slot, leading to unnecessary gas consumption. Solidity automatically stores variables in 32-byte (256-bit) slots, and inefficient ordering of data types can lead to wasted space. Contracts that fail to optimize storage packing may incur higher gas costs during deployments and transactions.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-040"
+      ],
+      "mappings": [
+        "SCWE-040"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:041",
+      "kind": "failure_mode",
+      "summary": "Unsafe Downcasting",
+      "definition": "Unsafe downcasting occurs when a larger integer type is implicitly or explicitly converted to a smaller type, leading to precision loss, unintended value changes, or integer overflows. Solidity does not automatically check for overflow when performing explicit type conversions, making it possible to unintentionally truncate values.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-041"
+      ],
+      "mappings": [
+        "SCWE-041"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:042",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of External Calls",
+      "definition": "Insecure use of external calls refers to vulnerabilities that arise when calling external contracts without proper validation or safeguards. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of vulnerabilities in the called contract.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-042"
+      ],
+      "mappings": [
+        "SCWE-042"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:043",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of Fallback Functions",
+      "definition": "Insecure use of fallback functions refers to vulnerabilities that arise when fallback functions are used improperly. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data due to unintended execution.\n- Exploitation of contract logic if the fallback function allows arbitrary interactions.\n\nFallback functions are triggered when a contract receives a call with no matching function signature. They can be used to handle Ether transfers or proxy unknown function calls. If misconfigured, they may enable unintended behaviors, such as unauthorized access or fund loss.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-043"
+      ],
+      "mappings": [
+        "SCWE-043"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:044",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of Storage",
+      "definition": "Insecure use of storage refers to vulnerabilities that arise when storage variables are improperly managed. This can lead to:\n- Unauthorized access to sensitive data.\n- Loss of funds or data.\n- Exploitation of vulnerabilities in contract logic.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-044"
+      ],
+      "mappings": [
+        "SCWE-044"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:045",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of Modifiers",
+      "definition": "Insecure use of modifiers refers to vulnerabilities that arise when modifiers are used improperly. This can lead to:\n- Unauthorized actions by malicious actors.\n- Loss of funds or data.\n- Exploitation of vulnerabilities in contract logic.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-045"
+      ],
+      "mappings": [
+        "SCWE-045"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:046",
+      "kind": "failure_mode",
+      "summary": "Reentrancy Attacks",
+      "definition": "Reentrancy attacks occur when a contract allows untrusted external calls during execution without properly updating state variables or implementing protections. This enables attackers to repeatedly call functions and manipulate the contract’s state before execution completes. Common issues include:\n\n- Making external calls before updating state variables.  \n- Lack of mechanisms to prevent repeated or recursive calls.  \n- Improper handling of external interactions.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-046"
+      ],
+      "mappings": [
+        "SCWE-046"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:047",
+      "kind": "failure_mode",
+      "summary": "Integer Overflows and Underflows",
+      "definition": "Integer overflows and underflows occur when arithmetic operations exceed the bounds of the integer data type, causing the value to \"wrap around\" to an unexpected number.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-047"
+      ],
+      "mappings": [
+        "SCWE-047"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:048",
+      "kind": "failure_mode",
+      "summary": "Unchecked Call Return Value",
+      "definition": "Unchecked call return value vulnerabilities occur when a contract fails to validate the success or failure of low-level calls, such as `call`, `delegatecall`, and `staticcall`. Ignoring the return values of these calls can result in undetected errors, allowing malicious or unintended actions to succeed silently.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-048"
+      ],
+      "mappings": [
+        "SCWE-048"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:049",
+      "kind": "failure_mode",
+      "summary": "Unprotected Ether Withdrawal",
+      "definition": "Unprotected Ether withdrawal occurs when a smart contract allows withdrawal of Ether (ETH) without sufficient access control or proper authorization mechanisms. This vulnerability exposes the contract to unauthorized or malicious users, enabling them to drain funds without any checks on the withdrawal request.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-049"
+      ],
+      "mappings": [
+        "SCWE-049"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:050",
+      "kind": "failure_mode",
+      "summary": "Unprotected SELFDESTRUCT Instruction",
+      "definition": "The `SELFDESTRUCT` instruction in Ethereum allows a contract to destroy itself and send its remaining Ether balance to a specified address. If this instruction is not properly protected with access controls, an attacker could trigger it, causing the contract to self-destruct and possibly transferring all the funds to an unauthorized address. This can result in the total loss of funds or disruption of contract functionality.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-050"
+      ],
+      "mappings": [
+        "SCWE-050"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:051",
+      "kind": "failure_mode",
+      "summary": "Improper Use of CREATE2 for Contract Deployment",
+      "definition": "The `CREATE2` opcode allows for deterministic contract deployment, meaning the contract's address can be precomputed before deployment. However, improper handling of the salt parameter, constructor arguments, or contract bytecode can lead to vulnerabilities such as address predictability, re-deployment attacks, and malicious contract substitution. If an attacker can influence the salt or code, they may deploy a contract at a known address before the legitimate one, leading to security risks.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-051"
+      ],
+      "mappings": [
+        "SCWE-051"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:052",
+      "kind": "failure_mode",
+      "summary": "Transaction Order Dependence",
+      "definition": "Transaction Order Dependence (TOD) occurs when the outcome of a contract's execution depends on the order of transactions. Attackers can exploit this issue by submitting transactions in a specific order, manipulating the contract's state and gaining an unfair advantage, such as front-running or back-running other transactions. This can lead to unexpected behavior and resource consumption.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-052"
+      ],
+      "mappings": [
+        "SCWE-052"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:053",
+      "kind": "failure_mode",
+      "summary": "Improper Deletion of Mappings",
+      "definition": "In Solidity, mappings (`mapping(address => uint256)`) do not store key-value pairs in a way that allows them to be iterated over or deleted in a straightforward manner. Deleting a mapping variable does not remove its entries; it only resets the reference to the mapping, leaving stale data accessible if another variable references the same mapping. Improper deletion of mappings can lead to storage inconsistencies, potential access control issues, and unintended behavior.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-053"
+      ],
+      "mappings": [
+        "SCWE-053"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:054",
+      "kind": "failure_mode",
+      "summary": "Signature Malleability",
+      "definition": "Signature malleability refers to the ability to modify a valid signature without changing its validity. This can occur when signatures are not properly verified or when certain components of a signature (like the `v`, `r`, and `s` values) can be altered while still producing a valid signature.\n\nAttackers can modify a signature’s `s` value or flip `v` between 27 and 28, generating different valid signatures for the same message. This can lead to:\n\n- Replay attacks, where transactions can be re-executed with modified signatures.\n- Transaction hijacking, where a valid signature is altered to redirect funds or manipulate contract state.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-054"
+      ],
+      "mappings": [
+        "SCWE-054"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:055",
+      "kind": "failure_mode",
+      "summary": "Missing Protection against Signature Replay Attacks",
+      "definition": "Signature replay attacks occur when a valid signature from a previous transaction is reused in a different context, such as a different transaction or contract call. Without proper protection, an attacker can capture and replay a signature, potentially bypassing authentication checks and causing unauthorized actions or transactions.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-055"
+      ],
+      "mappings": [
+        "SCWE-055"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:056",
+      "kind": "failure_mode",
+      "summary": "Lack of Proper Signature Verification",
+      "definition": "This vulnerability occurs when a smart contract fails to properly verify whether a signature was produced by an authorized entity.\nIn Ethereum, contracts often use `ecrecover` to check signatures, but failing to validate who signed the message allows:\n\n- Unauthorized transactions, where attackers submit signatures from any key.\n- Replay attacks, where valid signatures are reused to repeat actions.\n- Malicious contract state manipulation, where attackers gain unauthorized access.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-056"
+      ],
+      "mappings": [
+        "SCWE-056"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:057",
+      "kind": "failure_mode",
+      "summary": "Write to Arbitrary Storage Location",
+      "definition": "Writing to arbitrary storage locations can occur when a contract fails to properly validate inputs before interacting with storage variables. An attacker may exploit this vulnerability to overwrite sensitive storage slots, leading to unintended contract behavior, state manipulation, or loss of funds.",
+      "facets": [
+        "category:scsvs-comp"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-057"
+      ],
+      "mappings": [
+        "SCWE-057"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:058",
+      "kind": "failure_mode",
+      "summary": "DoS with Block Gas Limit",
+      "definition": "Denial of Service (DoS) with block gas limit occurs when a contract is designed in such a way that its execution depends on a large amount of gas, potentially exceeding the block gas limit. This can result in the transaction failing, causing the contract to become unavailable or unusable. Attackers can exploit this vulnerability by creating transactions that consume excessive gas, effectively locking the contract or preventing normal operation.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-058"
+      ],
+      "mappings": [
+        "SCWE-058"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:059",
+      "kind": "failure_mode",
+      "summary": "Insufficient Gas Griefing",
+      "definition": "Insufficient gas griefing occurs when an attacker intentionally sends a transaction with insufficient gas to force the contract to fail. This can lead to resource consumption issues and potential denial of service for the contract or other users. If a contract relies on external calls or interacts with other contracts and does not properly handle gas estimation, it may be vulnerable to such attacks.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-059"
+      ],
+      "mappings": [
+        "SCWE-059"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:060",
+      "kind": "failure_mode",
+      "summary": "Floating Pragma",
+      "definition": "The use of floating pragmas (e.g., `^0.8.0`) in smart contract development can lead to unexpected issues when new versions of the Solidity compiler are released. Floating versions allow the contract to automatically use newer versions of the compiler within the specified range, which may introduce breaking changes, unexpected bugs, or security vulnerabilities. To avoid this, it is important to specify fixed versions to ensure the contract works reliably and consistently across different environments.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-060"
+      ],
+      "mappings": [
+        "SCWE-060"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:061",
+      "kind": "failure_mode",
+      "summary": "Outdated Compiler Version",
+      "definition": "Using an outdated compiler version can expose a smart contract to vulnerabilities that have already been patched in newer versions. Compiler versions often include security fixes, optimizations, and new features that are crucial for the safety and performance of contracts.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-061"
+      ],
+      "mappings": [
+        "SCWE-061"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:062",
+      "kind": "failure_mode",
+      "summary": "Dead Code",
+      "definition": "Code with no effects or Dead Code- refers to segments of a smart contract that are never executed or do not alter the contract's state or output. This can lead to unnecessary gas consumption, complicate the contract’s logic, and potentially confuse developers. Dead code often appears as leftover code from previous iterations or functions that are no longer in use but have not been removed. Removing such code improves contract efficiency and readability.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-062"
+      ],
+      "mappings": [
+        "SCWE-062"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:063",
+      "kind": "failure_mode",
+      "summary": "Insecure Event Emission",
+      "definition": "Events in Solidity play a critical role in logging contract activity and ensuring transparency. Improper event handling can lead to security risks such as:  \n\n1. **Missing critical event emissions** – Making external monitoring difficult.  \n2. **Emitting misleading or incorrect data** – Resulting in users or external systems making incorrect assumptions.  \n3. **Logging sensitive information** – Leaking private or security-sensitive data.  \n\nFailure to handle events properly can affect contract auditing, debugging, and external monitoring tools, making it difficult to detect anomalies or track contract states correctly.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-063"
+      ],
+      "mappings": [
+        "SCWE-063"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:064",
+      "kind": "failure_mode",
+      "summary": "Incorrect Inheritance Order",
+      "definition": "Incorrect inheritance order in Solidity can lead to unintended behavior, especially when multiple base contracts define similar variables or functions. Solidity’s linearization of the inheritance order can result in one contract unintentionally overriding or shadowing variables or functions defined in a parent contract, leading to confusion, errors, and potential vulnerabilities.\n\nIn Solidity, the order of inheritance matters. If the inheritance hierarchy is not properly structured, the wrong version of a variable or function may be called, causing bugs or security issues.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-064"
+      ],
+      "mappings": [
+        "SCWE-064"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:065",
+      "kind": "failure_mode",
+      "summary": "Block Values as a Proxy for Time",
+      "definition": "Using block values (such as `block.timestamp`, `block.number`, or `block.difficulty` / `block.prevrandao` post-merge) as a proxy for time in Ethereum smart contracts can be problematic. Block values are determined by validators (or miners on PoW chains) and can be manipulated within certain limits, making them unreliable for time-sensitive logic. Relying on these values for critical decisions like deadlines or expiration dates can result in unexpected behaviors, such as manipulations by validators (or miners on PoW chains) or unintended contract states.",
+      "facets": [
+        "category:scsvs-block"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-065"
+      ],
+      "mappings": [
+        "SCWE-065"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:066",
+      "kind": "failure_mode",
+      "summary": "Incorrect Handling of Bitwise Operations",
+      "definition": "Bitwise operations (e.g., `&`, `|`, `^`, `<<`, `>>`) can be efficient alternatives to arithmetic operations but are prone to errors if not used correctly. Misusing bitwise shifts can cause unintended value changes, integer overflows, or precision loss. Solidity lacks native overflow checks for bitwise shifts, making incorrect handling particularly dangerous in financial calculations or cryptographic functions.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-066"
+      ],
+      "mappings": [
+        "SCWE-066"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:067",
+      "kind": "failure_mode",
+      "summary": "Assert Violation",
+      "definition": "In Ethereum smart contracts, assertions (`assert`) are commonly used for internal consistency checks and to prevent erroneous states. However, if not used correctly, they can lead to unexpected behavior. When an `assert` statement fails, it reverts the entire transaction, and all changes made in the transaction are reverted. This can be problematic if it is used for conditions that can be expected during normal contract execution.\n\nUsing `assert` for conditions that can occur under normal circumstances (e.g., user inputs or contract logic) may cause unnecessary reverts and loss of gas. It’s important to reserve `assert` for critical errors, such as invariants and internal state checks that should never fail.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-067"
+      ],
+      "mappings": [
+        "SCWE-067"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:068",
+      "kind": "failure_mode",
+      "summary": "State Variable Default Visibility",
+      "definition": "In Solidity, state variables have a default visibility of `internal`, which means they can only be accessed within the contract or derived contracts (not by external callers). Omitting explicit visibility can lead to unintended behavior: for example, if a developer intends `private` but forgets to specify it, derived contracts can still access the variable; if they intend `public` but omit it, no getter is generated and external callers cannot read the value. Explicit visibility ensures the variable behaves as intended.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-068"
+      ],
+      "mappings": [
+        "SCWE-068"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:069",
+      "kind": "failure_mode",
+      "summary": "Shadowing State Variables",
+      "definition": "Shadowing occurs when a state variable in a derived contract uses the same name as one in the base contract. This can lead to confusion and unexpected behavior, as the derived contract will hide the state variable from the base contract, potentially causing errors in contract logic or making it harder to maintain and audit the code.\n\nIt is essential to avoid naming state variables in derived contracts the same as those in base contracts to ensure that the intended state is correctly accessed and modified.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-069"
+      ],
+      "mappings": [
+        "SCWE-069"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:070",
+      "kind": "failure_mode",
+      "summary": "Incorrect Constructor Name",
+      "definition": "In Solidity, the constructor is a special function used to initialize a contract's state variables when it is deployed. If a constructor is incorrectly named, it will not function as expected, leading to issues such as failing to initialize state variables or triggering unexpected behavior. The constructor must have the exact name of the contract and no return type.\n\nIf the constructor name is not correct, it will not be executed as intended, and the contract may not behave as expected, potentially leaving it in an uninitialized or inconsistent state.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-070"
+      ],
+      "mappings": [
+        "SCWE-070"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:071",
+      "kind": "failure_mode",
+      "summary": "Uninitialized Storage Pointer",
+      "definition": "An uninitialized storage pointer in Solidity refers to a variable that has been declared but not assigned a value before being used. This can result in unpredictable behavior, as the variable might point to unintended locations in the contract's storage, potentially exposing sensitive data or allowing attackers to exploit the uninitialized pointer. This is a critical issue because Solidity does not automatically initialize storage variables, leaving them with default values that may be unsafe.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-071"
+      ],
+      "mappings": [
+        "SCWE-071"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:072",
+      "kind": "failure_mode",
+      "summary": "Use of Deprecated Solidity Functions",
+      "definition": "Some Solidity functions and features have been deprecated over time due to security risks, inefficiencies, or better alternatives being introduced in newer versions of Solidity. Using deprecated functions can expose contracts to known vulnerabilities and potential attacks. Examples include `suicide()`, which was replaced by `selfdestruct()`, and `sha3()`, which was replaced by `keccak256()`.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-072"
+      ],
+      "mappings": [
+        "SCWE-072"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:073",
+      "kind": "failure_mode",
+      "summary": "Message Call with Hardcoded Gas Amount",
+      "definition": "In Solidity, calling external contracts with a hardcoded gas value can lead to various issues, such as running out of gas or allowing a malicious contract to manipulate gas consumption. Hardcoding the gas amount is inflexible and may lead to resource exhaustion or cause the transaction to fail when the gas limit is insufficient for the operation.",
+      "facets": [
+        "category:scsvs-block"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-073"
+      ],
+      "mappings": [
+        "SCWE-073"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:074",
+      "kind": "failure_mode",
+      "summary": "Hash Collisions with Multiple Variable Length Arguments",
+      "definition": "When hashing multiple variable-length arguments, there is a potential risk of hash collisions, which can occur if two different sets of inputs produce the same hash output. This vulnerability is particularly relevant in situations where hashes are used as identifiers, signatures, or keys, and collisions may lead to incorrect behavior or security breaches, such as false validation of signatures or unexpected contract logic execution.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-074"
+      ],
+      "mappings": [
+        "SCWE-074"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:075",
+      "kind": "failure_mode",
+      "summary": "Incorrect Ether Balance Tracking",
+      "definition": "Incorrect Ether balance tracking occurs when a contract manually maintains an internal balance variable instead of relying on `address(this).balance`. This creates inconsistencies when Ether is received outside of expected functions (e.g., via `selfdestruct()`, `transfer()`, or direct deposits).  \n\nAttackers can exploit this by artificially inflating the contract's perceived balance, leading to unauthorized withdrawals or failed transactions. This issue is common in poorly designed deposit/withdraw systems that do not properly verify the actual contract balance.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-075"
+      ],
+      "mappings": [
+        "SCWE-075"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:076",
+      "kind": "failure_mode",
+      "summary": "Right-To-Left-Override Control Character (U+202E)",
+      "definition": "The Right-To-Left-Override (RTLO) control character (U+202E) can be used to manipulate the display order of text, creating misleading or deceptive visual representations in source code. Malicious actors can exploit this to:\n- Mask malicious logic or misrepresent code intent.\n- Introduce security-critical bugs that are difficult to detect visually.\n- Deceive auditors, developers, or end-users by obscuring real functionality.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-076"
+      ],
+      "mappings": [
+        "SCWE-076"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:077",
+      "kind": "failure_mode",
+      "summary": "Lack of Rate Limiting",
+      "definition": "Lack of rate limiting in a smart contract can lead to **Denial of Service (DoS)** attacks, excessive gas consumption, or contract state bloating. Without a mechanism to restrict the frequency of function calls, an attacker can flood the contract with transactions, causing delays, increased gas fees, or complete unavailability of critical functions.  \n\nThis vulnerability is particularly dangerous in **DeFi protocols**, where unlimited function calls could drain funds, abuse governance mechanisms, or overload on-chain processing.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-077"
+      ],
+      "mappings": [
+        "SCWE-077"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:078",
+      "kind": "failure_mode",
+      "summary": "Improper Handling of Ether Transfers",
+      "definition": "Improper handling of Ether transfers in Solidity can lead to unexpected behaviors, such as failed transactions or loss of funds. For instance, when using `transfer()` or `send()`, failure to check for successful execution or not handling exceptions correctly can cause Ether to be locked or lost in the contract.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-078"
+      ],
+      "mappings": [
+        "SCWE-078"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:079",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of Transfer and Send",
+      "definition": "The use of `.transfer()` and `.send()` for Ether transfers in Solidity is insecure because they impose a fixed gas limit of 2300 gas. This restriction can cause transactions to fail unexpectedly when the receiving contract has complex logic that requires more gas. Additionally, it can result in a Denial of Service (DoS) vulnerability if the receiving contract cannot execute due to insufficient gas.\n\nThis issue is especially problematic in upgradable smart contracts or protocol interactions, where the gas requirements of a receiving contract might change over time.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-079"
+      ],
+      "mappings": [
+        "SCWE-079"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:080",
+      "kind": "failure_mode",
+      "summary": "Incorrect Type Conversion",
+      "definition": "Incorrect type conversion occurs when a value is cast or implicitly converted between incompatible types, potentially leading to precision loss, unexpected behavior, or security vulnerabilities. Solidity allows certain implicit conversions (e.g., from `uint256` to `uint8`), which can lead to silent truncation of data. Additionally, casting between types like `address` and `uint` can lead to unexpected security risks.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-080"
+      ],
+      "mappings": [
+        "SCWE-080"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:081",
+      "kind": "failure_mode",
+      "summary": "Improper Handling of Nonce",
+      "definition": "Nonce values are used to ensure that transactions are processed in the correct order and prevent replay attacks. Improper handling or validation of nonces can lead to issues such as transaction replay or improper sequencing of transactions, which can be exploited by attackers.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-081"
+      ],
+      "mappings": [
+        "SCWE-081"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:082",
+      "kind": "failure_mode",
+      "summary": "Lack of Proper Gas Management",
+      "definition": "Gas management is crucial in smart contracts to ensure that they do not run out of gas or cause excessive consumption. If gas consumption is not properly controlled, a contract can fail to execute or can be exploited by attackers to cause denial of service (DoS).",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-082"
+      ],
+      "mappings": [
+        "SCWE-082"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:083",
+      "kind": "failure_mode",
+      "summary": "Failure to Handle Edge Cases",
+      "definition": "Failure to account for edge cases can result in unexpected behaviors, security vulnerabilities, and unintended contract failures. Edge cases are unusual but possible inputs or states that developers often overlook, leading to incorrect logic, reverts, or even exploits.\n\n### Common scenarios include:\n\n- Arithmetic Issues (e.g., division by zero, integer overflow/underflow, precision loss).\n- Boundary Conditions (e.g., handling empty arrays, minimum/maximum values).\n- State-Dependent Bugs (e.g., failing to check for uninitialized variables, invalid state transitions).\n- Gas-Related Failures (e.g., unbounded loops consuming excessive gas).",
+      "facets": [
+        "category:scsvs-comp"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-083"
+      ],
+      "mappings": [
+        "SCWE-083"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:084",
+      "kind": "failure_mode",
+      "summary": "Insecure Use of blockhash",
+      "definition": "The `blockhash` function is often misused to generate randomness in smart contracts. However, `blockhash` is publicly available and can be influenced by validators (or miners on PoW chains), making it an unreliable and insecure source of randomness.\n\nAttackers can manipulate `blockhash` by controlling which transactions are included in a block, reordering transactions, or discarding unfavorable blocks. This can lead to predictable random outcomes, allowing malicious actors to exploit lotteries, gaming, and other randomness-dependent mechanisms.\n\n**Attack Scenarios**\n- Lottery Manipulation: A validator (or miner on PoW) can withhold or reorder transactions to ensure a favorable `blockhash` that lets them win.\n- Game Exploitation: If a game outcome depends on `blockhash`, an attacker can predict future results and place bets accordingly.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-084"
+      ],
+      "mappings": [
+        "SCWE-084"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:085",
+      "kind": "failure_mode",
+      "summary": "Misuse of Oracle Min/Max Price Band Without Validation",
+      "definition": "This weakness occurs when smart contracts consume price oracle data (e.g., from Chainlink) without verifying whether the returned price falls within an expected or trusted range (e.g., `minPrice`/`maxPrice`). Oracles may return fallback floor or ceiling values when actual prices exceed internal limits or when the feed encounters data instability.\n\nFailing to detect and reject such edge-case values can result in incorrect or exploitable logic paths in smart contracts. This weakness may allow attackers to:\n\n- Trigger mispriced swaps or asset conversions.\n- Exploit collateralization thresholds.\n- Manipulate auction pricing or tiered reward structures.\n- Influence governance systems based on price weightings.\n\nThese issues are especially dangerous during periods of high volatility or partial oracle outages, where fallback values may be automatically returned.\n\n---",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-085"
+      ],
+      "mappings": [
+        "SCWE-085"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:086",
+      "kind": "failure_mode",
+      "summary": "Missing Validation of Oracle Response Fields (Stale or Incomplete Data)",
+      "definition": "This weakness occurs when smart contracts consume data from oracles (e.g., Chainlink) without validating critical fields in the response such as `answeredInRound`, `timestamp`, or even the `answer` itself. Failing to validate these fields can lead to:\n\n- Use of stale price data from old oracle rounds.\n- Acceptance of incomplete oracle responses (e.g., `timestamp == 0`).\n- Execution based on invalid or zero-priced data.\n\nThis can severely affect the security of DeFi protocols or any smart contract relying on accurate, fresh data feeds.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-086"
+      ],
+      "mappings": [
+        "SCWE-086"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:087",
+      "kind": "failure_mode",
+      "summary": "Missing Payload Size Validation in Cross-Chain Messaging (Denial of Service/Stuck Funds)",
+      "definition": "This weakness arises when smart contracts performing cross-chain messaging fail to validate the size of payloads before emitting or sending them. In protocols using relayer-based messaging (e.g., LayerZero, Wormhole), data is typically encoded and emitted as a payload on the source chain, then relayed and decoded on the destination chain. If the encoded payload exceeds the maximum allowed size (often 10,000 bytes or similar, depending on the bridge/messaging protocol), the message transmission or decoding can revert—often because the large payload causes out-of-gas consumption during processing or fails explicit size checks. In lock-mint architectures, this can lead to permanent loss of user funds due to inability to unlock or mint assets on the destination chain.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-087"
+      ],
+      "mappings": [
+        "SCWE-087"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:088",
+      "kind": "failure_mode",
+      "summary": "Improper Decimal Normalization in Price-Based Calculations",
+      "definition": "This issue arises when smart contracts perform arithmetic involving token values and price feeds without properly aligning decimal places across different sources (e.g. ERC-20 tokens with varying decimals and Chainlink oracles with fixed 8-decimal prices). Failing to normalize decimals before calculations can lead to severely inflated or deflated results, causing users to be overcharged, underpaid, or otherwise economically exploited.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-088"
+      ],
+      "mappings": [
+        "SCWE-088"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:089",
+      "kind": "failure_mode",
+      "summary": "Vulnerable & Outdated Libraries",
+      "definition": "Smart contracts that depend on outdated or vulnerable third‑party libraries inherit their security flaws. Attackers can exploit known issues in widely used libraries (e.g., reentrancy, integer overflow, or access control bypasses), especially if the library is no longer maintained or patched.  \nCommon risks include:  \n- Exploitation of known vulnerabilities in older OpenZeppelin versions or other dependencies.  \n- Inheriting insecure logic or deprecated patterns from unmaintained libraries.  \n- Increased attack surface due to indirect dependencies.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-089"
+      ],
+      "mappings": [
+        "SCWE-089"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:090",
+      "kind": "failure_mode",
+      "summary": "Missing Slippage Protection in Automated Token Swaps",
+      "definition": "This weakness occurs when smart contracts execute token swaps through DEX routers (e.g., Uniswap, PancakeSwap, SushiSwap) with the amountOutMin parameter set to 0 or a hardcoded static value. This disables slippage protection and allows trades to execute regardless of adverse price movement. As a result, users or protocols may receive significantly fewer tokens than expected, especially under high volatility, front-running, or sandwich attack conditions.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-090"
+      ],
+      "mappings": [
+        "SCWE-090"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:091",
+      "kind": "failure_mode",
+      "summary": "Lack of Zero Value Check in Token Transfers",
+      "definition": "This weakness occurs when smart contracts perform ERC20 token transfers without first validating that the transfer amount is greater than zero. While most ERC20 tokens allow zero‑value transfers, some implementations (e.g., LEND and others) revert when the amount is zero. This inconsistency can cause unexpected reverts in production, disrupt execution flow, and prevent critical contract logic from completing successfully.  \nCommon risks include:  \n- Unexpected revert when interacting with non‑standard ERC20 tokens that disallow zero‑value operations.  \n- Potential denial‑of‑service conditions if an attacker or integration repeatedly triggers zero‑value transfers.  \n- Broken integrations when protocols assume uniform ERC20 behavior across diverse tokens.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-091"
+      ],
+      "mappings": [
+        "SCWE-091"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:092",
+      "kind": "failure_mode",
+      "summary": "Missing Disable Initializer in Constructor for Proxy Contracts",
+      "definition": "This weakness occurs when upgradeable proxy contracts (e.g., UUPS or Transparent Proxy patterns) do not include a call to `_disableInitializers()` inside their constructor. Without this safeguard, malicious actors may invoke the `initialize()` function directly on the implementation contract. This can lead to takeover of admin roles, unauthorized ownership assignment, or malicious configuration of protocol-critical parameters.  \n\nThis mistake is frequently observed in contracts built with OpenZeppelin Upgradeable libraries where developers forget to disable initializers in the implementation contract’s constructor.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-092"
+      ],
+      "mappings": [
+        "SCWE-092"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:093",
+      "kind": "failure_mode",
+      "summary": "Unnamed Function Parameters",
+      "definition": "This weakness occurs when functions declare parameters without names (only types). Unnamed parameters reduce code clarity and hinder maintainability, making it difficult for reviewers and future maintainers to understand the purpose and expected usage of each argument. In smart contracts, where correctness is critical, this ambiguity can result in misinterpretation, incorrect argument ordering in calls or refactors, and subtle logic errors.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-093"
+      ],
+      "mappings": [
+        "SCWE-093"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:094",
+      "kind": "failure_mode",
+      "summary": "Insufficient Gas Limit Validation in LayerZero Message Sending",
+      "definition": "This weakness arises when a smart contract using LayerZero for cross-chain communication fails to validate the minimum gas limit in the adapter parameters. Attackers (or misconfigured clients) can specify an adapter params gas value that is too low for the destination chain execution. As a result, message processing reverts before reaching business logic or error-handling, and the message is recorded as a failed payload on the destination chain. Accumulating failed payloads can disrupt protocol liveness by blocking the cross-chain communication pathway until manual intervention is performed.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-094"
+      ],
+      "mappings": [
+        "SCWE-094"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:095",
+      "kind": "failure_mode",
+      "summary": "Missing Destination Address Size Check",
+      "definition": "This weakness occurs when a smart contract function accepts a `bytes32` parameter intended to represent an Ethereum address without validating its size. Ethereum addresses are 20 bytes, and using a `bytes32` type without proper checks can lead to incorrect address interpretation, potentially causing funds to be sent to unintended addresses.  \n\nThis is especially risky in cross-chain, bridging, or interoperability contexts where address formats and padding conventions may vary. If the upper 12 bytes of the `bytes32` value are non-zero (or the value is otherwise malformed), naive casting to `address` can silently truncate or misinterpret the actual destination, leading to irreversible fund loss or misdirection.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-095"
+      ],
+      "mappings": [
+        "SCWE-095"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:096",
+      "kind": "failure_mode",
+      "summary": "Missing Token Burn During Cross-Chain NFT Withdrawal",
+      "definition": "This weakness occurs when a cross-chain bridge allows withdrawals from Chain B to Chain A without properly burning or locking the corresponding token on the source chain (Chain B) before initiating the cross-chain transaction.\n\nAs a result, the same token can exist simultaneously on both chains, enabling a double-spend scenario where malicious actors can sell, transfer, or use the same token on multiple chains.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-096"
+      ],
+      "mappings": [
+        "SCWE-096"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:097",
+      "kind": "failure_mode",
+      "summary": "Missing Explicit Function Visibility",
+      "definition": "When a function’s visibility is omitted in Solidity, it defaults to `public`, allowing any caller to invoke logic that may have been intended to be internal or private. This expands the attack surface, enabling unauthorized state changes, fund movements, or reentrancy entry points.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-097"
+      ],
+      "mappings": [
+        "SCWE-097"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:098",
+      "kind": "failure_mode",
+      "summary": "Initialization Front-Running in Upgradeable Contracts",
+      "definition": "Proxy-based contracts ship without constructors; if the initializer is callable by anyone, an attacker can front-run deployment and seize ownership, set trusted roles, or lock upgrades. This permanently compromises the implementation behind the proxy.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-098"
+      ],
+      "mappings": [
+        "SCWE-098"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:099",
+      "kind": "failure_mode",
+      "summary": "Storage Layout Collision on Upgrade",
+      "definition": "Upgradeable contracts rely on stable storage slots. Reordering, removing, or inserting state variables (or changing inheritance order) between versions causes storage collisions when the proxy reuses the same slots, corrupting balances, roles, or configuration.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-099"
+      ],
+      "mappings": [
+        "SCWE-099"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:100",
+      "kind": "failure_mode",
+      "summary": "Missing Quorum Validation in Governance Execution",
+      "definition": "Governance systems that allow proposal execution based solely on vote counts (e.g., \"for\" > \"against\") without enforcing a minimum participation threshold (quorum) can execute proposals with negligible community participation. A proposal may \"pass\" with only a handful of votes if quorum is not checked, allowing a small group or attacker with accumulated tokens to push through changes that lack legitimate community mandate.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-100"
+      ],
+      "mappings": [
+        "SCWE-100"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:101",
+      "kind": "failure_mode",
+      "summary": "Flash-Loan-Fueled Governance Manipulation",
+      "definition": "If voting power is measured at execution time without historical snapshots or locking, an attacker can borrow a large balance via flash loan, pass a proposal, and return the loan in the same transaction. Governance decisions then depend on transient liquidity rather than long-term stake.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-101"
+      ],
+      "mappings": [
+        "SCWE-101"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:102",
+      "kind": "failure_mode",
+      "summary": "Missing Checks-Effects-Interactions Pattern",
+      "definition": "Calling external contracts before updating local state breaks the checks-effects-interactions (CEI) pattern. Attackers can reenter or observe stale state to perform double-withdrawals, bypass limits, or corrupt accounting.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-102"
+      ],
+      "mappings": [
+        "SCWE-102"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:103",
+      "kind": "failure_mode",
+      "summary": "ERC20 Approval Double-Spend (Allowance Race)",
+      "definition": "Changing an ERC20 allowance from value `X` to `Y` with a single `approve` call allows a spender to front-run and spend `X` before the change, then spend `Y` after, effectively double-spending. Integrations that do not use `increaseAllowance`/`decreaseAllowance` are exposed.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-103"
+      ],
+      "mappings": [
+        "SCWE-103"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:104",
+      "kind": "failure_mode",
+      "summary": "Unprotected ERC777 Token Hooks",
+      "definition": "ERC777 tokens trigger `tokensReceived` hooks on recipients. Contracts that accept tokens without reentrancy protection or without blocking ERC777 hooks can be reentered during token transfers, enabling double-withdrawals or bypassing invariants.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-104"
+      ],
+      "mappings": [
+        "SCWE-104"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:105",
+      "kind": "failure_mode",
+      "summary": "Permit Signature Replay via Missing Domain Separator or Nonce",
+      "definition": "Improper EIP-2612 permit implementations that omit chain-specific domain separators, do not increment nonces, or ignore expiration allow signatures to be replayed across chains or multiple times. Attackers can repeatedly approve spending or re-use permits on forked networks.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-105"
+      ],
+      "mappings": [
+        "SCWE-105"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:106",
+      "kind": "failure_mode",
+      "summary": "Unauthenticated Meta-Transactions",
+      "definition": "Meta-transaction forwarders that relay calls without verifying the signer, nonce, chain, or expiry let relayers execute arbitrary actions on behalf of victims. Missing replay protection allows the same signed request to be executed multiple times.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-106"
+      ],
+      "mappings": [
+        "SCWE-106"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:107",
+      "kind": "failure_mode",
+      "summary": "Missing Chain ID Validation in Cross-Chain Messages",
+      "definition": "Cross-chain handlers that accept payloads without checking the source `chainId` or endpoint domain allow replay of messages from other networks or forks. Attackers can re-trigger transfers, minting, or governance actions on unintended chains.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-107"
+      ],
+      "mappings": [
+        "SCWE-107"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:108",
+      "kind": "failure_mode",
+      "summary": "Unverified Cross-Chain Message Proofs",
+      "definition": "Relayers may deliver fabricated payloads if the destination contract does not validate Merkle proofs, light-client headers, or signatures that attest to the message on the source chain. Forged messages can mint wrapped assets or execute arbitrary calls.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-108"
+      ],
+      "mappings": [
+        "SCWE-108"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:109",
+      "kind": "failure_mode",
+      "summary": "Unbounded Loops on Untrusted Input",
+      "definition": "Iterating over user-controlled arrays or mappings without bounds lets attackers submit large inputs that exhaust gas, causing denial of service. Functions like batch withdrawals, reward distribution, or liquidations may become permanently unusable.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-109"
+      ],
+      "mappings": [
+        "SCWE-109"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:110",
+      "kind": "failure_mode",
+      "summary": "Fee-On-Transfer Token Misaccounting",
+      "definition": "Assuming an ERC20 transfer moves the full requested amount fails with fee-on-transfer or deflationary tokens. Protocols that credit users for the requested amount instead of the received amount can be drained or mis-account balances.",
+      "facets": [
+        "category:scsvs-comp"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-110"
+      ],
+      "mappings": [
+        "SCWE-110"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:111",
+      "kind": "failure_mode",
+      "summary": "Rebase Token Balance Drift",
+      "definition": "Rebasing tokens change user balances over time. Protocols that track deposited amounts as fixed units (instead of shares) can become insolvent or let users withdraw more than their fair share after positive or negative rebases.",
+      "facets": [
+        "category:scsvs-comp"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-111"
+      ],
+      "mappings": [
+        "SCWE-111"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:112",
+      "kind": "failure_mode",
+      "summary": "Reliance on Low-Liquidity Spot Prices",
+      "definition": "Using a single on-chain DEX spot price from an illiquid pool lets attackers move the price with small trades or flash loans, then exploit inflated/deflated valuations for lending, liquidations, or swaps.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-112"
+      ],
+      "mappings": [
+        "SCWE-112"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:113",
+      "kind": "failure_mode",
+      "summary": "Insufficient TWAP Window or Single Observation",
+      "definition": "TWAP oracles that use very short windows or a single cumulative observation can be manipulated within a block or a few trades. Attackers can swing the average price temporarily to borrow, liquidate, or mint at a favorable rate.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-113"
+      ],
+      "mappings": [
+        "SCWE-113"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:114",
+      "kind": "failure_mode",
+      "summary": "ECDSA Nonce Reuse",
+      "definition": "Reusing the same ECDSA nonce (`k`) across signatures (or using predictable nonces) leaks the private key. Contracts that accept off-chain signatures for permits, meta-txs, or governance can be compromised if signing infrastructure mismanages nonces.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-114"
+      ],
+      "mappings": [
+        "SCWE-114"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:115",
+      "kind": "failure_mode",
+      "summary": "Weak VRF Parameterization or Callback Validation",
+      "definition": "Using VRF services without validating `requestId`, sender, or subscription can let attackers spoof fulfillments or drain subscription balances. Misconfigured key hashes, gas limits, or shared subscriptions can cause predictable failures and force fallback logic that leaks randomness.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-115"
+      ],
+      "mappings": [
+        "SCWE-115"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:116",
+      "kind": "failure_mode",
+      "summary": "Missing Supply Cap Enforcement",
+      "definition": "Tokens or lending systems without hard supply caps allow privileged accounts or flawed logic to mint unlimited units, inflating supply and draining collateralized protocols. Lack of caps also breaks price assumptions in AMMs and oracles.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-116"
+      ],
+      "mappings": [
+        "SCWE-116"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:117",
+      "kind": "failure_mode",
+      "summary": "Proxy Implementation Selfdestruct Exposure",
+      "definition": "If the proxy’s implementation contract exposes `selfdestruct` (or `SELFDESTRUCT` reachable through a function), an attacker or careless admin can destroy the implementation. The proxy then points to a non-existent code address, bricking upgrades or locking funds.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-117"
+      ],
+      "mappings": [
+        "SCWE-117"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:118",
+      "kind": "failure_mode",
+      "summary": "Unauthenticated Beacon Upgrade",
+      "definition": "Beacon proxies rely on a beacon address that determines implementation. If the beacon upgrade function lacks proper access control or timelock, an attacker can point all proxies to malicious code, taking over state and funds.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-118"
+      ],
+      "mappings": [
+        "SCWE-118"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:119",
+      "kind": "failure_mode",
+      "summary": "Shared Proxy Admin and Logic Owner Key",
+      "definition": "Using the same key to control both the proxy admin (upgrade rights) and logic contract owner concentrates power. A single key compromise allows hostile upgrades and privileged function abuse with no separation of duties.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-119"
+      ],
+      "mappings": [
+        "SCWE-119"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:120",
+      "kind": "failure_mode",
+      "summary": "Missing Return Data Length Validation",
+      "definition": "Low-level calls that decode return values without checking `returndatasize` can read zeroed or truncated data. Attackers can craft contracts that return short payloads so callers mis-interpret success flags, prices, or balances.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-120"
+      ],
+      "mappings": [
+        "SCWE-120"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:121",
+      "kind": "failure_mode",
+      "summary": "Swallowed Revert Reasons",
+      "definition": "Ignoring revert data (e.g., using `require(ok)` without bubbling reason) hides the root cause of failures. Protocols may proceed under incorrect assumptions, misprice risk, or block user funds without actionable errors.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-121"
+      ],
+      "mappings": [
+        "SCWE-121"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:122",
+      "kind": "failure_mode",
+      "summary": "Calldata Length Not Validated Before Decode",
+      "definition": "Functions that `abi.decode` calldata without first checking expected length can revert unpredictably or read malformed inputs. Attackers can craft short calldata to trigger reverts that lock functionality or bypass logic that runs before decode.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-122"
+      ],
+      "mappings": [
+        "SCWE-122"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:123",
+      "kind": "failure_mode",
+      "summary": "Corrupt Free Memory Pointer in Assembly",
+      "definition": "Inline assembly that writes to memory without preserving the Solidity free-memory pointer (at `0x40`) can corrupt ABI encoding for later calls or returns. Downstream decodes may misread buffers, leading to unexpected reverts or data leaks.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-123"
+      ],
+      "mappings": [
+        "SCWE-123"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:124",
+      "kind": "failure_mode",
+      "summary": "Inconsistent Rounding Direction in Financial Math",
+      "definition": "Using mixed rounding strategies (floor vs. ceil vs. truncation) across mint/burn/withdraw logic causes value drift. Attackers can cycle operations to accumulate dust gains or trigger unfair liquidations due to asymmetry.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-124"
+      ],
+      "mappings": [
+        "SCWE-124"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:125",
+      "kind": "failure_mode",
+      "summary": "Missing Post-Operation Health Check",
+      "definition": "Lending/borrowing protocols that do not re-evaluate health factors after actions (borrow, withdraw, leverage) allow users to exit with unhealthy positions. Attackers can drain collateral or avoid liquidation by skipping post-operation solvency checks.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-125"
+      ],
+      "mappings": [
+        "SCWE-125"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:126",
+      "kind": "failure_mode",
+      "summary": "Unbounded Withdrawal Queue Growth",
+      "definition": "Protocols that queue withdrawals without bounding length or processing batches can face gas exhaustion when executing large queues. Attackers can spam small requests to DoS withdrawal execution or force users to accept delays.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-126"
+      ],
+      "mappings": [
+        "SCWE-126"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:127",
+      "kind": "failure_mode",
+      "summary": "EIP-1559 Basefee Assumptions",
+      "definition": "Hardcoding gas price/basefee assumptions (e.g., fixed `gasprice` limits or expecting refunds) can break on EIP-1559 chains. Contracts that require exact `block.basefee` ranges or reimburse fixed gas can become stuck or exploitable via gas griefing.",
+      "facets": [
+        "category:scsvs-block"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-127"
+      ],
+      "mappings": [
+        "SCWE-127"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:128",
+      "kind": "failure_mode",
+      "summary": "Insecure Multicall Context Forwarding",
+      "definition": "Multicall-style aggregators that forward calls without guarding against reentrancy or context changes let attackers reorder actions within one tx (e.g., deposit then withdraw) or impersonate `msg.sender` when inner calls use `tx.origin` or cached sender state.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-128"
+      ],
+      "mappings": [
+        "SCWE-128"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:129",
+      "kind": "failure_mode",
+      "summary": "Single EOA Admin Without Rotation",
+      "definition": "Relying on a single externally owned account (EOA) as contract admin creates a single point of failure. Key compromise, loss, or coercion can lead to irreversible upgrades, pauses, or fund drains with no recovery.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-129"
+      ],
+      "mappings": [
+        "SCWE-129"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:130",
+      "kind": "failure_mode",
+      "summary": "Admin-Write Oracle Without Delay",
+      "definition": "Price feeds that allow an admin to push arbitrary values immediately (no delay or quorum) let insiders force liquidations, manipulate collateralization, or drain AMMs. Even trusted operators can be compromised.",
+      "facets": [
+        "category:scsvs-oracle"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-130"
+      ],
+      "mappings": [
+        "SCWE-130"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:131",
+      "kind": "failure_mode",
+      "summary": "Missing Domain Separation in Aggregate Signatures",
+      "definition": "BLS/aggregate signature schemes that omit domain separation (e.g., chain id, contract, purpose) allow signature replay across domains. A valid signature for one network or message type can be reused elsewhere to authorize unintended actions.",
+      "facets": [
+        "category:scsvs-crypto"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-131"
+      ],
+      "mappings": [
+        "SCWE-131"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:132",
+      "kind": "failure_mode",
+      "summary": "Mismatched Token Decimals in Bridge Mint/Burn",
+      "definition": "Bridging tokens with differing decimals without normalization can over- or under-mint wrapped assets. Attackers can exploit decimal confusion to siphon value or lock funds when withdrawing back to the origin chain.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-132"
+      ],
+      "mappings": [
+        "SCWE-132"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:133",
+      "kind": "failure_mode",
+      "summary": "Missing Replay Nonce per Bridge Lane",
+      "definition": "Bridge receivers that do not track nonces per source chain/sender allow the same message to be replayed, causing duplicate mints or withdrawals. Forked chains can also replay historical messages if lanes are not isolated.",
+      "facets": [
+        "category:scsvs-bridge"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-133"
+      ],
+      "mappings": [
+        "SCWE-133"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:134",
+      "kind": "failure_mode",
+      "summary": "Low-Level Call to Non-Contract Address",
+      "definition": "When using low-level `call`, `staticcall`, or `delegatecall` to a user-supplied or dynamic address, the target may be an EOA (externally owned account) with no contract code. In that case, the call returns `success = true` and empty return data, but no code executes. Contracts that assume the target performed logic (e.g., a callback, validation, or state change) can proceed under false assumptions, leading to bypassed checks, unexecuted logic, or incorrect accounting.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-134"
+      ],
+      "mappings": [
+        "SCWE-134"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:135",
+      "kind": "failure_mode",
+      "summary": "ERC4626 Share Inflation via Donations",
+      "definition": "ERC4626 vaults that do not guard against free-asset donations can skew `totalAssets` and share price. Attackers can donate assets to inflate share value and then mint shares cheaply before normalization, extracting value from existing holders.",
+      "facets": [
+        "category:scsvs-comp"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-135"
+      ],
+      "mappings": [
+        "SCWE-135"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:136",
+      "kind": "failure_mode",
+      "summary": "Unbounded Proposal Execution Gas",
+      "definition": "Governance proposals that execute arbitrary call lists without gas limits or batching can exceed block gas, making proposals unexecutable (DoS). Attackers can submit proposals with expensive calls to jam governance or brick queued actions.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-136"
+      ],
+      "mappings": [
+        "SCWE-136"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:137",
+      "kind": "failure_mode",
+      "summary": "Read-Only Reentrancy via View Function State Staleness",
+      "definition": "Read-only reentrancy occurs when a `view` or `pure` function is called during an external callback (e.g., from a lending protocol reading collateral, or an integrator querying state). The view function returns stale state because the contract's effects have not yet been applied—the callback happens mid-transaction, before state updates complete. External protocols that rely on this state for critical decisions (e.g., liquidations, pricing, health checks) can be exploited to drain funds or bypass invariants.\n\nThis is distinct from classic reentrancy (SCWE-046): no state-modifying function is reentered, but the *read* of inconsistent state by external callers during a callback causes the vulnerability.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-137"
+      ],
+      "mappings": [
+        "SCWE-137"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:138",
+      "kind": "failure_mode",
+      "summary": "Reentrancy via ERC721/ERC1155 Safe Transfer Callbacks",
+      "definition": "ERC721 `safeTransferFrom` and ERC1155 `safeTransferFrom` invoke `onERC721Received` or `onERC1155Received` on the recipient contract. If the recipient is a contract that accepts NFTs and performs sensitive logic (e.g., withdrawals, state updates) inside these callbacks without reentrancy protection, an attacker can reenter the sender contract during the transfer and exploit stale state—similar to ERC777 hooks (SCWE-104) but for NFTs.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-138"
+      ],
+      "mappings": [
+        "SCWE-138"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:139",
+      "kind": "failure_mode",
+      "summary": "Single-Step Ownership Transfer Without Confirmation",
+      "definition": "A single-step `transferOwnership(newOwner)` immediately assigns ownership to the new address. If the wrong address is used (typo, burn address `address(0)`, or a contract that cannot receive ownership), the contract can be permanently locked—no one can perform owner-only actions or correct the mistake. A two-step process (propose → accept) allows the intended recipient to confirm and prevents accidental loss of control.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-139"
+      ],
+      "mappings": [
+        "SCWE-139"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:140",
+      "kind": "failure_mode",
+      "summary": "Ether Locked Due to Missing Withdrawal Path",
+      "definition": "Contracts can receive ETH via `receive()`, `fallback()`, `selfdestruct` from another contract, or accidental sends. If the contract has no function to withdraw or forward this ETH, the funds become permanently locked. This can occur when a contract was not designed to hold ETH, when the withdrawal function is restricted to a role that no longer exists, or when the contract lacks a rescue/withdraw mechanism for unexpected inflows.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-140"
+      ],
+      "mappings": [
+        "SCWE-140"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:141",
+      "kind": "failure_mode",
+      "summary": "Lack of Deadline Validation in Time-Sensitive External Calls",
+      "definition": "Time-sensitive external calls (e.g., DEX swaps, limit orders) that use only `block.timestamp` as a deadline—or no user-supplied deadline—can be front-run or executed at unfavorable times. A user signs a transaction expecting execution within a short window, but miners/validators can delay inclusion. Without a `deadline` parameter, the transaction may execute when prices have moved adversely. SCWE-090 covers slippage; this weakness addresses the absence of explicit deadline validation.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-141"
+      ],
+      "mappings": [
+        "SCWE-141"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:142",
+      "kind": "failure_mode",
+      "summary": "Extractable Value from Predictable Transaction Ordering",
+      "definition": "Contracts that create predictable, orderable state changes expose value to block builders and searchers (MEV). Sandwich attacks, backrunning, and liquidation front-running are examples. When a user's transaction has a predictable effect (e.g., large swap moving price), an attacker can place transactions before and after to extract value. SCWE-037 covers front-running; this weakness addresses the broader MEV surface—design choices that make extraction easy.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-142"
+      ],
+      "mappings": [
+        "SCWE-142"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:143",
+      "kind": "failure_mode",
+      "summary": "Critical Address Parameters Not Validated for Zero Address",
+      "definition": "Critical address parameters (owner, oracle, fee recipient, token address) that are not validated for `address(0)` can brick the contract or cause funds to be sent to the burn address. Assigning `address(0)` as owner prevents any owner-only actions; using it as a recipient loses funds permanently. SCWE-091 covers zero *value* in token transfers; this weakness addresses zero *address*.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-143"
+      ],
+      "mappings": [
+        "SCWE-143"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:144",
+      "kind": "failure_mode",
+      "summary": "Bypassable Contract Existence Check via extcodesize",
+      "definition": "Using `extcodesize(addr) > 0` to detect whether an address is a contract fails during construction. When code runs inside a constructor, `extcodesize(address(this))` returns 0 because the contract's code is not yet deployed. An attacker can deploy a contract whose constructor calls the victim—the victim sees `extcodesize(caller) == 0` and treats the caller as an EOA, bypassing contract-specific restrictions.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-144"
+      ],
+      "mappings": [
+        "SCWE-144"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:145",
+      "kind": "failure_mode",
+      "summary": "Unvalidated Constructor Parameters",
+      "definition": "Constructors that accept critical parameters (owner, oracle, fee recipient, token addresses) without validation can deploy a contract in a broken or insecure state. Zero addresses, invalid values, or inconsistent configuration (e.g., fee > 100%) may be impossible to fix after deployment if there is no setter or upgrade path.",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-145"
+      ],
+      "mappings": [
+        "SCWE-145"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:146",
+      "kind": "failure_mode",
+      "summary": "Improper Use of try/catch Leading to Silent Failures",
+      "definition": "Solidity 0.6+ `try/catch` allows catching reverts from external calls. If the catch block does not properly handle the failure—e.g., proceeds without reverting, leaves state inconsistent, or swallows the error without logging—the contract can continue execution under incorrect assumptions. Silent failures can lead to fund loss, corrupted state, or exploitable inconsistencies.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-146"
+      ],
+      "mappings": [
+        "SCWE-146"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:147",
+      "kind": "failure_mode",
+      "summary": "Permit or Meta-Transaction Signatures Without Expiration",
+      "definition": "Permit (EIP-2612) and meta-transaction signatures that omit a `deadline` or `expiry` parameter can be replayed indefinitely once obtained. An attacker who captures a valid signature (e.g., via phishing or a compromised frontend) can submit it at any future time. SCWE-105 covers domain separator and nonce; this weakness specifically addresses the absence of expiration.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-147"
+      ],
+      "mappings": [
+        "SCWE-147"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:148",
+      "kind": "failure_mode",
+      "summary": "Gas Exhaustion via Unbounded Loops with External Calls",
+      "definition": "Loops that iterate over user-controlled arrays and perform external calls (transfers, approvals, or other contract calls) in each iteration can exhaust gas when the array is large. Each external call consumes gas; unbounded loops cause the transaction to hit the block gas limit and revert, resulting in denial of service. SCWE-109 covers unbounded loops generally; this weakness focuses on loops that perform external calls.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-148"
+      ],
+      "mappings": [
+        "SCWE-148"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:149",
+      "kind": "failure_mode",
+      "summary": "Transfers to Addresses That Cannot Receive Funds",
+      "definition": "Sending ETH or tokens to addresses that cannot receive them (e.g., contracts with no `receive`/`fallback`, or that revert on receive) causes the transfer to fail. In push-based distributions (e.g., airdrops, reward payouts), if one recipient cannot receive, the entire transaction reverts—leading to denial of service for all recipients. Pull-based patterns avoid this by letting users claim individually.",
+      "facets": [
+        "category:scsvs-comm"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-149"
+      ],
+      "mappings": [
+        "SCWE-149"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:150",
+      "kind": "failure_mode",
+      "summary": "Storage Slot Collision When Upgrading Implementation",
+      "definition": "When upgrading a proxy's implementation, the new implementation's storage layout must be compatible with the proxy's storage. Appending variables in the implementation without accounting for the proxy's own storage (e.g., admin, implementation address) can cause slot collisions. Similarly, inherited contracts that add state variables can overwrite slots used by the base or proxy. SCWE-099 covers same-contract layout; this addresses cross-contract layout (proxy + implementation, inheritance chain).",
+      "facets": [
+        "category:scsvs-arch"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-150"
+      ],
+      "mappings": [
+        "SCWE-150"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:151",
+      "kind": "failure_mode",
+      "summary": "Add/Remove Liquidity Without Minimum Output Validation",
+      "definition": "Adding or removing liquidity in AMMs (e.g., Uniswap, Curve) without enforcing a minimum amount of LP tokens or underlying assets received can expose users to sandwich attacks or unfavorable execution. Similar to swap slippage (SCWE-090), LP operations can be front-run: an attacker manipulates the pool before the user's add/remove, then reverses after. Without `amountMin` or equivalent checks, users may receive far less than expected.",
+      "facets": [
+        "category:scsvs-defi"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-151"
+      ],
+      "mappings": [
+        "SCWE-151"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:152",
+      "kind": "failure_mode",
+      "summary": "Misuse of Custom Errors Leading to Information Leakage or Wrong Revert Behavior",
+      "definition": "Custom errors (Solidity 0.8.4+) save gas but can expose internal state if parameters include sensitive data (e.g., balances, private keys, internal addresses). Using the wrong error in a revert can also mislead integrators or hide the actual failure reason. Custom errors are part of the revert payload and can be decoded off-chain.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-152"
+      ],
+      "mappings": [
+        "SCWE-152"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:153",
+      "kind": "failure_mode",
+      "summary": "Reliance on block.prevrandao for High-Value Randomness",
+      "definition": "Post-merge (Ethereum PoS), `block.difficulty` was replaced by `block.prevrandao`. Both are manipulable by validators: they can influence the value within protocol rules. Using `block.prevrandao` (or `block.difficulty`) for high-value randomness—lotteries, airdrops, winner selection—allows validators or sophisticated actors to predict or bias outcomes. SCWE-024 and SCWE-084 cover blockhash/timestamp; this weakness specifically addresses `block.prevrandao`.",
+      "facets": [
+        "category:scsvs-block"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-153"
+      ],
+      "mappings": [
+        "SCWE-153"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:154",
+      "kind": "failure_mode",
+      "summary": "Calldata Decode Without Length Check",
+      "definition": "Decoding calldata or bytes with `abi.decode` without first verifying the input length can cause unexpected reverts. In modern Solidity (0.4.22+), `abi.decode` with data shorter than expected reverts due to bounds checking; malformed or incorrectly typed data can produce wrong values. SCWE-122 covers calldata length validation; this weakness addresses the broader pattern of decoding without length checks.",
+      "facets": [
+        "category:scsvs-code"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-154"
+      ],
+      "mappings": [
+        "SCWE-154"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:155",
+      "kind": "failure_mode",
+      "summary": "Single Point of Failure in Administrative Key Management",
+      "definition": "Contracts that rely on a single administrative key (EOA or contract) without multisig, timelock, or key rotation create a single point of failure. Compromise of that key (phishing, malware, physical theft) gives full control; loss of the key (e.g., no backup) can permanently lock critical functions. SCWE-129 covers single EOA admin; this weakness focuses on the *risk* of single-key design and the absence of mitigations.",
+      "facets": [
+        "category:scsvs-auth"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-155"
+      ],
+      "mappings": [
+        "SCWE-155"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scwe:156",
+      "kind": "failure_mode",
+      "summary": "Missing Emergency Circuit Breaker for Critical Operations",
+      "definition": "A circuit breaker is a threshold-based or condition-based halt mechanism that stops critical operations when anomalies are detected (e.g., TVL drop >X%, unusual withdrawal volume, oracle deviation). Unlike simple pausability (SCWE-014), a circuit breaker automatically or semi-automatically triggers based on predefined conditions, providing an additional safety layer during attacks or market stress.",
+      "facets": [
+        "category:scsvs-gov"
+      ],
+      "applicability": [],
+      "exclusions": [],
+      "sources": [
+        "SCWE-156"
+      ],
+      "mappings": [
+        "SCWE-156"
+      ],
+      "review": "imported"
+    }
+  ],
+  "sources": [
+    {
+      "id": "SCWE-001",
+      "title": "Improper Contract Architecture",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-001.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-002",
+      "title": "Excessive Contract Complexity",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-002.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-003",
+      "title": "Lack of Modularity",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-003.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-004",
+      "title": "Uncaught Exceptions",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-004.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-005",
+      "title": "Insecure Upgradeable Proxy Design",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-005.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-006",
+      "title": "Inconsistent Inheritance Hierarchy",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-006.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-051",
+      "title": "Improper Use of CREATE2 for Contract Deployment",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-051.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-052",
+      "title": "Transaction Order Dependence",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-052.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-064",
+      "title": "Incorrect Inheritance Order",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-064.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-070",
+      "title": "Incorrect Constructor Name",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-070.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-071",
+      "title": "Uninitialized Storage Pointer",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-071.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-080",
+      "title": "Incorrect Type Conversion",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-080.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-098",
+      "title": "Initialization Front-Running in Upgradeable Contracts",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-098.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-099",
+      "title": "Storage Layout Collision on Upgrade",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-099.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-117",
+      "title": "Proxy Implementation Selfdestruct Exposure",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-117.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-118",
+      "title": "Unauthenticated Beacon Upgrade",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-118.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-119",
+      "title": "Shared Proxy Admin and Logic Owner Key",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-119.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-145",
+      "title": "Unvalidated Constructor Parameters",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-145.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-150",
+      "title": "Storage Slot Collision When Upgrading Implementation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ARCH/SCWE-150.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-016",
+      "title": "Insufficient Authorization Checks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-016.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-017",
+      "title": "Privileged Role Mismanagement",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-017.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-018",
+      "title": "Use of tx.origin for Authorization",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-018.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-019",
+      "title": "Insecure Signature Verification",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-019.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-020",
+      "title": "Absence of Time-Locked Functions",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-020.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-038",
+      "title": "Insecure Use of Selfdestruct",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-038.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-045",
+      "title": "Insecure Use of Modifiers",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-045.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-049",
+      "title": "Unprotected Ether Withdrawal",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-049.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-050",
+      "title": "Unprotected SELFDESTRUCT Instruction",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-050.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-105",
+      "title": "Permit Signature Replay via Missing Domain Separator or Nonce",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-105.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-106",
+      "title": "Unauthenticated Meta-Transactions",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-106.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-129",
+      "title": "Single EOA Admin Without Rotation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-129.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-139",
+      "title": "Single-Step Ownership Transfer Without Confirmation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-139.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-147",
+      "title": "Permit or Meta-Transaction Signatures Without Expiration",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-147.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-155",
+      "title": "Single Point of Failure in Administrative Key Management",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-AUTH/SCWE-155.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-024",
+      "title": "Weak Randomness Sources",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BLOCK/SCWE-024.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-031",
+      "title": "Insecure use of Block Variables",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BLOCK/SCWE-031.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-065",
+      "title": "Block Values as a Proxy for Time",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BLOCK/SCWE-065.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-073",
+      "title": "Message Call with Hardcoded Gas Amount",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BLOCK/SCWE-073.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-127",
+      "title": "EIP-1559 Basefee Assumptions",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BLOCK/SCWE-127.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-153",
+      "title": "Reliance on block.prevrandao for High-Value Randomness",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BLOCK/SCWE-153.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-032",
+      "title": "Dependency on Block Gas Limit",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-032.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-033",
+      "title": "Chain Split Risks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-033.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-034",
+      "title": "Insecure Cross-Chain Messaging",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-034.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-087",
+      "title": "Missing Payload Size Validation in Cross-Chain Messaging (Denial of Service/Stuck Funds)",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-087.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-094",
+      "title": "Insufficient Gas Limit Validation in LayerZero Message Sending",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-094.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-096",
+      "title": "Missing Token Burn During Cross-Chain NFT Withdrawal",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-096.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-132",
+      "title": "Mismatched Token Decimals in Bridge Mint/Burn",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-132.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-133",
+      "title": "Missing Replay Nonce per Bridge Lane",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-BRIDGE/SCWE-133.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-007",
+      "title": "Presence of Unused Variables",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-007.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-008",
+      "title": "Hardcoded Constants",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-008.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-009",
+      "title": "Deprecated Variable and Function Usage",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-009.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-010",
+      "title": "Shadowing Variables and Functions",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-010.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-011",
+      "title": "Insecure ABI Encoding and Decoding",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-011.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-013",
+      "title": "Unauthorized Parameter Changes",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-013.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-014",
+      "title": "Lack of Emergency Stop Mechanism",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-014.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-039",
+      "title": "Insecure Use of Inline Assembly",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-039.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-040",
+      "title": "Incorrect Storage Packing",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-040.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-041",
+      "title": "Unsafe Downcasting",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-041.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-046",
+      "title": "Reentrancy Attacks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-046.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-047",
+      "title": "Integer Overflows and Underflows",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-047.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-048",
+      "title": "Unchecked Call Return Value",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-048.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-053",
+      "title": "Improper Deletion of Mappings",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-053.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-060",
+      "title": "Floating Pragma",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-060.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-061",
+      "title": "Outdated Compiler Version",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-061.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-062",
+      "title": "Dead Code",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-062.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-066",
+      "title": "Incorrect Handling of Bitwise Operations",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-066.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-067",
+      "title": "Assert Violation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-067.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-068",
+      "title": "State Variable Default Visibility",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-068.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-069",
+      "title": "Shadowing State Variables",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-069.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-072",
+      "title": "Use of Deprecated Solidity Functions",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-072.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-076",
+      "title": "Right-To-Left-Override Control Character (U+202E)",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-076.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-089",
+      "title": "Vulnerable & Outdated Libraries",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-089.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-090",
+      "title": "Missing Slippage Protection in Automated Token Swaps",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-090.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-091",
+      "title": "Lack of Zero Value Check in Token Transfers",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-091.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-092",
+      "title": "Missing Disable Initializer in Constructor for Proxy Contracts",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-092.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-093",
+      "title": "Unnamed Function Parameters",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-093.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-095",
+      "title": "Missing Destination Address Size Check",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-095.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-097",
+      "title": "Missing Explicit Function Visibility",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-097.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-120",
+      "title": "Missing Return Data Length Validation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-120.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-121",
+      "title": "Swallowed Revert Reasons",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-121.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-122",
+      "title": "Calldata Length Not Validated Before Decode",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-122.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-123",
+      "title": "Corrupt Free Memory Pointer in Assembly",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-123.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-124",
+      "title": "Inconsistent Rounding Direction in Financial Math",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-124.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-137",
+      "title": "Read-Only Reentrancy via View Function State Staleness",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-137.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-141",
+      "title": "Lack of Deadline Validation in Time-Sensitive External Calls",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-141.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-143",
+      "title": "Critical Address Parameters Not Validated for Zero Address",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-143.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-144",
+      "title": "Bypassable Contract Existence Check via extcodesize",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-144.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-146",
+      "title": "Improper Use of try/catch Leading to Silent Failures",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-146.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-152",
+      "title": "Misuse of Custom Errors Leading to Information Leakage or Wrong Revert Behavior",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-152.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-154",
+      "title": "Calldata Decode Without Length Check",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CODE/SCWE-154.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-021",
+      "title": "Unsecured Data Transmission",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-021.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-022",
+      "title": "Message Replay Vulnerabilities",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-022.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-023",
+      "title": "Lack of Communication Authenticity",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-023.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-035",
+      "title": "Insecure Delegatecall Usage",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-035.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-042",
+      "title": "Insecure Use of External Calls",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-042.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-063",
+      "title": "Insecure Event Emission",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-063.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-103",
+      "title": "ERC20 Approval Double-Spend (Allowance Race)",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-103.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-104",
+      "title": "Unprotected ERC777 Token Hooks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-104.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-107",
+      "title": "Missing Chain ID Validation in Cross-Chain Messages",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-107.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-108",
+      "title": "Unverified Cross-Chain Message Proofs",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-108.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-128",
+      "title": "Insecure Multicall Context Forwarding",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-128.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-134",
+      "title": "Low-Level Call to Non-Contract Address",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-134.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-138",
+      "title": "Reentrancy via ERC721/ERC1155 Safe Transfer Callbacks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-138.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-149",
+      "title": "Transfers to Addresses That Cannot Receive Funds",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMM/SCWE-149.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-057",
+      "title": "Write to Arbitrary Storage Location",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMP/SCWE-057.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-083",
+      "title": "Failure to Handle Edge Cases",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMP/SCWE-083.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-110",
+      "title": "Fee-On-Transfer Token Misaccounting",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMP/SCWE-110.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-111",
+      "title": "Rebase Token Balance Drift",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMP/SCWE-111.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-135",
+      "title": "ERC4626 Share Inflation via Donations",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-COMP/SCWE-135.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-025",
+      "title": "Improper Cryptographic Key Management",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-025.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-026",
+      "title": "Insufficient Hash Verification",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-026.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-027",
+      "title": "Vulnerable Cryptographic Algorithms",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-027.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-054",
+      "title": "Signature Malleability",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-054.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-055",
+      "title": "Missing Protection against Signature Replay Attacks",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-055.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-056",
+      "title": "Lack of Proper Signature Verification",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-056.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-074",
+      "title": "Hash Collisions with Multiple Variable Length Arguments",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-074.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-084",
+      "title": "Insecure Use of blockhash",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-084.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-114",
+      "title": "ECDSA Nonce Reuse",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-114.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-115",
+      "title": "Weak VRF Parameterization or Callback Validation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-115.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-131",
+      "title": "Missing Domain Separation in Aggregate Signatures",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-CRYPTO/SCWE-131.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-036",
+      "title": "Inadequate Gas Limit Handling",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-036.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-058",
+      "title": "DoS with Block Gas Limit",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-058.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-059",
+      "title": "Insufficient Gas Griefing",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-059.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-077",
+      "title": "Lack of Rate Limiting",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-077.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-082",
+      "title": "Lack of Proper Gas Management",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-082.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-109",
+      "title": "Unbounded Loops on Untrusted Input",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-109.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-116",
+      "title": "Missing Supply Cap Enforcement",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-116.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-125",
+      "title": "Missing Post-Operation Health Check",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-125.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-126",
+      "title": "Unbounded Withdrawal Queue Growth",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-126.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-148",
+      "title": "Gas Exhaustion via Unbounded Loops with External Calls",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-148.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-151",
+      "title": "Add/Remove Liquidity Without Minimum Output Validation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-DEFI/SCWE-151.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-012",
+      "title": "Lack of Multisig Governance",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-012.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-015",
+      "title": "Poor Governance Documentation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-015.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-037",
+      "title": "Insufficient Protection Against Front-Running",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-037.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-043",
+      "title": "Insecure Use of Fallback Functions",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-043.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-044",
+      "title": "Insecure Use of Storage",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-044.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-075",
+      "title": "Incorrect Ether Balance Tracking",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-075.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-078",
+      "title": "Improper Handling of Ether Transfers",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-078.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-079",
+      "title": "Insecure Use of Transfer and Send",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-079.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-081",
+      "title": "Improper Handling of Nonce",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-081.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-100",
+      "title": "Missing Quorum Validation in Governance Execution",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-100.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-101",
+      "title": "Flash-Loan-Fueled Governance Manipulation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-101.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-102",
+      "title": "Missing Checks-Effects-Interactions Pattern",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-102.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-136",
+      "title": "Unbounded Proposal Execution Gas",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-136.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-140",
+      "title": "Ether Locked Due to Missing Withdrawal Path",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-140.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-142",
+      "title": "Extractable Value from Predictable Transaction Ordering",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-142.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-156",
+      "title": "Missing Emergency Circuit Breaker for Critical Operations",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-GOV/SCWE-156.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-028",
+      "title": "Price Oracle Manipulation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-028.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-029",
+      "title": "Lack of Decentralized Oracle Sources",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-029.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-030",
+      "title": "Insecure Oracle Data Updates",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-030.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-085",
+      "title": "Misuse of Oracle Min/Max Price Band Without Validation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-085.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-086",
+      "title": "Missing Validation of Oracle Response Fields (Stale or Incomplete Data)",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-086.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-088",
+      "title": "Improper Decimal Normalization in Price-Based Calculations",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-088.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-112",
+      "title": "Reliance on Low-Liquidity Spot Prices",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-112.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-113",
+      "title": "Insufficient TWAP Window or Single Observation",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-113.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "SCWE-130",
+      "title": "Admin-Write Oracle Without Delay",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCWE/SCSVS-ORACLE/SCWE-130.md",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    }
+  ],
+  "edges": []
+}
