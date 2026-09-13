@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/figtracer/buggraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/buggraph/actions/workflows/ci.yml)
 
-Fast, token-budgeted retrieval for smart contract security knowledge.
+Full OWASP coverage for UltraFuzz with 94% less agent context.
 
 Buggraph gives agents a compact map of vulnerability classes, then fetches detailed
 descriptions, code examples, and concrete findings only when selected. The Rust CLI
@@ -19,7 +19,8 @@ taxonomy relationships.
 
 ## Results
 
-On the 156-record OWASP snapshot using the `gpt-4o` tokenizer:
+On the 156-record OWASP snapshot, the locked `gpt-4o` and `gpt-5.6-sol`
+tokenizers produce the same counts:
 
 | Input | Tokens |
 | --- | ---: |
