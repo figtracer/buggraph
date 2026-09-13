@@ -41,6 +41,26 @@ fn shared_descendants_are_unique_and_filters_intersect() {
 }
 
 #[test]
+fn descendant_browsing_reports_shortest_bounded_depths() {
+    let graph = compile(fixture()).unwrap();
+    let root = graph.descendants_to_depth("a", 0).unwrap();
+    assert_eq!(
+        root.iter()
+            .map(|hit| (hit.id, hit.depth))
+            .collect::<Vec<_>>(),
+        [("a", 0)]
+    );
+    let one = graph.descendants_to_depth("a", 1).unwrap();
+    assert!(one.iter().all(|hit| hit.depth <= 1));
+    let all = graph.descendants_to_depth("a", usize::MAX).unwrap();
+    let mut ids = all.iter().map(|hit| hit.id).collect::<Vec<_>>();
+    let count = ids.len();
+    ids.sort_unstable();
+    ids.dedup();
+    assert_eq!(ids.len(), count);
+}
+
+#[test]
 fn validates_dag_and_typed_relations() {
     let mut value = fixture();
     value["edges"]

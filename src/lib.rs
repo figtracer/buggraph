@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 mod retrieval;
-pub use retrieval::{BundleOptions, Detail, Hit, RankedContext, RetrievalMode, TokenCounter};
+pub use retrieval::{
+    BundleOptions, Detail, ExplorationContext, Hit, RankedContext, RetrievalMode, TokenCounter,
+};
 
 mod packing;
 pub use packing::{BundleFormat, expand_bundle};
@@ -121,6 +123,13 @@ pub struct Context {
     pub jsonl: String,
     pub selected: usize,
     pub omitted: usize,
+}
+
+/// A node reached while browsing a specialization subtree.
+#[derive(Debug, Serialize)]
+pub struct TraversalHit<'a> {
+    pub id: &'a str,
+    pub depth: usize,
 }
 
 impl Graph {
@@ -321,6 +330,46 @@ impl Graph {
             .enumerate()
             .filter_map(|(i, present)| present.then_some(&self.corpus.nodes[i]))
             .collect())
+    }
+
+    /// Return a root and its unique descendants through at most `max_depth`
+    /// specialization edges. Shared descendants keep their shortest distance.
+    pub fn descendants_to_depth(
+        &self,
+        root: &str,
+        max_depth: usize,
+    ) -> Result<Vec<TraversalHit<'_>>, String> {
+        let &root = self
+            .ids
+            .get(root)
+            .ok_or_else(|| format!("unknown ID: {root}"))?;
+        let mut depths = vec![usize::MAX; self.corpus.nodes.len()];
+        let mut pending = VecDeque::from([(root, 0)]);
+        depths[root] = 0;
+        while let Some((parent, depth)) = pending.pop_front() {
+            if depth == max_depth {
+                continue;
+            }
+            for &child in &self.children[parent] {
+                if depth + 1 < depths[child] {
+                    depths[child] = depth + 1;
+                    pending.push_back((child, depth + 1));
+                }
+            }
+        }
+        let mut hits = depths
+            .into_iter()
+            .enumerate()
+            .filter(|(_, depth)| *depth != usize::MAX)
+            .map(|(index, depth)| TraversalHit {
+                id: &self.corpus.nodes[index].id,
+                depth,
+            })
+            .collect::<Vec<_>>();
+        hits.sort_unstable_by(|left, right| {
+            left.depth.cmp(&right.depth).then(left.id.cmp(right.id))
+        });
+        Ok(hits)
     }
 
     /// Pack complete summary records, including delimiters, within a UTF-8 byte budget.

@@ -13,6 +13,14 @@ unchanged before forwarding it to a model. `op: "show"` accepts `record_id`. Err
 are per request, so malformed input does not discard the loaded index. EOF stops the
 process.
 
+`op: "explore"` adds `max_direct_records` and `max_depth`. It packs BM25 matches
+first, expands only from matches that fit, and uses remaining capacity for their
+specialization ancestors. Depth zero disables expansion. Shared ancestors keep their
+shortest distance and direct matches keep their own score and role. The response's
+`selected` metadata reports each record's role and depth; that transport metadata is
+not part of `context`. `op: "descendants"` accepts `root_id` and `max_depth` for
+bounded category-to-mechanism browsing.
+
 ## Modes
 
 `id_order` returns failure modes in stable ID order, the original flat baseline.
@@ -25,6 +33,12 @@ titles are not positive relevance evidence. Terms are Unicode alphanumeric runs,
 lowercased; query terms are deduplicated. There is no stemming, learned synonym
 expansion, embedding service, relevance threshold, or semantic negation handling.
 Ties resolve by stable ID. Shared ancestors appear once.
+
+The direct-first `explore` policy leaves `bm25_ancestors` available for compatibility.
+It considers every lexical match before structural context, so broad categories cannot
+consume space reserved for direct evidence. Facets remain explicit: traversal may cross
+a filtered intermediate node and consumes a hop, but only matching ancestors are
+returned.
 
 Fixed parameters `k1=1.2`, `b=0.75`, and positive log IDF follow conventional
 [Lucene BM25 defaults](https://lucene.apache.org/core/9_12_1/core/org/apache/lucene/search/similarities/BM25Similarity.html).

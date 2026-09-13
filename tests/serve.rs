@@ -59,6 +59,75 @@ fn persistent_service_reuses_state_and_recovers_from_bad_requests() {
     writeln!(
         stdin,
         "{}",
+        json!({
+            "version": 1,
+            "id": "explore",
+            "op": "explore",
+            "max_tokens": 2048,
+            "detail": "summary",
+            "query": "liquidation",
+            "max_direct_records": 1,
+            "max_depth": 1
+        })
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let explored = read_json(&mut stdout);
+    assert_eq!(explored["ok"], true);
+    assert_eq!(
+        explored["selected"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|hit| hit["relation"] == "match")
+            .count(),
+        1
+    );
+    let one_shot = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+        .args([
+            "explore",
+            "data/example.json",
+            "gpt-4o",
+            "2048",
+            "summary",
+            "1",
+            "1",
+            "liquidation",
+        ])
+        .output()
+        .unwrap();
+    assert!(one_shot.status.success());
+    assert_eq!(
+        explored["context"].as_str().unwrap().as_bytes(),
+        one_shot.stdout
+    );
+
+    writeln!(
+        stdin,
+        "{}",
+        json!({
+            "version": 1,
+            "id": "tree",
+            "op": "descendants",
+            "root_id": "fm:liveness",
+            "max_depth": 1
+        })
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let tree = read_json(&mut stdout);
+    assert_eq!(tree["ok"], true);
+    assert!(
+        tree["records"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|record| record["depth"].as_u64().unwrap() <= 1)
+    );
+
+    writeln!(
+        stdin,
+        "{}",
         json!({"version": 1, "id": "missing", "op": "show", "record_id": "missing"})
     )
     .unwrap();

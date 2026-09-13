@@ -1,4 +1,6 @@
-use buggraph::{Corpus, Detail, EvalSuite, Graph, RetrievalMode, TokenCounter};
+use buggraph::{
+    BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, RetrievalMode, TokenCounter,
+};
 use serde_json::{Value, json};
 use std::process::Command;
 
@@ -33,6 +35,87 @@ fn lexical_ranking_respects_facets_and_returns_no_match_for_unknown_terms() {
     ids.dedup();
     assert_eq!(count, ids.len());
     assert!(hits.iter().any(|hit| hit.relation == "ancestor"));
+}
+
+#[test]
+fn direct_first_expansion_is_bounded_deduplicated_and_preserves_matches() {
+    let corpus = json!({"revision":"depth-v1", "nodes":[
+        {"id":"root","kind":"failure_mode","summary":"broad category with a very long structural explanation that should not displace direct evidence"},
+        {"id":"left","kind":"failure_mode","summary":"left category"},
+        {"id":"other-parent","kind":"failure_mode","summary":"separate category"},
+        {"id":"right","kind":"failure_mode","summary":"right category"},
+        {"id":"leaf","kind":"failure_mode","summary":"needle concrete mechanism"},
+        {"id":"other","kind":"failure_mode","summary":"needle separate mechanism"}
+    ], "edges":[
+        {"from":"leaf","relation":"specializes","to":"left"},
+        {"from":"leaf","relation":"specializes","to":"right"},
+        {"from":"left","relation":"specializes","to":"root"},
+        {"from":"right","relation":"specializes","to":"root"},
+        {"from":"other","relation":"specializes","to":"other-parent"}
+    ]});
+    let graph = Graph::compile(serde_json::from_value(corpus).unwrap()).unwrap();
+    let counter = TokenCounter::for_model("gpt-4o").unwrap();
+    let options = |max_tokens| BundleOptions {
+        mode: RetrievalMode::Bm25,
+        detail: Detail::Summary,
+        format: BundleFormat::Json,
+        max_tokens,
+    };
+
+    let flat = graph.bundle_direct_first("needle", &[], &counter, options(usize::MAX), 2, 0);
+    assert_eq!(
+        flat.context
+            .hits
+            .iter()
+            .map(|hit| hit.id)
+            .collect::<Vec<_>>(),
+        ["leaf", "other"]
+    );
+    assert_eq!(flat.depths, [0, 0]);
+
+    let depth_one = graph.bundle_direct_first("needle", &[], &counter, options(usize::MAX), 2, 1);
+    assert_eq!(
+        depth_one
+            .context
+            .hits
+            .iter()
+            .zip(&depth_one.depths)
+            .filter(|(hit, _)| hit.relation == "ancestor")
+            .map(|(hit, depth)| (hit.id, *depth))
+            .collect::<Vec<_>>(),
+        [("left", 1), ("right", 1), ("other-parent", 1)]
+    );
+
+    let depth_two = graph.bundle_direct_first("needle", &[], &counter, options(usize::MAX), 1, 2);
+    let ancestors = depth_two
+        .context
+        .hits
+        .iter()
+        .zip(&depth_two.depths)
+        .filter(|(hit, _)| hit.relation == "ancestor")
+        .map(|(hit, depth)| (hit.id, *depth))
+        .collect::<Vec<_>>();
+    assert_eq!(ancestors, [("left", 1), ("right", 1), ("root", 2)]);
+    assert!(
+        !depth_two
+            .context
+            .hits
+            .iter()
+            .any(|hit| hit.id == "other-parent")
+    );
+
+    let tight =
+        graph.bundle_direct_first("needle", &[], &counter, options(flat.context.tokens), 2, 2);
+    assert_eq!(
+        tight
+            .context
+            .hits
+            .iter()
+            .filter(|hit| hit.relation == "match")
+            .map(|hit| hit.id)
+            .collect::<Vec<_>>(),
+        ["leaf", "other"]
+    );
 }
 
 #[test]

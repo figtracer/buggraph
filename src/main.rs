@@ -13,7 +13,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
@@ -35,20 +35,83 @@ enum ServeRequest {
         id: String,
         record_id: String,
     },
+    Explore {
+        version: u8,
+        id: String,
+        max_tokens: usize,
+        detail: Detail,
+        query: String,
+        max_direct_records: usize,
+        max_depth: usize,
+        #[serde(default)]
+        facets: Vec<String>,
+        #[serde(default)]
+        compact: bool,
+    },
+    Descendants {
+        version: u8,
+        id: String,
+        root_id: String,
+        max_depth: usize,
+    },
 }
 
 impl ServeRequest {
     fn version(&self) -> u8 {
         match self {
-            Self::Bundle { version, .. } | Self::Show { version, .. } => *version,
+            Self::Bundle { version, .. }
+            | Self::Show { version, .. }
+            | Self::Explore { version, .. }
+            | Self::Descendants { version, .. } => *version,
         }
     }
 
     fn id(&self) -> &str {
         match self {
-            Self::Bundle { id, .. } | Self::Show { id, .. } => id,
+            Self::Bundle { id, .. }
+            | Self::Show { id, .. }
+            | Self::Explore { id, .. }
+            | Self::Descendants { id, .. } => id,
         }
     }
+}
+
+fn context_response(id: String, context: buggraph::RankedContext<'_>) -> Value {
+    serde_json::json!({
+        "version": 1,
+        "id": id,
+        "ok": true,
+        "context": context.jsonl,
+        "tokens": context.tokens,
+        "selected": context.hits,
+        "omitted": context.omitted,
+    })
+}
+
+fn exploration_response(id: String, result: buggraph::ExplorationContext<'_>) -> Value {
+    let selected = result
+        .context
+        .hits
+        .iter()
+        .zip(&result.depths)
+        .map(|(hit, depth)| {
+            serde_json::json!({
+                "id": hit.id,
+                "score": hit.score,
+                "relation": hit.relation,
+                "depth": depth,
+            })
+        })
+        .collect::<Vec<_>>();
+    serde_json::json!({
+        "version": 1,
+        "id": id,
+        "ok": true,
+        "context": result.context.jsonl,
+        "tokens": result.context.tokens,
+        "selected": selected,
+        "omitted": result.context.omitted,
+    })
 }
 
 fn show_value(graph: &Graph, id: &str) -> Option<Value> {
@@ -131,15 +194,7 @@ fn serve(graph: &Graph, counter: &TokenCounter) -> Result<(), Box<dyn Error>> {
                             },
                         },
                     );
-                    serde_json::json!({
-                        "version": 1,
-                        "id": id,
-                        "ok": true,
-                        "context": context.jsonl,
-                        "tokens": context.tokens,
-                        "selected": context.hits,
-                        "omitted": context.omitted,
-                    })
+                    context_response(id, context)
                 }
                 ServeRequest::Show { id, record_id, .. } => match show_value(graph, &record_id) {
                     Some(record) => serde_json::json!({
@@ -147,6 +202,50 @@ fn serve(graph: &Graph, counter: &TokenCounter) -> Result<(), Box<dyn Error>> {
                     }),
                     None => serde_json::json!({
                         "version": 1, "id": id, "ok": false, "error": "unknown ID"
+                    }),
+                },
+                ServeRequest::Explore {
+                    id,
+                    max_tokens,
+                    detail,
+                    query,
+                    max_direct_records,
+                    max_depth,
+                    facets,
+                    compact,
+                    ..
+                } => {
+                    let facets = facets.iter().map(String::as_str).collect::<Vec<_>>();
+                    let context = graph.bundle_direct_first(
+                        &query,
+                        &facets,
+                        counter,
+                        BundleOptions {
+                            mode: RetrievalMode::Bm25,
+                            detail,
+                            max_tokens,
+                            format: if compact {
+                                BundleFormat::Compact
+                            } else {
+                                BundleFormat::Json
+                            },
+                        },
+                        max_direct_records,
+                        max_depth,
+                    );
+                    exploration_response(id, context)
+                }
+                ServeRequest::Descendants {
+                    id,
+                    root_id,
+                    max_depth,
+                    ..
+                } => match graph.descendants_to_depth(&root_id, max_depth) {
+                    Ok(records) => serde_json::json!({
+                        "version": 1, "id": id, "ok": true, "records": records
+                    }),
+                    Err(error) => serde_json::json!({
+                        "version": 1, "id": id, "ok": false, "error": error
                     }),
                 },
             },
@@ -184,6 +283,41 @@ fn run() -> Result<(), Box<dyn Error>> {
         return serve(&graph, &counter);
     }
     let output = match args[0].as_str() {
+        "explore" if args.len() >= 8 => {
+            let counter = TokenCounter::for_model(&args[2])?;
+            let max_tokens = args[3].parse::<usize>()?;
+            let detail =
+                serde_json::from_value::<Detail>(serde_json::Value::String(args[4].clone()))?;
+            let max_direct_records = args[5].parse::<usize>()?;
+            let max_depth = args[6].parse::<usize>()?;
+            let compact = args.len() > 8 && args.last().is_some_and(|arg| arg == "--compact");
+            let facet_end = args.len() - usize::from(compact);
+            let facets = args[8..facet_end]
+                .iter()
+                .map(String::as_str)
+                .collect::<Vec<_>>();
+            let result = graph.bundle_direct_first(
+                &args[7],
+                &facets,
+                &counter,
+                BundleOptions {
+                    mode: RetrievalMode::Bm25,
+                    detail,
+                    max_tokens,
+                    format: if compact {
+                        BundleFormat::Compact
+                    } else {
+                        BundleFormat::Json
+                    },
+                },
+                max_direct_records,
+                max_depth,
+            );
+            io::stdout()
+                .lock()
+                .write_all(result.context.jsonl.as_bytes())?;
+            return Ok(());
+        }
         "search" | "bundle" if args.len() >= 6 => {
             let mode = serde_json::from_value::<RetrievalMode>(serde_json::Value::String(
                 args[2].clone(),

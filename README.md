@@ -47,6 +47,7 @@ cargo install --path . --locked
 
 buggraph validate data/owasp.json
 buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "contract architecture" --compact
+buggraph explore data/owasp.json gpt-4o 2048 summary 8 2 "contract architecture"
 buggraph serve data/owasp.json gpt-4o
 buggraph show data/owasp.json scwe:143
 ```
@@ -59,6 +60,7 @@ ordinary JSON. Source numbers index the shared citation table.
 | --- | --- |
 | `validate` | Check IDs, provenance, edge types, and specialization cycles. |
 | `bundle` | Fetch summaries or complete records within a token budget. |
+| `explore` | Pack direct matches, then bounded graph context. |
 | `serve` | Reuse one compiled graph and tokenizer over JSON lines. |
 | `expand` | Decode a saved compact bundle into ordinary JSON. |
 | `search` | Return ranked summaries as JSONL. |
@@ -70,7 +72,9 @@ ordinary JSON. Source numbers index the shared citation table.
 
 Bundle writes only its payload to stdout. Token counts cover the complete response;
 callers reserve their own message and tool overhead. The tokenizer runs locally and
-needs no API key. See [retrieval](docs/retrieval.md) and [encoding](docs/packing.md).
+needs no API key. The persistent protocol adds direct-first, depth-bounded exploration
+without letting ancestors displace lexical matches. See [retrieval](docs/retrieval.md)
+and [encoding](docs/packing.md).
 
 ## Evaluation
 

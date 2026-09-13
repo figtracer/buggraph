@@ -96,6 +96,7 @@ pub enum Detail {
 }
 
 /// Retrieval and representation policy for a token-capped bundle.
+#[derive(Clone, Copy)]
 pub struct BundleOptions {
     pub mode: RetrievalMode,
     pub detail: Detail,
@@ -133,11 +134,17 @@ struct BundleRecord<'a> {
     code: Vec<BundleCode<'a>>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub struct Hit<'a> {
     pub id: &'a str,
     pub score: f64,
     pub relation: &'static str,
+}
+
+/// Direct-first context plus the structural distance of each returned hit.
+pub struct ExplorationContext<'a> {
+    pub context: RankedContext<'a>,
+    pub depths: Vec<usize>,
 }
 
 /// Counts ordinary text, including strings resembling special token delimiters.
@@ -209,6 +216,59 @@ impl Graph {
     ) -> RankedContext<'_> {
         let ranked = self.rank(query, facets, options.mode);
         let total = ranked.len();
+        self.pack_ranked(ranked, counter, options, total, usize::MAX)
+    }
+
+    /// Pack lexical matches before bounded structural context. Ancestors never
+    /// displace an accepted direct match or bypass the direct-record limit.
+    pub fn bundle_direct_first(
+        &self,
+        query: &str,
+        facets: &[&str],
+        counter: &TokenCounter,
+        options: BundleOptions,
+        max_direct_records: usize,
+        max_depth: usize,
+    ) -> ExplorationContext<'_> {
+        let direct_mode = match options.mode {
+            RetrievalMode::IdOrder => RetrievalMode::IdOrder,
+            RetrievalMode::Bm25 | RetrievalMode::Bm25Ancestors => RetrievalMode::Bm25,
+        };
+        let direct = self.rank(query, facets, direct_mode);
+        let all_ancestors = self.bounded_ancestors(&direct, facets, max_depth);
+        let total = direct.len() + all_ancestors.len();
+        let selected_direct = self.pack_ranked(direct, counter, options, total, max_direct_records);
+        if selected_direct.hits.is_empty() || all_ancestors.is_empty() {
+            let depths = vec![0; selected_direct.hits.len()];
+            return ExplorationContext {
+                context: selected_direct,
+                depths,
+            };
+        }
+        let ancestors = self.bounded_ancestors(&selected_direct.hits, facets, max_depth);
+        let mut ranked = selected_direct.hits;
+        let ancestor_depths = ancestors
+            .iter()
+            .map(|(hit, depth)| (hit.id, *depth))
+            .collect::<HashMap<_, _>>();
+        ranked.extend(ancestors.into_iter().map(|(hit, _)| hit));
+        let context = self.pack_ranked(ranked, counter, options, total, usize::MAX);
+        let depths = context
+            .hits
+            .iter()
+            .map(|hit| ancestor_depths.get(hit.id).copied().unwrap_or(0))
+            .collect();
+        ExplorationContext { context, depths }
+    }
+
+    fn pack_ranked<'a>(
+        &'a self,
+        ranked: Vec<Hit<'a>>,
+        counter: &TokenCounter,
+        options: BundleOptions,
+        total: usize,
+        max_records: usize,
+    ) -> RankedContext<'a> {
         let source_urls = self
             .corpus
             .sources
@@ -223,6 +283,9 @@ impl Graph {
             omitted: 0,
         };
         for hit in ranked {
+            if result.hits.len() == max_records {
+                break;
+            }
             selected.push(&self.corpus.nodes[self.ids[hit.id]]);
             let mut sources = Vec::new();
             let mut source_slots = HashMap::new();
@@ -300,6 +363,68 @@ impl Graph {
         result
     }
 
+    fn bounded_ancestors<'a>(
+        &'a self,
+        direct: &[Hit<'a>],
+        facets: &[&str],
+        max_depth: usize,
+    ) -> Vec<(Hit<'a>, usize)> {
+        if max_depth == 0 {
+            return Vec::new();
+        }
+        let candidates =
+            (!facets.is_empty()).then(|| self.matching(facets).into_iter().collect::<HashSet<_>>());
+        let direct_ids = direct
+            .iter()
+            .map(|hit| self.ids[hit.id])
+            .collect::<HashSet<_>>();
+        let mut best = HashMap::<usize, (usize, usize, f64)>::new();
+        for (seed_order, hit) in direct.iter().enumerate() {
+            let seed = self.ids[hit.id];
+            let mut pending = self.parents[seed]
+                .iter()
+                .map(|&parent| (parent, 1))
+                .collect::<VecDeque<_>>();
+            let mut walked = HashSet::new();
+            while let Some((parent, depth)) = pending.pop_front() {
+                if !walked.insert(parent) {
+                    continue;
+                }
+                if !direct_ids.contains(&parent)
+                    && candidates.as_ref().is_none_or(|set| set.contains(&parent))
+                {
+                    let candidate = (depth, seed_order, hit.score);
+                    if best.get(&parent).is_none_or(|current| {
+                        candidate.0 < current.0
+                            || candidate.0 == current.0 && candidate.1 < current.1
+                    }) {
+                        best.insert(parent, candidate);
+                    }
+                }
+                if depth < max_depth {
+                    pending.extend(self.parents[parent].iter().map(|&next| (next, depth + 1)));
+                }
+            }
+        }
+        let mut ancestors = best.into_iter().collect::<Vec<_>>();
+        ancestors.sort_unstable_by(|(left, a), (right, b)| {
+            a.0.cmp(&b.0).then(a.1.cmp(&b.1)).then(left.cmp(right))
+        });
+        ancestors
+            .into_iter()
+            .map(|(index, (depth, _, score))| {
+                (
+                    Hit {
+                        id: &self.corpus.nodes[index].id,
+                        score,
+                        relation: "ancestor",
+                    },
+                    depth,
+                )
+            })
+            .collect()
+    }
+
     /// Rank only failure modes. Ancestors are explicit structural context and keep
     /// the originating lexical score; they are not independent semantic matches.
     pub fn rank(&self, query: &str, facets: &[&str], mode: RetrievalMode) -> Vec<Hit<'_>> {
@@ -343,9 +468,12 @@ impl Graph {
                     relation: "match",
                 });
             }
-            let mut pending = self.parents[index].iter().copied().collect::<VecDeque<_>>();
+            let mut pending = self.parents[index]
+                .iter()
+                .map(|&parent| (parent, 1))
+                .collect::<VecDeque<_>>();
             let mut walked = HashSet::new();
-            while let Some(parent) = pending.pop_front() {
+            while let Some((parent, depth)) = pending.pop_front() {
                 if walked.insert(parent) {
                     if eligible(parent) && seen.insert(parent) {
                         output.push(Hit {
@@ -354,7 +482,7 @@ impl Graph {
                             relation: "ancestor",
                         });
                     }
-                    pending.extend(&self.parents[parent]);
+                    pending.extend(self.parents[parent].iter().map(|&next| (next, depth + 1)));
                 }
             }
         }
