@@ -47,6 +47,7 @@ cargo install --path . --locked
 
 buggraph validate data/owasp.json
 buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "contract architecture" --compact
+buggraph serve data/owasp.json gpt-4o
 buggraph show data/owasp.json scwe:143
 ```
 
@@ -58,6 +59,7 @@ ordinary JSON. Source numbers index the shared citation table.
 | --- | --- |
 | `validate` | Check IDs, provenance, edge types, and specialization cycles. |
 | `bundle` | Fetch summaries or complete records within a token budget. |
+| `serve` | Reuse one compiled graph and tokenizer over JSON lines. |
 | `expand` | Decode a saved compact bundle into ordinary JSON. |
 | `search` | Return ranked summaries as JSONL. |
 | `show` | Open a record with its code, sources, and relationships. |

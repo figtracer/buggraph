@@ -4,15 +4,164 @@ use buggraph::{
     BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, Ledger, RetrievalMode,
     TokenCounter, expand_bundle,
 };
+use serde_json::Value;
 use std::{
     env,
     error::Error,
     fs,
-    io::{self, Write},
+    io::{self, BufRead, Write},
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+
+#[derive(serde::Deserialize)]
+#[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
+enum ServeRequest {
+    Bundle {
+        version: u8,
+        id: String,
+        mode: RetrievalMode,
+        max_tokens: usize,
+        detail: Detail,
+        query: String,
+        #[serde(default)]
+        facets: Vec<String>,
+        #[serde(default)]
+        compact: bool,
+    },
+    Show {
+        version: u8,
+        id: String,
+        record_id: String,
+    },
+}
+
+impl ServeRequest {
+    fn version(&self) -> u8 {
+        match self {
+            Self::Bundle { version, .. } | Self::Show { version, .. } => *version,
+        }
+    }
+
+    fn id(&self) -> &str {
+        match self {
+            Self::Bundle { id, .. } | Self::Show { id, .. } => id,
+        }
+    }
+}
+
+fn show_value(graph: &Graph, id: &str) -> Option<Value> {
+    let node = graph.node(id)?;
+    let edges = graph
+        .corpus()
+        .edges
+        .iter()
+        .filter(|edge| edge.from == node.id || edge.to == node.id)
+        .collect::<Vec<_>>();
+    let sources = graph
+        .corpus()
+        .sources
+        .iter()
+        .filter(|source| node.sources.contains(&source.id))
+        .collect::<Vec<_>>();
+    Some(serde_json::json!({
+        "revision": graph.corpus().revision,
+        "node": node,
+        "edges": edges,
+        "sources": sources,
+    }))
+}
+
+fn serve(graph: &Graph, counter: &TokenCounter) -> Result<(), Box<dyn Error>> {
+    let stdin = io::stdin();
+    let mut stdout = io::stdout().lock();
+    writeln!(
+        stdout,
+        "{}",
+        serde_json::json!({
+            "version": 1,
+            "ready": true,
+            "revision": graph.corpus().revision,
+            "model": counter.model(),
+        })
+    )?;
+    stdout.flush()?;
+
+    for line in stdin.lock().lines() {
+        let value = line.map_err(|error| error.to_string()).and_then(|line| {
+            serde_json::from_str::<Value>(&line).map_err(|error| error.to_string())
+        });
+        let request_id = value
+            .as_ref()
+            .ok()
+            .and_then(|value| value.get("id"))
+            .cloned();
+        let request = value.and_then(|value| {
+            serde_json::from_value::<ServeRequest>(value).map_err(|error| error.to_string())
+        });
+        let response = match request {
+            Ok(request) if request.version() != 1 => serde_json::json!({
+                "version": 1, "id": request.id(), "ok": false, "error": "unsupported request version"
+            }),
+            Ok(request) => match request {
+                ServeRequest::Bundle {
+                    id,
+                    mode,
+                    max_tokens,
+                    detail,
+                    query,
+                    facets,
+                    compact,
+                    ..
+                } => {
+                    let facets = facets.iter().map(String::as_str).collect::<Vec<_>>();
+                    let context = graph.bundle_with_options(
+                        &query,
+                        &facets,
+                        counter,
+                        BundleOptions {
+                            mode,
+                            detail,
+                            max_tokens,
+                            format: if compact {
+                                BundleFormat::Compact
+                            } else {
+                                BundleFormat::Json
+                            },
+                        },
+                    );
+                    serde_json::json!({
+                        "version": 1,
+                        "id": id,
+                        "ok": true,
+                        "context": context.jsonl,
+                        "tokens": context.tokens,
+                        "selected": context.hits,
+                        "omitted": context.omitted,
+                    })
+                }
+                ServeRequest::Show { id, record_id, .. } => match show_value(graph, &record_id) {
+                    Some(record) => serde_json::json!({
+                        "version": 1, "id": id, "ok": true, "record": record
+                    }),
+                    None => serde_json::json!({
+                        "version": 1, "id": id, "ok": false, "error": "unknown ID"
+                    }),
+                },
+            },
+            Err(error) => serde_json::json!({
+                "version": 1,
+                "id": request_id.unwrap_or(Value::Null),
+                "ok": false,
+                "error": error,
+            }),
+        };
+        writeln!(stdout, "{response}")?;
+        stdout.flush()?;
+    }
+    Ok(())
+}
 
 fn run() -> Result<(), Box<dyn Error>> {
     let args = env::args().skip(1).collect::<Vec<_>>();
@@ -30,6 +179,10 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
     let corpus = serde_json::from_slice::<Corpus>(&fs::read(&args[1])?)?;
     let graph = Graph::compile(corpus)?;
+    if args[0] == "serve" && args.len() == 3 {
+        let counter = TokenCounter::for_model(&args[2])?;
+        return serve(&graph, &counter);
+    }
     let output = match args[0].as_str() {
         "search" | "bundle" if args.len() >= 6 => {
             let mode = serde_json::from_value::<RetrievalMode>(serde_json::Value::String(
@@ -99,22 +252,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         "validate" if args.len() == 2 => {
             serde_json::json!({"revision": graph.corpus().revision, "nodes": graph.corpus().nodes.len(), "edges": graph.corpus().edges.len()})
         }
-        "show" if args.len() == 3 => {
-            let node = graph.node(&args[2]).ok_or("unknown ID")?;
-            let edges = graph
-                .corpus()
-                .edges
-                .iter()
-                .filter(|edge| edge.from == node.id || edge.to == node.id)
-                .collect::<Vec<_>>();
-            let sources = graph
-                .corpus()
-                .sources
-                .iter()
-                .filter(|source| node.sources.contains(&source.id))
-                .collect::<Vec<_>>();
-            serde_json::json!({"revision": graph.corpus().revision, "node": node, "edges": edges, "sources": sources})
-        }
+        "show" if args.len() == 3 => show_value(&graph, &args[2]).ok_or("unknown ID")?,
         "descendants" if args.len() == 3 => serde_json::to_value(graph.descendants(&args[2])?)?,
         "context" if args.len() >= 3 => {
             let max_bytes = args[2].parse::<usize>()?;

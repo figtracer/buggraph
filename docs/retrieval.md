@@ -2,7 +2,16 @@
 
 The library compiles JSON into an immutable graph with integer node references,
 facet and lexical posting lists, and cached JSONL summaries. Load once and reuse
-`Graph` in a long-lived consumer. The CLI reloads and compiles on each invocation.
+`Graph` in a long-lived consumer. The `serve` command keeps one graph and tokenizer
+alive behind a versioned JSON-lines protocol; ordinary CLI commands reload them.
+
+Start `buggraph serve CORPUS MODEL` and wait for its readiness line. Each subsequent
+stdin line is one request and produces exactly one stdout line. Bundle requests use
+the ordinary retrieval fields plus `version`, a correlation `id`, and `op: "bundle"`.
+The response carries the exact token-counted bundle in `context`; extract that string
+unchanged before forwarding it to a model. `op: "show"` accepts `record_id`. Errors
+are per request, so malformed input does not discard the loaded index. EOF stops the
+process.
 
 ## Modes
 

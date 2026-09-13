@@ -1,0 +1,122 @@
+use serde_json::{Value, json};
+use std::{
+    io::{BufRead, BufReader, Write},
+    process::{Command, Stdio},
+};
+
+fn read_json(reader: &mut impl BufRead) -> Value {
+    let mut line = String::new();
+    reader.read_line(&mut line).unwrap();
+    serde_json::from_str(&line).unwrap()
+}
+
+#[test]
+fn persistent_service_reuses_state_and_recovers_from_bad_requests() {
+    let mut child = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+        .args(["serve", "data/example.json", "gpt-4o"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut stdin = child.stdin.take().unwrap();
+    let mut stdout = BufReader::new(child.stdout.take().unwrap());
+
+    let ready = read_json(&mut stdout);
+    assert_eq!(ready["ready"], true);
+    assert_eq!(ready["version"], 1);
+
+    writeln!(stdin, "not json").unwrap();
+    stdin.flush().unwrap();
+    let malformed = read_json(&mut stdout);
+    assert_eq!(malformed["ok"], false);
+
+    let request = json!({
+        "version": 1,
+        "id": "unicode-β",
+        "op": "bundle",
+        "mode": "bm25",
+        "max_tokens": 2048,
+        "detail": "full",
+        "query": "liquidation denial of service β",
+        "facets": [],
+        "compact": false
+    });
+    writeln!(stdin, "{request}").unwrap();
+    stdin.flush().unwrap();
+    let response = read_json(&mut stdout);
+    assert_eq!(response["ok"], true);
+    assert_eq!(response["id"], "unicode-β");
+    let context = response["context"].as_str().unwrap();
+    assert!(context.ends_with('\n'));
+    assert_eq!(
+        response["tokens"],
+        tiktoken_rs::o200k_base()
+            .unwrap()
+            .encode_ordinary(context)
+            .len()
+    );
+
+    writeln!(
+        stdin,
+        "{}",
+        json!({"version": 1, "id": "missing", "op": "show", "record_id": "missing"})
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let missing = read_json(&mut stdout);
+    assert_eq!(missing["ok"], false);
+    assert_eq!(missing["id"], "missing");
+
+    drop(stdin);
+    assert!(child.wait().unwrap().success());
+}
+
+#[test]
+fn service_bundle_context_matches_one_shot_output() {
+    let expected = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+        .args([
+            "bundle",
+            "data/example.json",
+            "bm25",
+            "gpt-4o",
+            "2048",
+            "summary",
+            "liquidation denial of service",
+        ])
+        .output()
+        .unwrap();
+    assert!(expected.status.success());
+
+    let mut child = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+        .args(["serve", "data/example.json", "gpt-4o"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut stdin = child.stdin.take().unwrap();
+    let mut stdout = BufReader::new(child.stdout.take().unwrap());
+    read_json(&mut stdout);
+    writeln!(
+        stdin,
+        "{}",
+        json!({
+            "version": 1,
+            "id": "same",
+            "op": "bundle",
+            "mode": "bm25",
+            "max_tokens": 2048,
+            "detail": "summary",
+            "query": "liquidation denial of service"
+        })
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let response = read_json(&mut stdout);
+    assert_eq!(
+        response["context"].as_str().unwrap().as_bytes(),
+        expected.stdout
+    );
+
+    drop(stdin);
+    assert!(child.wait().unwrap().success());
+}
