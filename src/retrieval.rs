@@ -17,10 +17,8 @@ pub(crate) fn terms(text: &str) -> Vec<String> {
 }
 
 pub(crate) struct SearchIndex {
+    // Each posting stores its immutable BM25 contribution, not term frequency.
     postings: HashMap<String, Vec<(usize, f64)>>,
-    lengths: Vec<usize>,
-    average: f64,
-    documents: usize,
 }
 
 impl SearchIndex {
@@ -51,13 +49,18 @@ impl SearchIndex {
                 }
             }
         }
-        let average = lengths.iter().sum::<usize>() as f64 / documents.max(1) as f64;
-        Self {
-            postings,
-            lengths,
-            average: average.max(1.0),
-            documents,
+        let average = (lengths.iter().sum::<usize>() as f64 / documents.max(1) as f64).max(1.0);
+        for entries in postings.values_mut() {
+            let idf = (1.0
+                + (documents as f64 - entries.len() as f64 + 0.5) / (entries.len() as f64 + 0.5))
+                .ln();
+            for (index, contribution) in entries {
+                let frequency = *contribution;
+                let denominator = frequency + K1 * (1.0 - B + B * lengths[*index] as f64 / average);
+                *contribution = idf * frequency * (K1 + 1.0) / denominator;
+            }
         }
+        Self { postings }
     }
 
     fn scores(&self, query: &str) -> HashMap<usize, f64> {
@@ -67,14 +70,8 @@ impl SearchIndex {
         query_terms.dedup();
         for term in query_terms {
             if let Some(postings) = self.postings.get(&term) {
-                let idf = (1.0
-                    + (self.documents as f64 - postings.len() as f64 + 0.5)
-                        / (postings.len() as f64 + 0.5))
-                    .ln();
-                for &(index, frequency) in postings {
-                    let denominator =
-                        frequency + K1 * (1.0 - B + B * self.lengths[index] as f64 / self.average);
-                    *scores.entry(index).or_default() += idf * frequency * (K1 + 1.0) / denominator;
+                for &(index, contribution) in postings {
+                    *scores.entry(index).or_default() += contribution;
                 }
             }
         }
@@ -153,6 +150,16 @@ impl Graph {
                 .collect(),
         };
         ranked.sort_unstable_by(|(a, x), (b, y)| y.total_cmp(x).then(a.cmp(b)));
+        if !matches!(mode, RetrievalMode::Bm25Ancestors) {
+            return ranked
+                .into_iter()
+                .map(|(index, score)| Hit {
+                    id: &self.corpus.nodes[index].id,
+                    score,
+                    relation: "match",
+                })
+                .collect();
+        }
         let mut output = Vec::new();
         let mut seen = HashSet::new();
         for (index, score) in ranked {
@@ -163,20 +170,18 @@ impl Graph {
                     relation: "match",
                 });
             }
-            if matches!(mode, RetrievalMode::Bm25Ancestors) {
-                let mut pending = self.parents[index].iter().copied().collect::<VecDeque<_>>();
-                let mut walked = HashSet::new();
-                while let Some(parent) = pending.pop_front() {
-                    if walked.insert(parent) {
-                        if eligible(parent) && seen.insert(parent) {
-                            output.push(Hit {
-                                id: &self.corpus.nodes[parent].id,
-                                score,
-                                relation: "ancestor",
-                            });
-                        }
-                        pending.extend(&self.parents[parent]);
+            let mut pending = self.parents[index].iter().copied().collect::<VecDeque<_>>();
+            let mut walked = HashSet::new();
+            while let Some(parent) = pending.pop_front() {
+                if walked.insert(parent) {
+                    if eligible(parent) && seen.insert(parent) {
+                        output.push(Hit {
+                            id: &self.corpus.nodes[parent].id,
+                            score,
+                            relation: "ancestor",
+                        });
                     }
+                    pending.extend(&self.parents[parent]);
                 }
             }
         }

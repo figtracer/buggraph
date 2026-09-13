@@ -31,6 +31,11 @@ records. UltraFuzz already
 [caches OWASP references](https://github.com/monad-developers/ultrafuzz/blob/89b57c9a7c5aa22af15e1ae9625b8ab3a2c6f810/packages/references/src/index.ts#L328-L359);
 its end-to-end benefit from Buggraph remains unproven.
 
+On 156 OWASP records, warm BM25 ranking is **1.69× faster** than `16afb0d` in four
+alternating local release-run pairs. Scores and output are unchanged; index construction
+is about 3% slower and token-budgeted retrieval is roughly unchanged. This excludes
+process and tokenizer startup.
+
 ## Getting started
 
 Install [Rust](https://rustup.rs), then build with the pinned toolchain:

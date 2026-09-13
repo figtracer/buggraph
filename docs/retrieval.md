@@ -20,7 +20,10 @@ Ties resolve by stable ID. Shared ancestors appear once.
 Fixed parameters `k1=1.2`, `b=0.75`, and positive log IDF follow conventional
 [Lucene BM25 defaults](https://lucene.apache.org/core/9_12_1/core/org/apache/lucene/search/similarities/BM25Similarity.html).
 They were not fitted to the suite. Unfiltered lexical queries score only matching
-posting lists. Sorting costs depend on matching document count.
+posting lists. Each posting's BM25 contribution is computed once when the immutable
+index is built; queries add those contributions in sorted term order. Rebuilding the
+graph recomputes weights for the new corpus. Sorting costs depend on matching document
+count. Plain ranked lookup needs no ancestor-deduplication set.
 
 ## Token budgets
 
