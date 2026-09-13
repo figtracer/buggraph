@@ -13,7 +13,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph route-ultrafuzz CORPUS THREAT_MODEL MAX_CLASSES\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
@@ -436,6 +436,16 @@ fn run() -> Result<(), Box<dyn Error>> {
         let counter = TokenCounter::for_model(&args[2])?;
         let inventory = graph.taxonomy(&counter);
         io::stdout().lock().write_all(inventory.jsonl.as_bytes())?;
+        return Ok(());
+    }
+    if args[0] == "route-ultrafuzz" && args.len() == 4 {
+        let threat_model = fs::read(&args[2])?;
+        let route = graph.route_ultrafuzz(&threat_model, args[3].parse()?)?;
+        writeln!(
+            io::stdout().lock(),
+            "{}",
+            serde_json::to_string_pretty(&route)?
+        )?;
         return Ok(());
     }
     let output = match args[0].as_str() {
