@@ -8,7 +8,7 @@ use std::collections::HashMap;
 const THREAT_WEIGHT: f64 = 4.0;
 const INVARIANT_WEIGHT: f64 = 2.0;
 const COVERAGE_GAP_WEIGHT: f64 = 1.0;
-const RESULTS_PER_QUERY: usize = 5;
+const RESULTS_PER_QUERY: usize = 10;
 const RRF_OFFSET: usize = 60;
 
 #[derive(Deserialize)]
