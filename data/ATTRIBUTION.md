@@ -5,8 +5,10 @@ and complete Description sections are copied from the corresponding Markdown fil
 CRLF line endings and surrounding whitespace are normalized. Categories come from
 source directory names, source IDs are retained as mappings, and node IDs use
 `scwe:NNN`. Each record is marked `imported`; no independent review or inferred
-relationships are claimed. Examples and other document sections remain available
-through pinned source links. This is source inventory coverage, not exhaustive
+relationships are claimed. SCWE-143 additionally includes the exact Fixed Solidity
+constructor excerpt beginning at line 50, including its trailing newline. It is a
+partial source example; no compilation or independent correctness review is claimed.
+Other examples and document sections remain available through pinned source links. This is source inventory coverage, not exhaustive
 coverage of smart contract weaknesses.
 
 The separate `curated.json` starter taxonomy adapts 16 entries from the

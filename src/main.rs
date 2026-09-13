@@ -1,6 +1,9 @@
 //! Local JSON interface for taxonomy validation and knowledge retrieval.
 
-use buggraph::{Corpus, Detail, EvalSuite, Graph, Ledger, RetrievalMode, TokenCounter};
+use buggraph::{
+    BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, Ledger, RetrievalMode,
+    TokenCounter, expand_bundle,
+};
 use std::{
     env,
     error::Error,
@@ -9,7 +12,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...]\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 fn run() -> Result<(), Box<dyn Error>> {
     let args = env::args().skip(1).collect::<Vec<_>>();
@@ -19,6 +22,11 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
     if args.len() < 2 {
         return Err(USAGE.into());
+    }
+    if args[0] == "expand" && args.len() == 2 {
+        let value = expand_bundle(&fs::read_to_string(&args[1])?)?;
+        writeln!(io::stdout().lock(), "{value}")?;
+        return Ok(());
     }
     let corpus = serde_json::from_slice::<Corpus>(&fs::read(&args[1])?)?;
     let graph = Graph::compile(corpus)?;
@@ -40,12 +48,30 @@ fn run() -> Result<(), Box<dyn Error>> {
             } else {
                 (&args[5], 6, Detail::Summary)
             };
-            let facets = args[facet_start..]
+            let compact = bundled
+                && args.len() > facet_start
+                && args.last().is_some_and(|arg| arg == "--compact");
+            let facet_end = args.len() - usize::from(compact);
+            let facets = args[facet_start..facet_end]
                 .iter()
                 .map(String::as_str)
                 .collect::<Vec<_>>();
             let context = if bundled {
-                graph.bundle(query, &facets, mode, detail, &counter, max_tokens)
+                graph.bundle_with_options(
+                    query,
+                    &facets,
+                    &counter,
+                    BundleOptions {
+                        mode,
+                        detail,
+                        max_tokens,
+                        format: if compact {
+                            BundleFormat::Compact
+                        } else {
+                            BundleFormat::Json
+                        },
+                    },
+                )
             } else {
                 graph.ranked_context(query, &facets, mode, &counter, max_tokens, usize::MAX)
             };

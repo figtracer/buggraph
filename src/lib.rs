@@ -4,7 +4,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 mod retrieval;
-pub use retrieval::{Detail, Hit, RankedContext, RetrievalMode, TokenCounter};
+pub use retrieval::{BundleOptions, Detail, Hit, RankedContext, RetrievalMode, TokenCounter};
+
+mod packing;
+pub use packing::{BundleFormat, expand_bundle};
 
 mod evaluation;
 pub use evaluation::{EvalCase, EvalReport, EvalSuite, Split};
@@ -41,6 +44,18 @@ pub struct Node {
     pub mappings: Vec<String>,
     #[serde(default)]
     pub review: ReviewStatus,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub code: Vec<CodeExcerpt>,
+}
+
+/// An exact source excerpt, with one-based line location in its pinned source.
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CodeExcerpt {
+    pub language: String,
+    pub source: String,
+    pub start_line: usize,
+    pub text: String,
 }
 
 /// Source checking records provenance, not independent expert validation.
@@ -144,6 +159,18 @@ impl Graph {
             for source in &node.sources {
                 if !source_ids.contains_key(source.as_str()) {
                     return Err(format!("unknown source: {source}"));
+                }
+            }
+            for code in &node.code {
+                if code.language.trim().is_empty()
+                    || code.text.is_empty()
+                    || code.start_line == 0
+                    || !node.sources.contains(&code.source)
+                {
+                    return Err(format!(
+                        "code requires language, text, a source attached to its node and a positive start line: {}",
+                        node.id
+                    ));
                 }
             }
             if matches!(

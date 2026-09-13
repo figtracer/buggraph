@@ -2,40 +2,39 @@
 
 [![CI](https://github.com/figtracer/buggraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/buggraph/actions/workflows/ci.yml)
 
-smart contract failure modes, structured for agents. local retrieval first.
+smart contract security references. local retrieval, exact token budgets.
 
-[getting started](#getting-started) · [references](data/owasp.json) · [retrieval](docs/retrieval.md) · [evaluation](docs/evaluation.md) · [agent instructions](AGENTS.md) · [contributing](CONTRIBUTING.md)
+[getting started](#getting-started) · [references](data/owasp.json) · [encoding](docs/packing.md) · [evaluation](docs/evaluation.md) · [contributing](CONTRIBUTING.md)
 
-Buggraph is a local reference library with token-budgeted retrieval and optional typed
-graph relationships. A Rust library and CLI share the same validated index.
+A Rust library and CLI for fetching reference material in one call. Search **156
+pinned OWASP descriptions**, return summaries or full records with citations, and
+compress repeated structure without changing descriptions or code.
 
-The reference corpus includes titles and complete Description sections for all **156
-SCWE entries** in a pinned OWASP snapshot, with stable IDs, category filters, and
-citations. Imported records are distinguished from checked adaptations. The separate
-[starter taxonomy](data/curated.json) contains 19 failure modes and four properties;
-its source checking was AI-assisted and still needs independent expert review.
+The reference catalog has stable IDs and category filters. A separate
+[starter taxonomy](data/curated.json) adds typed relationships across 19 failure modes
+and four properties. Code excerpts retain their source and line location; the catalog
+currently includes one pinned defensive example.
 
 ## Why use it
 
-Buggraph makes security knowledge easier to retrieve, cite, and budget. It does not
-currently establish that an agent finds more vulnerabilities.
-
-| Benefit | What is available now |
+| Feature | What it provides |
 | --- | --- |
-| Smaller context | Fetch summaries or complete descriptions in one token-capped bundle; shared citations appear once. |
-| Reusable knowledge | Stable failure-mode IDs, source references, applicability notes, and exclusions. |
-| Explainable relationships | Inspect broader classes and shared properties without duplicating records. |
-| Auditable assessment | Record evidence and unresolved questions separately from nodes visited. |
+| Local search | BM25 ranking and category filters without model calls or network access. |
+| Token budgets | Whole records packed under an exact model-token cap. |
+| Lossless encoding | Shared metadata and schema; exact descriptions, code, and citation reconstruction. |
+| Source provenance | Pinned URLs, licenses, review status, and code line locations. |
+| Optional graph | Typed relationships and deduplicated ancestor expansion. |
 
-Local diagnostics found no graph-specific recall or lookup-speed advantage over flat
-records. UltraFuzz already
-[caches OWASP references](https://github.com/monad-developers/ultrafuzz/blob/89b57c9a7c5aa22af15e1ae9625b8ab3a2c6f810/packages/references/src/index.ts#L328-L359);
-its end-to-end benefit from Buggraph remains unproven.
+On the complete 156-record payload (`gpt-4o` encoding):
 
-Across 19 local queries on the 156-entry catalog, summary bundles used **11–12%
-fewer tokens** than legacy JSONL with the same selected records and summary fields
-(`gpt-4` and `gpt-4o` encodings). This measures serialization savings, not relevance
-or end-to-end agent performance.
+| Payload | Plain bundle | Compact bundle |
+| --- | ---: | ---: |
+| Summaries | 14,286 tokens | 4,887 tokens (−66%) |
+| Full descriptions and code | 28,915 tokens | 20,752 tokens (−28%) |
+
+Decoded records match exactly. Three separate agents each passed 36/36 extraction
+questions across synthetic fixtures and pinned references, including exact code and
+similar identifiers. This is a small single-model check. Compact encoding trades additional CPU work for fewer tokens.
 
 ## Getting started
 
@@ -47,30 +46,29 @@ cd buggraph
 cargo install --path . --locked
 
 buggraph validate data/owasp.json
-buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "contract architecture"
-buggraph show data/owasp.json scwe:001
+buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "contract architecture" --compact
+buggraph show data/owasp.json scwe:143
 ```
 
-The model name selects a local tokenizer. Search makes no model calls and needs no
-API key, database server, or network connection after dependencies are installed.
+Use `summary` instead of `full` for an overview. `--compact` compares reversible
+representations and includes its decoding guide in the budget. Omit the flag for
+ordinary JSON. Source numbers index the shared citation table.
 
 | Command | What it does |
 | --- | --- |
-| `validate` | Check IDs, source references, edge types, and specialization cycles. |
-| `bundle` | Fetch summaries or full descriptions in one compact, token-capped JSON object. |
-| `search` | Rank failure modes and return summaries within a token budget. |
-| `show` | Expand a record with applicability, exclusions, sources, and relationships. |
-| `descendants` | Explore a specialization subtree with shared nodes deduplicated. |
-| `context` | Retrieve facet-filtered summaries within a byte budget. |
-| `coverage` | Count evidence-backed assessment states against an explicit scope. |
-| `eval` | Compare ID ordering, BM25, and BM25 with ancestor expansion. |
+| `validate` | Check IDs, provenance, edge types, and specialization cycles. |
+| `bundle` | Fetch summaries or complete records within a token budget. |
+| `expand` | Decode a saved compact bundle into ordinary JSON. |
+| `search` | Return ranked summaries as JSONL. |
+| `show` | Open a record with its code, sources, and relationships. |
+| `descendants` | Explore a specialization subtree. |
+| `context` | Fetch facet-filtered summaries within a byte budget. |
+| `coverage` | Read evidence-backed assessment states for an explicit scope. |
+| `eval` | Compare retrieval modes against labeled queries. |
 
-Bundle writes one JSON object and no success diagnostics; use `summary` in place of
-`full` for a smaller overview. Source numbers index the shared citation table.
-Search retains its JSONL interface and writes ranking metadata to stderr. Budgets
-cover stdout; callers reserve their own message and tool overhead.
-See [retrieval](docs/retrieval.md) for model support and [the schema](docs/schema.md)
-for graph and coverage semantics.
+Bundle writes only its payload to stdout. Token counts cover the complete response;
+callers reserve their own message and tool overhead. The tokenizer runs locally and
+needs no API key. See [retrieval](docs/retrieval.md) and [encoding](docs/packing.md).
 
 ## Evaluation
 
@@ -78,9 +76,9 @@ for graph and coverage semantics.
 buggraph eval data/curated.json data/eval.json gpt-4o 2048 3
 ```
 
-The suite reports precision, recall, MRR, nDCG, negative-query behavior, and context
-tokens. These are small retrieval diagnostics, not vulnerability-detection results.
-See [metric definitions](docs/evaluation.md) and [benchmark instructions](BENCHMARKS.md).
+The authored diagnostic suite reports precision, recall, MRR, nDCG, negative-query
+behavior, and context tokens. See [metric definitions](docs/evaluation.md) and
+[benchmark instructions](BENCHMARKS.md).
 
 ## Development
 
@@ -90,5 +88,6 @@ cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked --all-targets
 ```
 
-CI runs checks on Linux and macOS. Code is MIT; the data is CC-BY-SA-4.0.
-See [contributing](CONTRIBUTING.md) and [source attribution](data/ATTRIBUTION.md).
+CI runs on Linux and macOS. Code is MIT; data is CC-BY-SA-4.0. See
+[agent instructions](AGENTS.md), [contributing](CONTRIBUTING.md), and
+[source attribution](data/ATTRIBUTION.md).

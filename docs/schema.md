@@ -7,8 +7,9 @@ must change when definitions or relationships change; Git identifies exact conte
 
 Nodes have stable IDs, a kind (`failure_mode`, `property`, or `finding`), a summary,
 definition, explicit facets, applicability conditions, exclusions, source IDs,
-external mappings, and a review status. Draft is the default. Both `imported` and
-`source_checked` require resolvable source IDs. `imported` means a source record was transferred without
+external mappings, optional `code` excerpts, and a review status. Draft is the default.
+Both `imported` and `source_checked` require resolvable source IDs. `imported` means
+a source record was transferred without
 independent content adjudication. `source_checked` means the adaptation was checked
 against the cited source, not that a human auditor endorsed it.
 
@@ -38,6 +39,17 @@ applicability. It has no inferred specialization edges. Its inventory covers a p
 retains its existing `fm:` IDs and evaluation labels; the two files are not silently
 merged or deduplicated. Source references link to complete upstream documents,
 including examples that are not embedded in the catalog.
+
+Code excerpts contain `language`, a registry `source` ID already attached to the
+node, positive one-based `start_line`, and nonempty `text`. Text and whitespace
+are retained exactly. The engine validates associations, not source file contents
+or compilation; excerpts may be partial functions. Full bundles include excerpts;
+summary bundles omit them. The imported SCWE-143 example is the pinned document’s
+Fixed constructor excerpt, not a standalone contract.
+
+Old corpus JSON remains accepted. Rust consumers constructing `Node` with a struct
+literal must add `code: Vec::new()` (or supplied excerpts). Existing bundle calls
+keep the ordinary JSON representation.
 
 ## Assessment ledger
 

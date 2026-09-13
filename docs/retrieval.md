@@ -51,7 +51,9 @@ Record IDs remain stable. The complete source registry is available through `sho
 
 The corpus revision and identical citation URLs appear once. Empty optional fields
 are omitted. Full records add complete definitions, applicability, exclusions, and
-external mappings. Relationships appear under `edges` only when both endpoints are
+external mappings, and attached code excerpts. Code text is kept verbatim; excerpts
+carry their language, one-based source start line, and citation-table source index.
+Relationships appear under `edges` only when both endpoints are
 selected; omission does not establish that no other relationships exist. Graph
 expansion remains opt-in through `bm25_ancestors`. A DAG and semantic similarity
 search are separate concepts; this engine currently uses lexical ranking.
@@ -67,6 +69,12 @@ record count, repetition, and the selected detail level.
 Use a full bundle when the question needs descriptions immediately; a summary bundle
 followed by `show` is useful when only a few records will need expansion. Fetching the
 entire corpus or expanding all ancestors is not inherently token-efficient.
+
+Append `--compact` to opt into lossless structural compression. It compares ordinary
+JSON with factored and tabular JSON, counts their complete decoding guides, and
+keeps the smallest candidate. See [encoding and code preservation](packing.md).
+The existing `Graph::bundle` keeps ordinary JSON; `bundle_with_options` accepts an
+explicit `BundleFormat`.
 
 ## Performance boundaries
 

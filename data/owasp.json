@@ -1,5 +1,5 @@
 {
-  "revision": "owasp-scwe-fefd476b-v1",
+  "revision": "owasp-scwe-fefd476b-v2",
   "nodes": [
     {
       "id": "scwe:001",
@@ -2573,7 +2573,15 @@
       "mappings": [
         "SCWE-143"
       ],
-      "review": "imported"
+      "review": "imported",
+      "code": [
+        {
+          "language": "solidity",
+          "source": "SCWE-143",
+          "start_line": 50,
+          "text": "constructor(address _owner, address _feeRecipient) {\n    require(_owner != address(0), \"Invalid owner\");\n    require(_feeRecipient != address(0), \"Invalid fee recipient\");\n    owner = _owner;\n    feeRecipient = _feeRecipient;\n}\n"
+        }
+      ]
     },
     {
       "id": "scwe:144",

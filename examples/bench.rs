@@ -14,6 +14,7 @@ fn main() {
     // One percent selectivity, with two explicit facets per node.
     let nodes = (0..count)
         .map(|i| Node {
+            code: Vec::new(),
             id: format!("fm:{i:08}"),
             kind: Kind::FailureMode,
             summary: format!("Synthetic classification record {i}"),

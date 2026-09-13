@@ -1,6 +1,6 @@
 //! Lexical retrieval and exact model-token budgets for serialized context.
 
-use crate::{Graph, Kind, Node, ReviewStatus};
+use crate::{BundleFormat, Graph, Kind, Node, ReviewStatus, packing};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 use tiktoken_rs::{CoreBPE, bpe_for_model};
@@ -95,6 +95,22 @@ pub enum Detail {
     Full,
 }
 
+/// Retrieval and representation policy for a token-capped bundle.
+pub struct BundleOptions {
+    pub mode: RetrievalMode,
+    pub detail: Detail,
+    pub format: BundleFormat,
+    pub max_tokens: usize,
+}
+
+#[derive(Serialize)]
+struct BundleCode<'a> {
+    language: &'a str,
+    source: usize,
+    start_line: usize,
+    text: &'a str,
+}
+
 #[derive(Serialize)]
 struct BundleRecord<'a> {
     id: &'a str,
@@ -113,6 +129,8 @@ struct BundleRecord<'a> {
     exclusions: &'a [String],
     #[serde(skip_serializing_if = "<[String]>::is_empty")]
     mappings: &'a [String],
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    code: Vec<BundleCode<'a>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -167,7 +185,29 @@ impl Graph {
         counter: &TokenCounter,
         max_tokens: usize,
     ) -> RankedContext<'_> {
-        let ranked = self.rank(query, facets, mode);
+        self.bundle_with_options(
+            query,
+            facets,
+            counter,
+            BundleOptions {
+                mode,
+                detail,
+                format: BundleFormat::Json,
+                max_tokens,
+            },
+        )
+    }
+
+    /// Compact mode chooses the smallest supported exact representation for each
+    /// candidate. It includes its decoding guide in the token budget.
+    pub fn bundle_with_options(
+        &self,
+        query: &str,
+        facets: &[&str],
+        counter: &TokenCounter,
+        options: BundleOptions,
+    ) -> RankedContext<'_> {
+        let ranked = self.rank(query, facets, options.mode);
         let total = ranked.len();
         let source_urls = self
             .corpus
@@ -200,7 +240,7 @@ impl Graph {
                             })
                         })
                         .collect::<Vec<_>>();
-                    let full = matches!(detail, Detail::Full);
+                    let full = matches!(options.detail, Detail::Full);
                     BundleRecord {
                         id: &node.id,
                         kind: node.kind,
@@ -212,6 +252,19 @@ impl Graph {
                         applicability: if full { &node.applicability } else { &[] },
                         exclusions: if full { &node.exclusions } else { &[] },
                         mappings: if full { &node.mappings } else { &[] },
+                        code: if full {
+                            node.code
+                                .iter()
+                                .map(|code| BundleCode {
+                                    language: &code.language,
+                                    source: source_slots[source_urls[code.source.as_str()]],
+                                    start_line: code.start_line,
+                                    text: &code.text,
+                                })
+                                .collect()
+                        } else {
+                            Vec::new()
+                        },
                     }
                 })
                 .collect::<Vec<_>>();
@@ -234,9 +287,8 @@ impl Graph {
             if !edges.is_empty() {
                 value["edges"] = serde_json::to_value(edges).expect("serializable edges");
             }
-            let text = format!("{value}\n");
-            let tokens = counter.count(&text);
-            if tokens <= max_tokens {
+            let (text, tokens) = packing::serialize(value, options.format, counter);
+            if tokens <= options.max_tokens {
                 result.jsonl = text;
                 result.tokens = tokens;
                 result.hits.push(hit);
