@@ -108,6 +108,71 @@ fn persistent_service_reuses_state_and_recovers_from_bad_requests() {
         "{}",
         json!({
             "version": 1,
+            "id": "resolve",
+            "op": "resolve",
+            "max_tokens": 2048,
+            "detail": "full",
+            "ids": ["fm:liquidation-liveness", "fm:liveness"]
+        })
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let resolved = read_json(&mut stdout);
+    assert_eq!(resolved["ok"], true);
+    assert_eq!(resolved["omitted_ids"], json!([]));
+    assert_eq!(resolved["selected"][0]["id"], "fm:liquidation-liveness");
+    assert_eq!(resolved["selected"][1]["id"], "fm:liveness");
+    assert_eq!(
+        resolved["tokens"],
+        tiktoken_rs::o200k_base()
+            .unwrap()
+            .encode_ordinary(resolved["context"].as_str().unwrap())
+            .len()
+    );
+
+    writeln!(
+        stdin,
+        "{}",
+        json!({
+            "version": 1,
+            "id": "oversized",
+            "op": "resolve",
+            "max_tokens": 1,
+            "detail": "full",
+            "ids": ["fm:liveness", "fm:liquidation-liveness"]
+        })
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let oversized = read_json(&mut stdout);
+    assert_eq!(
+        oversized["omitted_ids"],
+        json!(["fm:liquidation-liveness", "fm:liveness"])
+    );
+
+    writeln!(
+        stdin,
+        "{}",
+        json!({
+            "version": 1,
+            "id": "unknown",
+            "op": "resolve",
+            "max_tokens": 2048,
+            "detail": "full",
+            "ids": ["missing"]
+        })
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let unknown = read_json(&mut stdout);
+    assert_eq!(unknown["ok"], false);
+    assert_eq!(unknown["error"], "unknown ID: missing");
+
+    writeln!(
+        stdin,
+        "{}",
+        json!({
+            "version": 1,
             "id": "explore",
             "op": "explore",
             "max_tokens": 2048,

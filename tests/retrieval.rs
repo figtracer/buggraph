@@ -9,6 +9,15 @@ fn graph() -> Graph {
         .unwrap()
 }
 
+fn options(max_tokens: usize) -> BundleOptions {
+    BundleOptions {
+        mode: RetrievalMode::Bm25,
+        detail: Detail::Full,
+        format: BundleFormat::Json,
+        max_tokens,
+    }
+}
+
 #[test]
 fn inventory_contains_every_node_and_edge_with_exact_model_tokens() {
     let graph = graph();
@@ -68,6 +77,51 @@ fn taxonomy_omits_instances_and_instance_search_returns_them() {
     assert_eq!(instances.hits[0].id, "finding:dust");
     assert!(instances.jsonl.contains("Exact finding detail."));
     assert_eq!(instances.tokens, counter.count(&instances.jsonl));
+
+    let resolved = graph
+        .resolve_with_options(
+            &["finding:dust", "fm:dos"],
+            &counter,
+            BundleOptions {
+                mode: RetrievalMode::Bm25,
+                detail: Detail::Full,
+                format: BundleFormat::Json,
+                max_tokens: 2048,
+            },
+        )
+        .unwrap();
+    assert_eq!(
+        resolved.hits.iter().map(|hit| hit.id).collect::<Vec<_>>(),
+        ["finding:dust", "fm:dos"]
+    );
+    assert!(resolved.jsonl.contains("Exact finding detail."));
+    assert_eq!(resolved.tokens, counter.count(&resolved.jsonl));
+    assert!(
+        graph
+            .resolve_with_options(&["fm:dos", "fm:dos"], &counter, options(2048))
+            .err()
+            .unwrap()
+            .contains("duplicate ID")
+    );
+    assert!(
+        graph
+            .resolve_with_options(&["missing"], &counter, options(2048))
+            .err()
+            .unwrap()
+            .contains("unknown ID")
+    );
+    assert!(
+        graph
+            .resolve_with_options(&[], &counter, options(2048))
+            .err()
+            .unwrap()
+            .contains("at least one ID")
+    );
+    let oversized = graph
+        .resolve_with_options(&["finding:dust", "fm:dos"], &counter, options(1))
+        .unwrap();
+    assert!(oversized.hits.is_empty());
+    assert_eq!(oversized.omitted, 2);
 }
 
 #[test]

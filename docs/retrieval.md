@@ -13,8 +13,10 @@ the ordinary retrieval fields plus `version`, a correlation `id`, and `op: "bund
 The response carries the exact token-counted bundle in `context`; extract that string
 unchanged before forwarding it to a model. `op: "instances"` uses the same bundle
 fields but ranks only concrete findings. `op: "show"` accepts `record_id`. Errors
-are per request, so malformed input does not discard the loaded index. EOF stops the
-process.
+are per request, so malformed input does not discard the loaded index. `op: "resolve"`
+accepts `ids`, `detail`, `max_tokens`, and optional `compact`; it rejects unknown or
+duplicate IDs, packs in stable ID order, and returns `omitted_ids` for selected records
+that cannot fit. EOF stops the process.
 
 `op: "explore"` adds `max_direct_records` and `max_depth`. It packs BM25 matches
 first, expands only from matches that fit, and uses remaining capacity for their
@@ -37,6 +39,12 @@ contain concrete findings. It retains every failure mode, property, and relation
 between those classes. `instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [facets
 ...]` then searches only findings, so a caller can select a Tag or Subtag facet before
 spending tokens on source examples.
+
+`resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...]` is the deterministic handoff
+from routing to source detail. It fetches the selected set in one bundle without a
+second relevance pass. Service responses expose both the accepted records and exact
+omitted IDs; the one-shot command writes the same trace to stderr while keeping only
+model context on stdout.
 
 `id_order` returns failure modes in stable ID order, the original flat baseline.
 `bm25` ranks positive lexical matches. `bm25_ancestors` interleaves each match with

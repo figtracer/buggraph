@@ -13,7 +13,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
@@ -50,6 +50,15 @@ enum ServeRequest {
         #[serde(default)]
         compact: bool,
     },
+    Resolve {
+        version: u8,
+        id: String,
+        max_tokens: usize,
+        detail: Detail,
+        ids: Vec<String>,
+        #[serde(default)]
+        compact: bool,
+    },
     Show {
         version: u8,
         id: String,
@@ -83,6 +92,7 @@ impl ServeRequest {
             | Self::Taxonomy { version, .. }
             | Self::Bundle { version, .. }
             | Self::Instances { version, .. }
+            | Self::Resolve { version, .. }
             | Self::Show { version, .. }
             | Self::Explore { version, .. }
             | Self::Descendants { version, .. } => *version,
@@ -95,6 +105,7 @@ impl ServeRequest {
             | Self::Taxonomy { id, .. }
             | Self::Bundle { id, .. }
             | Self::Instances { id, .. }
+            | Self::Resolve { id, .. }
             | Self::Show { id, .. }
             | Self::Explore { id, .. }
             | Self::Descendants { id, .. } => id,
@@ -272,6 +283,47 @@ fn serve(graph: &Graph, counter: &TokenCounter) -> Result<(), Box<dyn Error>> {
                     );
                     context_response(id, context)
                 }
+                ServeRequest::Resolve {
+                    id,
+                    max_tokens,
+                    detail,
+                    ids,
+                    compact,
+                    ..
+                } => {
+                    let record_ids = ids.iter().map(String::as_str).collect::<Vec<_>>();
+                    match graph.resolve_with_options(
+                        &record_ids,
+                        counter,
+                        BundleOptions {
+                            mode: RetrievalMode::IdOrder,
+                            detail,
+                            max_tokens,
+                            format: if compact {
+                                BundleFormat::Compact
+                            } else {
+                                BundleFormat::Json
+                            },
+                        },
+                    ) {
+                        Ok(context) => {
+                            let mut omitted_ids = record_ids
+                                .iter()
+                                .filter(|record_id| {
+                                    !context.hits.iter().any(|hit| hit.id == **record_id)
+                                })
+                                .copied()
+                                .collect::<Vec<_>>();
+                            omitted_ids.sort_unstable();
+                            let mut response = context_response(id, context);
+                            response["omitted_ids"] = serde_json::json!(omitted_ids);
+                            response
+                        }
+                        Err(error) => serde_json::json!({
+                            "version": 1, "id": id, "ok": false, "error": error
+                        }),
+                    }
+                }
                 ServeRequest::Show { id, record_id, .. } => match show_value(graph, &record_id) {
                     Some(record) => serde_json::json!({
                         "version": 1, "id": id, "ok": true, "record": record
@@ -420,6 +472,52 @@ fn run() -> Result<(), Box<dyn Error>> {
             io::stdout()
                 .lock()
                 .write_all(result.context.jsonl.as_bytes())?;
+            return Ok(());
+        }
+        "resolve" if args.len() >= 6 => {
+            let counter = TokenCounter::for_model(&args[2])?;
+            let max_tokens = args[3].parse::<usize>()?;
+            let detail =
+                serde_json::from_value::<Detail>(serde_json::Value::String(args[4].clone()))?;
+            let compact = args.last().is_some_and(|arg| arg == "--compact");
+            let id_end = args.len() - usize::from(compact);
+            let ids = args[5..id_end]
+                .iter()
+                .map(String::as_str)
+                .collect::<Vec<_>>();
+            if ids.is_empty() {
+                return Err(USAGE.into());
+            }
+            let context = graph.resolve_with_options(
+                &ids,
+                &counter,
+                BundleOptions {
+                    mode: RetrievalMode::IdOrder,
+                    detail,
+                    max_tokens,
+                    format: if compact {
+                        BundleFormat::Compact
+                    } else {
+                        BundleFormat::Json
+                    },
+                },
+            )?;
+            let omitted_ids = ids
+                .iter()
+                .filter(|id| !context.hits.iter().any(|hit| hit.id == **id))
+                .copied()
+                .collect::<Vec<_>>();
+            io::stdout().lock().write_all(context.jsonl.as_bytes())?;
+            writeln!(
+                io::stderr().lock(),
+                "{}",
+                serde_json::json!({
+                    "model": counter.model(),
+                    "tokens": context.tokens,
+                    "selected": context.hits,
+                    "omitted_ids": omitted_ids,
+                })
+            )?;
             return Ok(());
         }
         "search" | "bundle" | "instances" if args.len() >= 6 => {

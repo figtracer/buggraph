@@ -22,6 +22,7 @@ place; 155 of its documents contain code.
 | --- | --- |
 | Semantic inventory | Every ID, source-derived synopsis, facet, and edge in one model-counted response. |
 | Layered taxonomy | Route over classes first, then fetch ranked concrete instances from selected facets. |
+| Exact ID resolution | Fetch a selected set in one call with explicit oversized-record traces. |
 | Local search | BM25 ranking and category filters without model calls or network access. |
 | Token budgets | Whole records packed under an exact model-token cap. |
 | Lossless encoding | Shared metadata and schema; exact descriptions, code, and citation reconstruction. |
@@ -60,6 +61,7 @@ buggraph inventory data/owasp.json gpt-4o
 buggraph taxonomy data/owasp.json gpt-4o
 buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "contract architecture" --compact
 buggraph instances corpus.json bm25 gpt-4o 4096 full "dust liquidation" tag:dos --compact
+buggraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
 buggraph explore data/owasp.json gpt-4o 2048 summary 8 2 "contract architecture"
 buggraph serve data/owasp.json gpt-4o
 buggraph show data/owasp.json scwe:143
@@ -80,6 +82,7 @@ ordinary JSON. Source numbers index the shared citation table.
 | `taxonomy` | Return classes and their relationships without concrete findings. |
 | `bundle` | Fetch summaries or complete records within a token budget. |
 | `instances` | Fetch concrete findings by query and taxonomy facets. |
+| `resolve` | Pack selected IDs directly and report any that exceed the budget. |
 | `explore` | Pack direct matches, then bounded graph context. |
 | `serve` | Reuse one compiled graph and tokenizer over JSON lines. |
 | `import-owasp` | Reproduce a source-complete corpus from a pinned checkout. |

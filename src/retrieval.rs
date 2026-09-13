@@ -316,6 +316,43 @@ impl Graph {
         self.pack_ranked(ranked, counter, options, total, usize::MAX)
     }
 
+    /// Resolve an explicit set of IDs into one stable, token-capped bundle.
+    ///
+    /// Unknown and duplicate IDs fail instead of silently changing the caller's
+    /// selected set. Records are packed in stable ID order.
+    pub fn resolve_with_options<'a>(
+        &'a self,
+        ids: &[&'a str],
+        counter: &TokenCounter,
+        options: BundleOptions,
+    ) -> Result<RankedContext<'a>, String> {
+        if ids.is_empty() {
+            return Err("resolve requires at least one ID".into());
+        }
+        let mut ids = ids.to_vec();
+        ids.sort_unstable();
+        for pair in ids.windows(2) {
+            if pair[0] == pair[1] {
+                return Err(format!("duplicate ID: {}", pair[0]));
+            }
+        }
+        let ranked = ids
+            .into_iter()
+            .map(|id| {
+                if !self.ids.contains_key(id) {
+                    return Err(format!("unknown ID: {id}"));
+                }
+                Ok(Hit {
+                    id,
+                    score: 0.0,
+                    relation: "selected",
+                })
+            })
+            .collect::<Result<Vec<_>, String>>()?;
+        let total = ranked.len();
+        Ok(self.pack_ranked(ranked, counter, options, total, usize::MAX))
+    }
+
     /// Pack lexical matches before bounded structural context. Ancestors never
     /// displace an accepted direct match or bypass the direct-record limit.
     pub fn bundle_direct_first(
