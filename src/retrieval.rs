@@ -324,12 +324,22 @@ impl Graph {
         total: usize,
         max_records: usize,
     ) -> RankedContext<'a> {
-        let source_urls = self
-            .corpus
-            .sources
-            .iter()
-            .map(|source| (source.id.as_str(), source.url.as_str()))
-            .collect::<HashMap<_, _>>();
+        let ranked = ranked.into_iter().take(max_records).collect::<Vec<_>>();
+        if !ranked.is_empty() {
+            let selected = ranked
+                .iter()
+                .map(|hit| &self.corpus.nodes[self.ids[hit.id]])
+                .collect::<Vec<_>>();
+            let (jsonl, tokens) = self.serialize_selection(&selected, counter, options, total);
+            if tokens <= options.max_tokens {
+                return RankedContext {
+                    jsonl,
+                    omitted: total - ranked.len(),
+                    hits: ranked,
+                    tokens,
+                };
+            }
+        }
         let mut selected = Vec::new();
         let mut result = RankedContext {
             jsonl: String::new(),
@@ -338,74 +348,8 @@ impl Graph {
             omitted: 0,
         };
         for hit in ranked {
-            if result.hits.len() == max_records {
-                break;
-            }
             selected.push(&self.corpus.nodes[self.ids[hit.id]]);
-            let mut sources = Vec::new();
-            let mut source_slots = HashMap::new();
-            let records = selected
-                .iter()
-                .map(|node| {
-                    let citations = node
-                        .sources
-                        .iter()
-                        .map(|id| {
-                            let url = source_urls[id.as_str()];
-                            *source_slots.entry(url).or_insert_with(|| {
-                                sources.push(url);
-                                sources.len() - 1
-                            })
-                        })
-                        .collect::<Vec<_>>();
-                    let full = matches!(options.detail, Detail::Full);
-                    BundleRecord {
-                        id: &node.id,
-                        kind: node.kind,
-                        summary: &node.summary,
-                        review: node.review,
-                        sources: citations,
-                        facets: &node.facets,
-                        definition: if full { &node.definition } else { "" },
-                        applicability: if full { &node.applicability } else { &[] },
-                        exclusions: if full { &node.exclusions } else { &[] },
-                        mappings: if full { &node.mappings } else { &[] },
-                        code: if full {
-                            node.code
-                                .iter()
-                                .map(|code| BundleCode {
-                                    language: &code.language,
-                                    source: source_slots[source_urls[code.source.as_str()]],
-                                    start_line: code.start_line,
-                                    text: &code.text,
-                                })
-                                .collect()
-                        } else {
-                            Vec::new()
-                        },
-                    }
-                })
-                .collect::<Vec<_>>();
-            let ids = selected
-                .iter()
-                .map(|node| node.id.as_str())
-                .collect::<HashSet<_>>();
-            let edges = self
-                .corpus
-                .edges
-                .iter()
-                .filter(|edge| ids.contains(edge.from.as_str()) && ids.contains(edge.to.as_str()))
-                .collect::<Vec<_>>();
-            let mut value = serde_json::json!({
-                "revision": self.corpus.revision,
-                "sources": sources,
-                "records": records,
-                "omitted": total - selected.len(),
-            });
-            if !edges.is_empty() {
-                value["edges"] = serde_json::to_value(edges).expect("serializable edges");
-            }
-            let (text, tokens) = packing::serialize(value, options.format, counter);
+            let (text, tokens) = self.serialize_selection(&selected, counter, options, total);
             if tokens <= options.max_tokens {
                 result.jsonl = text;
                 result.tokens = tokens;
@@ -416,6 +360,85 @@ impl Graph {
         }
         result.omitted = total - result.hits.len();
         result
+    }
+
+    fn serialize_selection(
+        &self,
+        selected: &[&Node],
+        counter: &TokenCounter,
+        options: BundleOptions,
+        total: usize,
+    ) -> (String, usize) {
+        let source_urls = self
+            .corpus
+            .sources
+            .iter()
+            .map(|source| (source.id.as_str(), source.url.as_str()))
+            .collect::<HashMap<_, _>>();
+        let mut sources = Vec::new();
+        let mut source_slots = HashMap::new();
+        let records = selected
+            .iter()
+            .map(|node| {
+                let citations = node
+                    .sources
+                    .iter()
+                    .map(|id| {
+                        let url = source_urls[id.as_str()];
+                        *source_slots.entry(url).or_insert_with(|| {
+                            sources.push(url);
+                            sources.len() - 1
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                let full = matches!(options.detail, Detail::Full);
+                BundleRecord {
+                    id: &node.id,
+                    kind: node.kind,
+                    summary: &node.summary,
+                    review: node.review,
+                    sources: citations,
+                    facets: &node.facets,
+                    definition: if full { &node.definition } else { "" },
+                    applicability: if full { &node.applicability } else { &[] },
+                    exclusions: if full { &node.exclusions } else { &[] },
+                    mappings: if full { &node.mappings } else { &[] },
+                    code: if full {
+                        node.code
+                            .iter()
+                            .map(|code| BundleCode {
+                                language: &code.language,
+                                source: source_slots[source_urls[code.source.as_str()]],
+                                start_line: code.start_line,
+                                text: &code.text,
+                            })
+                            .collect()
+                    } else {
+                        Vec::new()
+                    },
+                }
+            })
+            .collect::<Vec<_>>();
+        let ids = selected
+            .iter()
+            .map(|node| node.id.as_str())
+            .collect::<HashSet<_>>();
+        let edges = self
+            .corpus
+            .edges
+            .iter()
+            .filter(|edge| ids.contains(edge.from.as_str()) && ids.contains(edge.to.as_str()))
+            .collect::<Vec<_>>();
+        let mut value = serde_json::json!({
+            "revision": self.corpus.revision,
+            "sources": sources,
+            "records": records,
+            "omitted": total - selected.len(),
+        });
+        if !edges.is_empty() {
+            value["edges"] = serde_json::to_value(edges).expect("serializable edges");
+        }
+        packing::serialize(value, options.format, counter)
     }
 
     fn bounded_ancestors<'a>(
