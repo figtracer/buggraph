@@ -1,0 +1,1242 @@
+{
+  "interpretation": "Exploratory paired sign tests on positive query outcomes; configurations reuse cases, are dependent, and are not independent replications. No population or detection claim follows.",
+  "source_report_sha256": "3ce0e4eddcd8dc523e04f2de388dcfbc0ce16380ad266c665fb917a9bb3eab8f",
+  "candidate_report_sha256": "e9c083ac8bf89585d1d82698640784c76be5d36eda0d9e7ee415722d16e141a4",
+  "comparisons": [
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 128,
+      "k": 1,
+      "mode": "id_order",
+      "wins": [],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 89.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 106.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 128,
+      "k": 1,
+      "mode": "bm25",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.5,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.75,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 128,
+      "k": 1,
+      "mode": "bm25_ancestors",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.5,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.75,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 128,
+      "k": 3,
+      "mode": "id_order",
+      "wins": [],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 89.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 106.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 128,
+      "k": 3,
+      "mode": "bm25",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.16666666666666666,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.24999999999999997,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 128,
+      "k": 3,
+      "mode": "bm25_ancestors",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.16666666666666666,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.24999999999999997,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 256,
+      "k": 1,
+      "mode": "id_order",
+      "wins": [],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 89.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 106.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 256,
+      "k": 1,
+      "mode": "bm25",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.5,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.75,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 256,
+      "k": 1,
+      "mode": "bm25_ancestors",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.5,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.75,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 256,
+      "k": 3,
+      "mode": "id_order",
+      "wins": [],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 180.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 217.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 256,
+      "k": 3,
+      "mode": "bm25",
+      "wins": [
+        "swc-121"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 184.5,
+          "mrr_at_k": 0.625,
+          "ndcg_at_k": 0.6577324383928644,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.24999999999999997,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 227.4,
+          "mrr_at_k": 0.8125,
+          "ndcg_at_k": 0.8288662191964322,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.29166666666666663,
+          "recall_at_k": 0.875,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 256,
+      "k": 3,
+      "mode": "bm25_ancestors",
+      "wins": [
+        "swc-121"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 183.3,
+          "mrr_at_k": 0.625,
+          "ndcg_at_k": 0.6577324383928644,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.24999999999999997,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 225.9,
+          "mrr_at_k": 0.8125,
+          "ndcg_at_k": 0.8288662191964322,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.29166666666666663,
+          "recall_at_k": 0.875,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 512,
+      "k": 1,
+      "mode": "id_order",
+      "wins": [],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 89.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 106.0,
+          "mrr_at_k": 0.0,
+          "ndcg_at_k": -0.0,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 512,
+      "k": 1,
+      "mode": "bm25",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.5,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.75,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 512,
+      "k": 1,
+      "mode": "bm25_ancestors",
+      "wins": [
+        "swc-101",
+        "swc-120"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 0.5,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 92.2,
+          "mrr_at_k": 0.5,
+          "ndcg_at_k": 0.5,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.5,
+          "recall_at_k": 0.5,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 113.5,
+          "mrr_at_k": 0.75,
+          "ndcg_at_k": 0.75,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.75,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 512,
+      "k": 3,
+      "mode": "id_order",
+      "wins": [],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 273.0,
+          "mrr_at_k": 0.041666666666666664,
+          "ndcg_at_k": 0.0625,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.041666666666666664,
+          "recall_at_k": 0.125,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 330.0,
+          "mrr_at_k": 0.041666666666666664,
+          "ndcg_at_k": 0.0625,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.041666666666666664,
+          "recall_at_k": 0.125,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 512,
+      "k": 3,
+      "mode": "bm25",
+      "wins": [],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-121",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 277.2,
+          "mrr_at_k": 0.6666666666666666,
+          "ndcg_at_k": 0.7202324383928644,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.29166666666666663,
+          "recall_at_k": 0.875,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 340.8,
+          "mrr_at_k": 0.8125,
+          "ndcg_at_k": 0.8288662191964322,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.29166666666666663,
+          "recall_at_k": 0.875,
+          "split": "test"
+        }
+      ]
+    },
+    {
+      "variant": "original",
+      "model": "gpt-4o",
+      "max_tokens": 512,
+      "k": 3,
+      "mode": "bm25_ancestors",
+      "wins": [
+        "swc-121"
+      ],
+      "losses": [],
+      "ties": [
+        "swc-101",
+        "swc-104",
+        "swc-107",
+        "swc-115",
+        "swc-117",
+        "swc-120",
+        "swc-128"
+      ],
+      "two_sided_sign_p": 1.0,
+      "source_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 275.2,
+          "mrr_at_k": 0.625,
+          "ndcg_at_k": 0.6577324383928644,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.24999999999999997,
+          "recall_at_k": 0.75,
+          "split": "test"
+        }
+      ],
+      "candidate_metrics": [
+        {
+          "mean_context_tokens": null,
+          "mrr_at_k": null,
+          "ndcg_at_k": null,
+          "negative_cases": 0,
+          "negative_empty_rate": null,
+          "positive_cases": 0,
+          "precision_at_k": null,
+          "recall_at_k": null,
+          "split": "dev"
+        },
+        {
+          "mean_context_tokens": 338.0,
+          "mrr_at_k": 0.8125,
+          "ndcg_at_k": 0.8288662191964322,
+          "negative_cases": 2,
+          "negative_empty_rate": 0.0,
+          "positive_cases": 8,
+          "precision_at_k": 0.29166666666666663,
+          "recall_at_k": 0.875,
+          "split": "test"
+        }
+      ]
+    }
+  ]
+}

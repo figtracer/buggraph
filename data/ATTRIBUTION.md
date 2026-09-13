@@ -27,6 +27,12 @@ unseen audit reports. `eval-results.json` records reproducible local results.
 the transformed relevance labels and per-case output. Transforming labels does not
 make the suite independent or remove its lexical and authoring biases.
 
+The `external/` study uses SWC excerpts with their upstream MIT license and attribution
+preserved in `external/LICENSE-SWC`. OWASP descriptions retain CC-BY-SA-4.0 terms.
+See `external/README.md` and `external/provenance.json` for extraction and crosswalk
+limitations. These explicit source-license notices take precedence over the general
+directory licensing statement below for the included SWC source excerpts.
+
 Files under `data/` use CC-BY-SA-4.0. Retain attribution and identify changes when
 redistributing adaptations. Linked sources retain their upstream terms. Code and
 documentation outside `data/` are covered by the root MIT license.

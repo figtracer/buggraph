@@ -37,6 +37,11 @@ Ultrafuzz is a potential consumer. The [comparison plan](docs/experiments.md#ult
 keeps knowledge retrieval separate from campaign execution; no Ultrafuzz integration
 or end-to-end result is claimed.
 
+The [UltraFuzz evidence review](docs/ultrafuzz-evidence.md) finds that its current
+catalog already supports much of this metadata. A frozen external-text comparison
+shows a modest normalization benefit over an OWASP-text proxy, but no demonstrated
+graph advantage. Incremental usefulness to UltraFuzz remains **unproven**.
+
 ## Getting started
 
 Install [Rust](https://rustup.rs), then build with the pinned toolchain:

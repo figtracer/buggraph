@@ -122,3 +122,6 @@ budgets, matched source coverage, and independent judgments.
 
 These experiments evaluate the knowledge layer. They do not configure or launch
 Ultrafuzz's autonomous vulnerability-hunting pipeline.
+
+The subsequent [baseline inspection and external-text test](ultrafuzz-evidence.md)
+supersede any interpretation that these metadata features are new to UltraFuzz.

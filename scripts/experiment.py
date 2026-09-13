@@ -53,6 +53,11 @@ def main():
     parser.add_argument("--models", required=True, nargs="+")
     parser.add_argument("--budgets", required=True, nargs="+", type=positive_integer)
     parser.add_argument("--k", required=True, nargs="+", type=positive_integer)
+    parser.add_argument(
+        "--variants", nargs="+", choices=["original", "most_specific"],
+        default=["original", "most_specific"],
+        help="Label variants to score; both preserves the original ablation workflow.",
+    )
     parser.add_argument("--output", required=True, type=pathlib.Path)
     args = parser.parse_args()
     binary = args.binary.resolve()
@@ -80,6 +85,8 @@ def main():
     }
     with tempfile.TemporaryDirectory(prefix="buggraph-eval-") as temporary:
         for variant, data in [("original", suite), ("most_specific", specific)]:
+            if variant not in args.variants:
+                continue
             path = pathlib.Path(temporary) / f"{variant}.json"
             path.write_text(json.dumps(data))
             for model in dict.fromkeys(args.models):
