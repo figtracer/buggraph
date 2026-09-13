@@ -1,0 +1,6 @@
+{
+  "revision":"illustrative-v1",
+  "scope_revision":"example-design-v1",
+  "scope":["fm:liveness","fm:liquidation-liveness"],
+  "records":[{"id":"fm:liquidation-liveness","state":"unresolved","evidence":["Illustrative entry: no protocol design has been supplied."]}]
+}

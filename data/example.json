@@ -1,0 +1,12 @@
+{
+  "revision": "illustrative-v1",
+  "nodes": [
+    {"id":"fm:liveness","kind":"failure_mode","summary":"A required operation cannot make progress.","facets":["impact:availability"],"definition":"A classification example, not a reviewed finding."},
+    {"id":"fm:liquidation-liveness","kind":"failure_mode","summary":"Required liquidation cannot make progress.","facets":["impact:availability","operation:liquidation","domain:lending"],"definition":"A contextual specialization of an operation liveness failure.","exclusions":["Documented waiting periods alone do not establish a failure."],"sources":[]},
+    {"id":"property:progress","kind":"property","summary":"Required operations can progress under their documented preconditions.","facets":[]}
+  ],
+  "edges": [
+    {"from":"fm:liquidation-liveness","relation":"specializes","to":"fm:liveness"},
+    {"from":"fm:liquidation-liveness","relation":"violates","to":"property:progress"}
+  ]
+}
