@@ -13,3 +13,12 @@ Use matched inputs, repeated runs, and representative corpus sizes. Separate col
 loading from repeated queries, and include tokenizer initialization when measuring
 CLI latency. Keep raw runs outside the repository. This benchmark does not establish
 UltraFuzz performance or vulnerability-detection quality.
+
+For a harness replay, start `buggraph serve` as a Node child, wait for readiness, and
+measure from writing each request through parsing its response. Report process-to-ready
+and first-response latency separately, then warm p50/p95 and complete session time.
+Compare the extracted `context` bytes with the equivalent one-shot command and recount
+that final string independently. Record source hashes, query order, detail, token cap,
+direct-record limit, depth, binary profile, runtime versions, filesystem-cache state,
+and combined parent/child memory. A cached map lookup is a useful lower bound, not an
+equivalent search-and-packing baseline.

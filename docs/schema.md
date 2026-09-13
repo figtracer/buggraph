@@ -32,20 +32,20 @@ Facets use `dimension:value` strings and AND semantics. They are explicit and no
 inherited. Missing facets are not proof of non-applicability. Ancestors must also pass
 the requested facet filters.
 
-The OWASP reference corpus uses canonical `scwe:NNN` IDs and copies upstream
-Description sections. Category facets come from source directories, not inferred
+The OWASP reference corpus uses canonical `scwe:NNN` IDs and retains each complete
+upstream Markdown source in `definition`, including frontmatter, remediation, and
+fenced examples. Category facets come from source directories, not inferred
 applicability. It has no inferred specialization edges. Its inventory covers a pinned
 156-entry snapshot, not every smart contract bug class. The separate curated corpus
 retains its existing `fm:` IDs and evaluation labels; the two files are not silently
-merged or deduplicated. Source references link to complete upstream documents,
-including examples that are not embedded in the catalog.
+merged or deduplicated.
 
 Code excerpts contain `language`, a registry `source` ID already attached to the
 node, positive one-based `start_line`, and nonempty `text`. Text and whitespace
 are retained exactly. The engine validates associations, not source file contents
 or compilation; excerpts may be partial functions. Full bundles include excerpts;
-summary bundles omit them. The imported SCWE-143 example is the pinned document’s
-Fixed constructor excerpt, not a standalone contract.
+summary bundles omit them. Imported OWASP fenced examples remain in their original
+Markdown context instead of being duplicated as separate excerpts.
 
 Old corpus JSON remains accepted. Rust consumers constructing `Node` with a struct
 literal must add `code: Vec::new()` (or supplied excerpts). Existing bundle calls

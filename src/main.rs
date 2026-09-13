@@ -2,7 +2,7 @@
 
 use buggraph::{
     BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, Ledger, RetrievalMode,
-    TokenCounter, expand_bundle,
+    TokenCounter, expand_bundle, import_owasp,
 };
 use serde_json::Value;
 use std::{
@@ -13,7 +13,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
@@ -274,6 +274,14 @@ fn run() -> Result<(), Box<dyn Error>> {
     if args[0] == "expand" && args.len() == 2 {
         let value = expand_bundle(&fs::read_to_string(&args[1])?)?;
         writeln!(io::stdout().lock(), "{value}")?;
+        return Ok(());
+    }
+    if args[0] == "import-owasp" && args.len() == 4 {
+        let corpus = import_owasp(std::path::Path::new(&args[1]), &args[2])?;
+        Graph::compile(serde_json::from_value(serde_json::to_value(&corpus)?)?)?;
+        let mut output = serde_json::to_string_pretty(&corpus)?;
+        output.push('\n');
+        fs::write(&args[3], output)?;
         return Ok(());
     }
     let corpus = serde_json::from_slice::<Corpus>(&fs::read(&args[1])?)?;

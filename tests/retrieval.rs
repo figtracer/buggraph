@@ -364,6 +364,25 @@ fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
     assert_eq!(graph.corpus().nodes.len(), 156);
     assert_eq!(graph.corpus().sources.len(), 156);
     assert!(graph.corpus().edges.is_empty());
+    assert_eq!(graph.corpus().revision, "owasp-scwe-fefd476b-source-v1");
+    assert_eq!(
+        graph
+            .corpus()
+            .nodes
+            .iter()
+            .map(|node| node.definition.len())
+            .sum::<usize>(),
+        363_890
+    );
+    assert_eq!(
+        graph
+            .corpus()
+            .nodes
+            .iter()
+            .filter(|node| node.definition.contains("```"))
+            .count(),
+        155
+    );
     assert!(
         graph
             .corpus()

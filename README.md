@@ -7,13 +7,13 @@ smart contract security references. local retrieval, exact token budgets.
 [getting started](#getting-started) · [references](data/owasp.json) · [encoding](docs/packing.md) · [evaluation](docs/evaluation.md) · [contributing](CONTRIBUTING.md)
 
 A Rust library and CLI for fetching reference material in one call. Search **156
-pinned OWASP descriptions**, return summaries or full records with citations, and
+pinned OWASP documents**, return summaries or complete Markdown with citations, and
 compress repeated structure without changing descriptions or code.
 
 The reference catalog has stable IDs and category filters. A separate
 [starter taxonomy](data/curated.json) adds typed relationships across 19 failure modes
-and four properties. Code excerpts retain their source and line location; the catalog
-currently includes one pinned defensive example.
+and four properties. The OWASP snapshot retains remediation and fenced examples in
+place; 155 of its documents contain code.
 
 ## Why use it
 
@@ -22,19 +22,21 @@ currently includes one pinned defensive example.
 | Local search | BM25 ranking and category filters without model calls or network access. |
 | Token budgets | Whole records packed under an exact model-token cap. |
 | Lossless encoding | Shared metadata and schema; exact descriptions, code, and citation reconstruction. |
-| Source provenance | Pinned URLs, licenses, review status, and code line locations. |
+| Source provenance | Pinned URLs, revisions, licenses, and review status. |
 | Optional graph | Typed relationships and deduplicated ancestor expansion. |
 
-On the complete 156-record payload (`gpt-4o` encoding):
+On the source-complete 156-record payload (`gpt-4o` encoding):
 
 | Payload | Plain bundle | Compact bundle |
 | --- | ---: | ---: |
-| Summaries | 14,286 tokens | 4,887 tokens (−66%) |
-| Full descriptions and code | 28,915 tokens | 20,752 tokens (−28%) |
+| Summaries | 9,565 tokens | 3,885 tokens (−59%) |
+| Complete Markdown | 105,747 tokens | 99,461 tokens (−6%) |
 
-Decoded records match exactly. Three separate agents each passed 36/36 extraction
-questions across synthetic fixtures and pinned references, including exact code and
-similar identifiers. This is a small single-model check. Compact encoding trades additional CPU work for fewer tokens.
+Decoded records match exactly. In a 380-request local replay, eight ranked summaries
+took 0.34 ms p50 / 0.48 ms p95 and averaged 519 tokens. Eight complete documents took
+3.49 ms p50 / 4.70 ms p95 and averaged 5,604 tokens. One-shot and persistent results
+were byte-identical; the warm service excludes its 65–84 ms startup. A cached ID lookup
+is cheaper because it does not rank, pack, traverse, or count tokens.
 
 ## Getting started
 
@@ -50,6 +52,8 @@ buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "contract architecture" --
 buggraph explore data/owasp.json gpt-4o 2048 summary 8 2 "contract architecture"
 buggraph serve data/owasp.json gpt-4o
 buggraph show data/owasp.json scwe:143
+# Rebuild data/owasp.json from a pinned OWASP checkout:
+buggraph import-owasp ../owasp-scs fefd476b83074666ada2d816f103436a18e1ece4 data/owasp.json
 ```
 
 Use `summary` instead of `full` for an overview. `--compact` compares reversible
@@ -62,6 +66,7 @@ ordinary JSON. Source numbers index the shared citation table.
 | `bundle` | Fetch summaries or complete records within a token budget. |
 | `explore` | Pack direct matches, then bounded graph context. |
 | `serve` | Reuse one compiled graph and tokenizer over JSON lines. |
+| `import-owasp` | Reproduce a source-complete corpus from a pinned checkout. |
 | `expand` | Decode a saved compact bundle into ordinary JSON. |
 | `search` | Return ranked summaries as JSONL. |
 | `show` | Open a record with its code, sources, and relationships. |

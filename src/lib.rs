@@ -14,6 +14,9 @@ pub use packing::{BundleFormat, expand_bundle};
 mod evaluation;
 pub use evaluation::{EvalCase, EvalReport, EvalSuite, Split};
 
+mod import;
+pub use import::import_owasp;
+
 /// Authoring format; revision identifies the exact corpus snapshot.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

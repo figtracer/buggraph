@@ -169,7 +169,7 @@ fn facet_dictionaries_round_trip_and_reject_out_of_range_indexes() {
 }
 
 #[test]
-fn code_provenance_is_required_and_cli_preserves_the_pinned_excerpt() {
+fn code_provenance_is_required_and_cli_preserves_pinned_markdown() {
     for (field, invalid) in [
         ("source", json!("unknown")),
         ("start_line", json!(0)),
@@ -186,7 +186,7 @@ fn code_provenance_is_required_and_cli_preserves_the_pinned_excerpt() {
             "data/owasp.json",
             "bm25",
             "gpt-4o",
-            "2048",
+            "8192",
             "full",
             "Critical Address Parameters Not Validated for Zero Address",
             "--compact",
@@ -196,7 +196,7 @@ fn code_provenance_is_required_and_cli_preserves_the_pinned_excerpt() {
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let text = std::str::from_utf8(&output.stdout).unwrap();
-    assert!(TokenCounter::for_model("gpt-4o").unwrap().count(text) <= 2048);
+    assert!(TokenCounter::for_model("gpt-4o").unwrap().count(text) <= 8192);
     let value = expand_bundle(text).unwrap();
     let record = value["records"]
         .as_array()
@@ -210,6 +210,9 @@ fn code_provenance_is_required_and_cli_preserves_the_pinned_excerpt() {
         .iter()
         .find(|node| node.id == "scwe:143")
         .unwrap();
-    assert_eq!(record["code"][0]["text"], node.code[0].text);
-    assert_eq!(record["code"][0]["start_line"], 50);
+    assert_eq!(record["definition"], node.definition);
+    assert!(
+        node.definition
+            .contains("### Fixed\n```solidity\nconstructor(address _owner")
+    );
 }

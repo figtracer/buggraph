@@ -1,15 +1,14 @@
 # Data attribution and review status
 
-`owasp.json` imports all 156 SCWE records present in the pinned snapshot. Titles
-and complete Description sections are copied from the corresponding Markdown files;
-CRLF line endings and surrounding whitespace are normalized. Categories come from
-source directory names, source IDs are retained as mappings, and node IDs use
-`scwe:NNN`. Each record is marked `imported`; no independent review or inferred
-relationships are claimed. SCWE-143 additionally includes the exact Fixed Solidity
-constructor excerpt beginning at line 50, including its trailing newline. It is a
-partial source example; no compilation or independent correctness review is claimed.
-Other examples and document sections remain available through pinned source links. This is source inventory coverage, not exhaustive
-coverage of smart contract weaknesses.
+`owasp.json` imports all 156 SCWE records present in the pinned snapshot. Titles and
+complete Markdown source bytes are copied from the corresponding files, including
+frontmatter, relationships, descriptions, remediation, examples, and fenced code;
+155 records contain fenced examples. Categories come from source directory names,
+source IDs are retained as mappings, and node IDs use `scwe:NNN`. Each record is
+marked `imported`; no independent review or inferred relationships are claimed.
+The deterministic `import-owasp` command produced the snapshot without normalizing
+line endings or surrounding whitespace. This is source inventory coverage, not
+exhaustive coverage of smart contract weaknesses.
 
 The separate `curated.json` starter taxonomy adapts 16 entries from the
 [OWASP Smart Contract Weakness Enumeration](https://github.com/OWASP/owasp-scs),
