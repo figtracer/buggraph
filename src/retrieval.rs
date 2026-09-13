@@ -179,7 +179,62 @@ pub struct RankedContext<'a> {
     pub omitted: usize,
 }
 
+/// Complete lightweight routing view. Record IDs retrieve full source-backed detail.
+pub struct InventoryContext {
+    pub jsonl: String,
+    pub tokens: usize,
+    pub records: usize,
+}
+
 impl Graph {
+    /// Return every node and edge in a compact, self-describing routing inventory.
+    pub fn inventory(&self, counter: &TokenCounter) -> InventoryContext {
+        let mut facet_table = self.facets.keys().collect::<Vec<_>>();
+        facet_table.sort_unstable();
+        let facet_slots = facet_table
+            .iter()
+            .enumerate()
+            .map(|(slot, facet)| (facet.as_str(), slot))
+            .collect::<HashMap<_, _>>();
+        let records = self
+            .corpus
+            .nodes
+            .iter()
+            .map(|node| {
+                serde_json::json!([
+                    node.id,
+                    node.kind,
+                    node.summary,
+                    node.facets
+                        .iter()
+                        .map(|facet| facet_slots[facet.as_str()])
+                        .collect::<Vec<_>>()
+                ])
+            })
+            .collect::<Vec<_>>();
+        let edges = self
+            .corpus
+            .edges
+            .iter()
+            .map(|edge| serde_json::json!([edge.from, edge.relation, edge.to]))
+            .collect::<Vec<_>>();
+        let value = serde_json::json!({
+            "schema": "buggraph/inventory-v1",
+            "revision": self.corpus.revision,
+            "record_fields": ["id", "kind", "summary", "facets"],
+            "facet_table": facet_table,
+            "records": records,
+            "edge_fields": ["from", "relation", "to"],
+            "edges": edges,
+        });
+        let jsonl = format!("{value}\n");
+        InventoryContext {
+            tokens: counter.count(&jsonl),
+            records: self.corpus.nodes.len(),
+            jsonl,
+        }
+    }
+
     /// Pack a single JSON object with a shared citation table and corpus revision.
     /// Full detail retains whole definitions, applicability, and exclusions.
     /// An empty string means no complete record fitted or no records matched.

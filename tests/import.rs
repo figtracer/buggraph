@@ -32,6 +32,8 @@ fn imports_exact_markdown_in_stable_id_order() {
     );
     assert_eq!(corpus.nodes[0].definition, second);
     assert_eq!(corpus.nodes[1].definition, first);
+    assert_eq!(corpus.nodes[0].summary, "Second record");
+    assert_eq!(corpus.nodes[1].summary, "First record: Exact β.");
     assert!(Graph::compile(corpus).is_ok());
 
     fs::remove_dir_all(root).unwrap();

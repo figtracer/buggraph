@@ -13,11 +13,15 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
 enum ServeRequest {
+    Inventory {
+        version: u8,
+        id: String,
+    },
     Bundle {
         version: u8,
         id: String,
@@ -59,7 +63,8 @@ enum ServeRequest {
 impl ServeRequest {
     fn version(&self) -> u8 {
         match self {
-            Self::Bundle { version, .. }
+            Self::Inventory { version, .. }
+            | Self::Bundle { version, .. }
             | Self::Show { version, .. }
             | Self::Explore { version, .. }
             | Self::Descendants { version, .. } => *version,
@@ -68,7 +73,8 @@ impl ServeRequest {
 
     fn id(&self) -> &str {
         match self {
-            Self::Bundle { id, .. }
+            Self::Inventory { id, .. }
+            | Self::Bundle { id, .. }
             | Self::Show { id, .. }
             | Self::Explore { id, .. }
             | Self::Descendants { id, .. } => id,
@@ -168,6 +174,17 @@ fn serve(graph: &Graph, counter: &TokenCounter) -> Result<(), Box<dyn Error>> {
                 "version": 1, "id": request.id(), "ok": false, "error": "unsupported request version"
             }),
             Ok(request) => match request {
+                ServeRequest::Inventory { id, .. } => {
+                    let inventory = graph.inventory(counter);
+                    serde_json::json!({
+                        "version": 1,
+                        "id": id,
+                        "ok": true,
+                        "context": inventory.jsonl,
+                        "tokens": inventory.tokens,
+                        "records": inventory.records,
+                    })
+                }
                 ServeRequest::Bundle {
                     id,
                     mode,
@@ -289,6 +306,12 @@ fn run() -> Result<(), Box<dyn Error>> {
     if args[0] == "serve" && args.len() == 3 {
         let counter = TokenCounter::for_model(&args[2])?;
         return serve(&graph, &counter);
+    }
+    if args[0] == "inventory" && args.len() == 3 {
+        let counter = TokenCounter::for_model(&args[2])?;
+        let inventory = graph.inventory(&counter);
+        io::stdout().lock().write_all(inventory.jsonl.as_bytes())?;
+        return Ok(());
     }
     let output = match args[0].as_str() {
         "explore" if args.len() >= 8 => {

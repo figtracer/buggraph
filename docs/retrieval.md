@@ -6,7 +6,8 @@ facet and lexical posting lists, and cached JSONL summaries. Load once and reuse
 alive behind a versioned JSON-lines protocol; ordinary CLI commands reload them.
 
 Start `buggraph serve CORPUS MODEL` and wait for its readiness line. Each subsequent
-stdin line is one request and produces exactly one stdout line. Bundle requests use
+stdin line is one request and produces exactly one stdout line. `op: "inventory"`
+returns every node and edge as a self-describing routing table. Bundle requests use
 the ordinary retrieval fields plus `version`, a correlation `id`, and `op: "bundle"`.
 The response carries the exact token-counted bundle in `context`; extract that string
 unchanged before forwarding it to a model. `op: "show"` accepts `record_id`. Errors
@@ -22,6 +23,12 @@ not part of `context`. `op: "descendants"` accepts `root_id` and `max_depth` for
 bounded category-to-mechanism browsing.
 
 ## Modes
+
+`inventory CORPUS MODEL` is the exhaustive routing layer. It includes stable IDs,
+source-derived semantic summaries, interned facets, and all typed edges, with the exact
+model-token count available through the library or service response. It omits full
+definitions and provenance metadata; retrieve those by ID with `show` or a full bundle.
+The inventory does not rank or remove classes.
 
 `id_order` returns failure modes in stable ID order, the original flat baseline.
 `bm25` ranks positive lexical matches. `bm25_ancestors` interleaves each match with

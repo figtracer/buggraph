@@ -10,6 +10,29 @@ fn graph() -> Graph {
 }
 
 #[test]
+fn inventory_contains_every_node_and_edge_with_exact_model_tokens() {
+    let graph = graph();
+    let counter = TokenCounter::for_model("gpt-4o").unwrap();
+    let inventory = graph.inventory(&counter);
+    let value = serde_json::from_str::<Value>(&inventory.jsonl).unwrap();
+    assert_eq!(value["schema"], "buggraph/inventory-v1");
+    assert_eq!(inventory.records, graph.corpus().nodes.len());
+    assert_eq!(
+        value["records"].as_array().unwrap().len(),
+        graph.corpus().nodes.len()
+    );
+    assert_eq!(
+        value["edges"].as_array().unwrap().len(),
+        graph.corpus().edges.len()
+    );
+    assert_eq!(inventory.tokens, counter.count(&inventory.jsonl));
+    assert!(value["records"].as_array().unwrap().iter().any(|row| {
+        row[0] == "fm:oracle-response-validity"
+            && row[3].as_array().unwrap().iter().all(Value::is_u64)
+    }));
+}
+
+#[test]
 fn lexical_ranking_respects_facets_and_returns_no_match_for_unknown_terms() {
     let graph = graph();
     let hits = graph.rank("stale oracle response freshness", &[], RetrievalMode::Bm25);

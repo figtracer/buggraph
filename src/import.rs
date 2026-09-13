@@ -70,7 +70,7 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
         nodes.push(Node {
             id: format!("scwe:{}", number.to_lowercase()),
             kind: Kind::FailureMode,
-            summary: title,
+            summary: semantic_summary(&title, &text),
             definition: text,
             facets: vec![format!("category:{}", group.to_lowercase())],
             exclusions: Vec::new(),
@@ -89,6 +89,70 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
         nodes,
         edges: Vec::<Edge>::new(),
     })
+}
+
+fn semantic_summary(title: &str, text: &str) -> String {
+    const MAX_DESCRIPTION_CHARS: usize = 160;
+
+    let mut in_description = false;
+    let mut lines = Vec::new();
+    for line in text.lines() {
+        let trimmed = line.trim();
+        if trimmed == "## Description" {
+            in_description = true;
+            continue;
+        }
+        if in_description && trimmed.starts_with("## ") {
+            break;
+        }
+        if !in_description {
+            continue;
+        }
+        if trimmed.is_empty() {
+            if !lines.is_empty() {
+                break;
+            }
+            continue;
+        }
+        if lines.is_empty()
+            && (trimmed.starts_with('-')
+                || trimmed.starts_with('#')
+                || trimmed.starts_with("```")
+                || trimmed.starts_with('!'))
+        {
+            continue;
+        }
+        lines.push(trimmed);
+    }
+    let description = lines.join(" ");
+    if description.is_empty() {
+        return title.to_owned();
+    }
+    let mut end = description.len();
+    let mut count = 0;
+    let mut sentence_end = false;
+    for (offset, character) in description.char_indices() {
+        if count == MAX_DESCRIPTION_CHARS {
+            end = offset;
+            break;
+        }
+        count += 1;
+        if matches!(character, '.' | '!' | '?') && count >= MAX_DESCRIPTION_CHARS / 2 {
+            end = offset + character.len_utf8();
+            sentence_end = true;
+            break;
+        }
+    }
+    let shortened = if sentence_end {
+        description[..end].to_owned()
+    } else if end < description.len() {
+        let prefix = &description[..end];
+        let boundary = prefix.rfind(char::is_whitespace).unwrap_or(prefix.len());
+        format!("{}…", prefix[..boundary].trim_end())
+    } else {
+        description
+    };
+    format!("{title}: {shortened}")
 }
 
 fn sorted_entries(path: &Path) -> Result<Vec<fs::DirEntry>, String> {
@@ -125,7 +189,7 @@ fn scalar<'a>(metadata: &'a str, key: &str) -> Result<&'a str, String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{frontmatter, scalar};
+    use super::{frontmatter, scalar, semantic_summary};
 
     #[test]
     fn parses_lf_and_crlf_frontmatter_without_changing_source_text() {
@@ -138,5 +202,18 @@ mod tests {
             assert_eq!(scalar(metadata, "title").unwrap(), "Example");
             assert!(text.ends_with(if text.contains("\r\n") { "\r\n" } else { "\n" }));
         }
+    }
+
+    #[test]
+    fn extracts_a_bounded_description_without_splitting_unicode() {
+        let text = format!(
+            "---\nid: SCWE-001\ntitle: Example\n---\n\n## Description\n{} fin. More text.\n\n## Remediation\nOther.\n",
+            "é".repeat(100)
+        );
+        let summary = semantic_summary("Example", &text);
+        assert!(summary.starts_with("Example: "));
+        assert!(summary.ends_with(" fin."));
+        assert!(!summary.contains("More text"));
+        assert!(!summary.contains("Other"));
     }
 }

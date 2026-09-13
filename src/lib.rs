@@ -5,7 +5,8 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 mod retrieval;
 pub use retrieval::{
-    BundleOptions, Detail, ExplorationContext, Hit, RankedContext, RetrievalMode, TokenCounter,
+    BundleOptions, Detail, ExplorationContext, Hit, InventoryContext, RankedContext, RetrievalMode,
+    TokenCounter,
 };
 
 mod packing;

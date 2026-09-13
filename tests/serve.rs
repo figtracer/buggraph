@@ -25,6 +25,23 @@ fn persistent_service_reuses_state_and_recovers_from_bad_requests() {
     assert_eq!(ready["ready"], true);
     assert_eq!(ready["version"], 1);
 
+    writeln!(
+        stdin,
+        "{}",
+        json!({"version": 1, "id": "inventory", "op": "inventory"})
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let inventory = read_json(&mut stdout);
+    assert_eq!(inventory["ok"], true);
+    assert_eq!(inventory["records"], 3);
+    assert!(
+        inventory["context"]
+            .as_str()
+            .unwrap()
+            .contains("buggraph/inventory-v1")
+    );
+
     writeln!(stdin, "not json").unwrap();
     stdin.flush().unwrap();
     let malformed = read_json(&mut stdout);

@@ -19,24 +19,25 @@ place; 155 of its documents contain code.
 
 | Feature | What it provides |
 | --- | --- |
+| Semantic inventory | Every ID, source-derived synopsis, facet, and edge in one model-counted response. |
 | Local search | BM25 ranking and category filters without model calls or network access. |
 | Token budgets | Whole records packed under an exact model-token cap. |
 | Lossless encoding | Shared metadata and schema; exact descriptions, code, and citation reconstruction. |
 | Source provenance | Pinned URLs, revisions, licenses, and review status. |
 | Optional graph | Typed relationships and deduplicated ancestor expansion. |
 
-On the source-complete 156-record payload (`gpt-4o` encoding):
+On the source-complete 156-record OWASP snapshot (`gpt-4o` encoding):
 
-| Payload | Plain bundle | Compact bundle |
-| --- | ---: | ---: |
-| Summaries | 9,565 tokens | 3,885 tokens (−59%) |
-| Complete Markdown | 105,747 tokens | 99,461 tokens (−6%) |
+| Model input | Tokens |
+| --- | ---: |
+| UltraFuzz planner catalog | 143,407 |
+| Complete Buggraph routing inventory | 7,156 (−95%) |
+| Inventory plus eight retrieved complete documents (mean) | 13,060 (−91%) |
 
-Decoded records match exactly. In a 380-request local replay, eight ranked summaries
-took 0.34 ms p50 / 0.48 ms p95 and averaged 519 tokens. Eight complete documents took
-3.49 ms p50 / 4.70 ms p95 and averaged 5,604 tokens. One-shot and persistent results
-were byte-identical; the warm service excludes its 65–84 ms startup. A cached ID lookup
-is cheaper because it does not rank, pack, traverse, or count tokens.
+All 156 inventory IDs resolve to byte-identical pinned Markdown. In a blinded 12-case
+routing replay, the inventory agreed with the full catalog on 10 top-ranked classes;
+their top-three sets overlapped by 72% on average. This measures routing preservation,
+not vulnerability detection.
 
 ## Getting started
 
@@ -48,6 +49,7 @@ cd buggraph
 cargo install --path . --locked
 
 buggraph validate data/owasp.json
+buggraph inventory data/owasp.json gpt-4o
 buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "contract architecture" --compact
 buggraph explore data/owasp.json gpt-4o 2048 summary 8 2 "contract architecture"
 buggraph serve data/owasp.json gpt-4o
@@ -63,6 +65,7 @@ ordinary JSON. Source numbers index the shared citation table.
 | Command | What it does |
 | --- | --- |
 | `validate` | Check IDs, provenance, edge types, and specialization cycles. |
+| `inventory` | Return every semantic synopsis and relationship in one compact response. |
 | `bundle` | Fetch summaries or complete records within a token budget. |
 | `explore` | Pack direct matches, then bounded graph context. |
 | `serve` | Reuse one compiled graph and tokenizer over JSON lines. |
