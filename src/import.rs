@@ -44,6 +44,7 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
         let metadata = frontmatter(&text)?;
         let source_id = scalar(metadata, "id")?.to_owned();
         let title = scalar(metadata, "title")?.to_owned();
+        let category = inline_list_item(metadata, "scsvs-cg")?.to_lowercase();
         let stem = path
             .file_stem()
             .and_then(|value| value.to_str())
@@ -74,7 +75,7 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
             kind: Kind::FailureMode,
             summary: semantic_summary(&title, &text),
             definition: text,
-            facets: vec![format!("category:{}", group.to_lowercase())],
+            facets: vec![format!("category:{category}")],
             exclusions: Vec::new(),
             sources: vec![source_id.clone()],
             applicability: Vec::new(),
@@ -86,7 +87,7 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
     sources.sort_unstable_by(|left, right| left.id.cmp(&right.id));
     nodes.sort_unstable_by(|left, right| left.id.cmp(&right.id));
     Ok(Corpus {
-        revision: format!("owasp-scwe-{}-source-v2", &revision[..8]),
+        revision: format!("owasp-scwe-{}-source-v3", &revision[..8]),
         sources,
         nodes,
         edges: Vec::<Edge>::new(),
@@ -179,19 +180,47 @@ fn scalar<'a>(metadata: &'a str, key: &str) -> Result<&'a str, String> {
         .ok_or_else(|| format!("SCWE frontmatter requires {key}"))
 }
 
+fn inline_list_item<'a>(metadata: &'a str, key: &str) -> Result<&'a str, String> {
+    let prefix = format!("{key}:");
+    let value = metadata
+        .lines()
+        .find_map(|line| line.trim_start().strip_prefix(&prefix).map(str::trim))
+        .ok_or_else(|| format!("SCWE frontmatter requires {key}"))?;
+    let item = value
+        .strip_prefix('[')
+        .and_then(|value| value.strip_suffix(']'))
+        .map(str::trim)
+        .filter(|value| !value.is_empty() && !value.contains(','))
+        .ok_or_else(|| format!("SCWE frontmatter {key} must contain exactly one item"))?;
+    if !item.starts_with("SCSVS-")
+        || !item
+            .bytes()
+            .all(|byte| byte.is_ascii_uppercase() || byte == b'-')
+    {
+        return Err(format!(
+            "SCWE frontmatter {key} has invalid category {item}"
+        ));
+    }
+    Ok(item)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{frontmatter, scalar, semantic_summary};
+    use super::{frontmatter, inline_list_item, scalar, semantic_summary};
 
     #[test]
     fn parses_lf_and_crlf_frontmatter_without_changing_source_text() {
         for text in [
-            "---\nid: SCWE-001\ntitle: Example\n---\n\n## Description\nBody\n",
-            "---\r\nid: SCWE-001\r\ntitle: Example\r\n---\r\n\r\nBody\r\n",
+            "---\nid: SCWE-001\ntitle: Example\nmappings:\n  scsvs-cg: [SCSVS-ARCH]\n---\n\n## Description\nBody\n",
+            "---\r\nid: SCWE-001\r\ntitle: Example\r\nmappings:\r\n  scsvs-cg: [SCSVS-ARCH]\r\n---\r\n\r\nBody\r\n",
         ] {
             let metadata = frontmatter(text).unwrap();
             assert_eq!(scalar(metadata, "id").unwrap(), "SCWE-001");
             assert_eq!(scalar(metadata, "title").unwrap(), "Example");
+            assert_eq!(
+                inline_list_item(metadata, "scsvs-cg").unwrap(),
+                "SCSVS-ARCH"
+            );
             assert!(text.ends_with(if text.contains("\r\n") { "\r\n" } else { "\n" }));
         }
     }
@@ -199,7 +228,7 @@ mod tests {
     #[test]
     fn extracts_a_bounded_description_without_splitting_unicode() {
         let text = format!(
-            "---\nid: SCWE-001\ntitle: Example\n---\n\n## Description\n{} block.number and (e.g. identifiers) {}\n\n## Remediation\nOther.\n",
+            "---\nid: SCWE-001\ntitle: Example\nmappings:\n  scsvs-cg: [SCSVS-CODE]\n---\n\n## Description\n{} block.number and (e.g. identifiers) {}\n\n## Remediation\nOther.\n",
             "é".repeat(90),
             "tail ".repeat(30)
         );
@@ -209,5 +238,17 @@ mod tests {
         assert!(summary.contains("block.number and (e.g. identifiers)"));
         assert!(summary.chars().count() <= "Example: ".chars().count() + 161);
         assert!(!summary.contains("Other"));
+    }
+
+    #[test]
+    fn requires_one_explicit_scsvs_category() {
+        for metadata in [
+            "mappings:\n  cwe: [1]",
+            "mappings:\n  scsvs-cg: []",
+            "mappings:\n  scsvs-cg: [SCSVS-ARCH, SCSVS-CODE]",
+            "mappings:\n  scsvs-cg: [scsvs-code]",
+        ] {
+            assert!(inline_list_item(metadata, "scsvs-cg").is_err());
+        }
     }
 }

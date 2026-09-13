@@ -16,8 +16,8 @@ fn imports_exact_markdown_in_stable_id_order() {
     let second_dir = root.join("docs/SCWE/SCSVS-ARCH");
     fs::create_dir_all(&first_dir).unwrap();
     fs::create_dir_all(&second_dir).unwrap();
-    let first = "---\ntitle: First record\nid: SCWE-002\n---\n\n## Description\nExact β.\n\n```solidity\ncontract A {}\n```\n";
-    let second = "---\r\ntitle: Second record\r\nid: SCWE-001\r\n---\r\n\r\nExact CRLF.\r\n";
+    let first = "---\ntitle: First record\nid: SCWE-002\nmappings:\n  scsvs-cg: [SCSVS-CODE]\n---\n\n## Description\nExact β.\n\n```solidity\ncontract A {}\n```\n";
+    let second = "---\r\ntitle: Second record\r\nid: SCWE-001\r\nmappings:\r\n  scsvs-cg: [SCSVS-GOV]\r\n---\r\n\r\nExact CRLF.\r\n";
     fs::write(first_dir.join("SCWE-002.md"), first).unwrap();
     fs::write(second_dir.join("SCWE-001.md"), second).unwrap();
 
@@ -34,7 +34,9 @@ fn imports_exact_markdown_in_stable_id_order() {
     assert_eq!(corpus.nodes[1].definition, first);
     assert_eq!(corpus.nodes[0].summary, "Second record");
     assert_eq!(corpus.nodes[1].summary, "First record: Exact β.");
-    assert_eq!(corpus.revision, "owasp-scwe-aaaaaaaa-source-v2");
+    assert_eq!(corpus.nodes[0].facets, ["category:scsvs-gov"]);
+    assert_eq!(corpus.nodes[1].facets, ["category:scsvs-code"]);
+    assert_eq!(corpus.revision, "owasp-scwe-aaaaaaaa-source-v3");
     assert_eq!(
         corpus.sources[0].url,
         format!(
@@ -54,7 +56,7 @@ fn rejects_unpinned_or_mismatched_sources() {
     fs::create_dir_all(&directory).unwrap();
     fs::write(
         directory.join("SCWE-001.md"),
-        "---\ntitle: Wrong ID\nid: SCWE-002\n---\nBody\n",
+        "---\ntitle: Wrong ID\nid: SCWE-002\nmappings:\n  scsvs-cg: [SCSVS-AUTH]\n---\nBody\n",
     )
     .unwrap();
     assert!(import_owasp(&root, "main").is_err());
