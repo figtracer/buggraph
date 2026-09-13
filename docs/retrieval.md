@@ -38,7 +38,9 @@ The inventory does not rank or remove classes.
 contain concrete findings. It retains every failure mode, property, and relationship
 between those classes. `instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [facets
 ...]` then searches only findings, so a caller can select a Tag or Subtag facet before
-spending tokens on source examples.
+spending tokens on source examples. Imported class records expose the canonical
+`tag:...` or `subtag:...` routing facet used by their finding instances; `level:...`
+describes the class layer and is not a branch selector.
 
 `resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...]` is the deterministic handoff
 from routing to source detail. It fetches the selected set in one bundle without a

@@ -369,6 +369,7 @@ impl Graph {
             RetrievalMode::Bm25 | RetrievalMode::Bm25Ancestors => RetrievalMode::Bm25,
         };
         let direct = self.rank(query, facets, direct_mode);
+        let direct_ids = direct.iter().map(|hit| hit.id).collect::<HashSet<_>>();
         let all_ancestors = self.bounded_ancestors(&direct, facets, max_depth);
         let total = direct.len() + all_ancestors.len();
         let selected_direct = self.pack_ranked(direct, counter, options, total, max_direct_records);
@@ -379,7 +380,8 @@ impl Graph {
                 depths,
             };
         }
-        let ancestors = self.bounded_ancestors(&selected_direct.hits, facets, max_depth);
+        let mut ancestors = self.bounded_ancestors(&selected_direct.hits, facets, max_depth);
+        ancestors.retain(|(hit, _)| !direct_ids.contains(hit.id));
         let mut ranked = selected_direct.hits;
         let ancestor_depths = ancestors
             .iter()
@@ -403,9 +405,9 @@ impl Graph {
         total: usize,
         max_records: usize,
     ) -> RankedContext<'a> {
-        let ranked = ranked.into_iter().take(max_records).collect::<Vec<_>>();
-        if !ranked.is_empty() {
-            let selected = ranked
+        let initial_count = ranked.len().min(max_records);
+        if initial_count > 0 {
+            let selected = ranked[..initial_count]
                 .iter()
                 .map(|hit| &self.corpus.nodes[self.ids[hit.id]])
                 .collect::<Vec<_>>();
@@ -413,8 +415,8 @@ impl Graph {
             if tokens <= options.max_tokens {
                 return RankedContext {
                     jsonl,
-                    omitted: total - ranked.len(),
-                    hits: ranked,
+                    omitted: total - initial_count,
+                    hits: ranked[..initial_count].to_vec(),
                     tokens,
                 };
             }
@@ -427,6 +429,9 @@ impl Graph {
             omitted: 0,
         };
         for hit in ranked {
+            if result.hits.len() == max_records {
+                break;
+            }
             selected.push(&self.corpus.nodes[self.ids[hit.id]]);
             let (text, tokens) = self.serialize_selection(&selected, counter, options, total);
             if tokens <= options.max_tokens {

@@ -1,4 +1,8 @@
-use buggraph::{Graph, Relation, import_bastet};
+use buggraph::{
+    BundleFormat, BundleOptions, Detail, Graph, Relation, RetrievalMode, TokenCounter,
+    import_bastet,
+};
+use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::{fs, path::PathBuf};
 
@@ -61,7 +65,35 @@ fn imports_labeled_findings_and_only_unambiguous_specializations() {
             .count(),
         2
     );
-    assert!(Graph::compile(corpus).is_ok());
+    let graph = Graph::compile(corpus).unwrap();
+    let counter = TokenCounter::for_model("gpt-4o").unwrap();
+    let taxonomy = serde_json::from_str::<Value>(&graph.taxonomy(&counter).jsonl).unwrap();
+    let facets = taxonomy["facet_table"].as_array().unwrap();
+    let dos = taxonomy["records"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|record| record[0] == "bastet:tag:dos")
+        .unwrap();
+    assert!(
+        dos[3]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|slot| facets[slot.as_u64().unwrap() as usize] == "tag:dos")
+    );
+    let instances = graph.instances_with_options(
+        "Exact",
+        &["tag:dos"],
+        &counter,
+        BundleOptions {
+            mode: RetrievalMode::Bm25,
+            detail: Detail::Full,
+            format: BundleFormat::Json,
+            max_tokens: usize::MAX,
+        },
+    );
+    assert_eq!(instances.hits.len(), 2);
 
     fs::remove_file(path).unwrap();
 }

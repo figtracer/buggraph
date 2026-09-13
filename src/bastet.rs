@@ -85,10 +85,10 @@ pub fn import_bastet(
 
     let mut nodes = Vec::with_capacity(tags.len() + subtags.len() + rows.len());
     for (id, label) in &tags {
-        nodes.push(class_node(id, label, "tag"));
+        nodes.push(class_node(id, label, "tag")?);
     }
     for (id, label) in &subtags {
-        nodes.push(class_node(id, label, "subtag"));
+        nodes.push(class_node(id, label, "subtag")?);
     }
 
     let mut edges = specializations
@@ -248,20 +248,24 @@ fn slug(value: &str) -> Result<String, String> {
     Ok(output)
 }
 
-fn class_node(id: &str, label: &str, layer: &str) -> Node {
-    Node {
+fn class_node(id: &str, label: &str, layer: &str) -> Result<Node, String> {
+    Ok(Node {
         id: id.into(),
         kind: Kind::FailureMode,
         summary: label.into(),
         definition: String::new(),
-        facets: vec!["dataset:bastet".into(), format!("level:{layer}")],
+        facets: vec![
+            "dataset:bastet".into(),
+            format!("level:{layer}"),
+            format!("{layer}:{}", slug(label)?),
+        ],
         exclusions: Vec::new(),
         sources: vec![SOURCE_ID.into()],
         applicability: Vec::new(),
         mappings: Vec::new(),
         review: ReviewStatus::Imported,
         code: Vec::new(),
-    }
+    })
 }
 
 fn bounded_summary(description: &str, fallback: &str) -> String {

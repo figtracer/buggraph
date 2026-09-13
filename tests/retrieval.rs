@@ -234,6 +234,64 @@ fn direct_first_expansion_is_bounded_deduplicated_and_preserves_matches() {
 }
 
 #[test]
+fn direct_first_does_not_reintroduce_excluded_matches_as_ancestors() {
+    let corpus = json!({"revision":"direct-role-v1", "nodes":[
+        {"id":"root","kind":"failure_mode","summary":"broad root"},
+        {"id":"parent","kind":"failure_mode","summary":"needle parent"},
+        {"id":"leaf","kind":"failure_mode","summary":"needle concrete leaf"}
+    ], "edges":[
+        {"from":"leaf","relation":"specializes","to":"parent"},
+        {"from":"parent","relation":"specializes","to":"root"}
+    ]});
+    let graph = Graph::compile(serde_json::from_value(corpus).unwrap()).unwrap();
+    let counter = TokenCounter::for_model("gpt-4o").unwrap();
+    let result =
+        graph.bundle_direct_first("needle concrete", &[], &counter, options(usize::MAX), 1, 2);
+
+    assert_eq!(
+        result
+            .context
+            .hits
+            .iter()
+            .map(|hit| (hit.id, hit.relation))
+            .collect::<Vec<_>>(),
+        [("leaf", "match"), ("root", "ancestor")]
+    );
+    assert_eq!(result.depths, [0, 2]);
+}
+
+#[test]
+fn direct_record_cap_counts_fitting_records() {
+    let corpus = json!({"revision":"direct-budget-v1", "nodes":[
+        {"id":"large","kind":"failure_mode","summary":"needle exact", "definition":"large ".repeat(10_000)},
+        {"id":"small","kind":"failure_mode","summary":"needle", "definition":"fits"}
+    ], "edges":[]});
+    let graph = Graph::compile(serde_json::from_value(corpus).unwrap()).unwrap();
+    let counter = TokenCounter::for_model("gpt-4o").unwrap();
+    let small = graph
+        .resolve_with_options(&["small"], &counter, options(usize::MAX))
+        .unwrap();
+    let result = graph.bundle_direct_first(
+        "needle exact",
+        &[],
+        &counter,
+        options(small.tokens + 20),
+        1,
+        0,
+    );
+
+    assert_eq!(
+        result
+            .context
+            .hits
+            .iter()
+            .map(|hit| hit.id)
+            .collect::<Vec<_>>(),
+        ["small"]
+    );
+}
+
+#[test]
 fn token_budgets_recount_the_serialized_context_for_both_encodings() {
     let graph = graph();
     for model in ["gpt-4", "gpt-4o"] {

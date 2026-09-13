@@ -44,8 +44,10 @@ not vulnerability detection.
 
 On a pinned external [Bastet CSV snapshot](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
 (`27d82e…d4a1d`), import produced 104 classes and 572 finding
-instances. The complete class taxonomy is 6,980 `gpt-4o` tokens versus 56,481 for all
-676 records and 846 edges (−88%); findings remain available through `instances`.
+instances. The complete class taxonomy is 7,916 `gpt-4o` tokens versus 56,689 for all
+676 records and 846 edges (−86%); findings remain available through `instances`.
+This is an older partial snapshot of the paper's dataset, and import preserves its
+published labels without adding a review claim.
 
 ## Getting started
 
