@@ -1,0 +1,212 @@
+{
+  "ultrafuzz_commit": "89b57c9a7c5aa22af15e1ae9625b8ab3a2c6f810",
+  "fixture_blob": "98e99fc69fee97becbb9a541dc74f9653039aa01",
+  "upstream_repo": "OWASP/owasp-scs",
+  "upstream_commit": "fefd476b83074666ada2d816f103436a18e1ece4",
+  "corpus_sources": [
+    {
+      "id": "fm:authorization",
+      "source": "SCWE-016",
+      "source_path": "docs/SCWE/SCSVS-AUTH/SCWE-016.md",
+      "git_blob": "e7ef68659d01de9d41c65edac2090ec1757c7492",
+      "description_sha256": "2bd9ab4a105ee0b13ecd7707851c3c431b372135946626a1f519e9e13cab0955"
+    },
+    {
+      "id": "fm:privileged-roles",
+      "source": "SCWE-017",
+      "source_path": "docs/SCWE/SCSVS-AUTH/SCWE-017.md",
+      "git_blob": "cbb62700010629c6f43f39440c5e9a19e74b6d39",
+      "description_sha256": "1bf44336bb9ad791d94476acb42d80b2b19d9729fd5a1a4847e2a8f2b09bc8b3"
+    },
+    {
+      "id": "fm:origin-authorization",
+      "source": "SCWE-018",
+      "source_path": "docs/SCWE/SCSVS-AUTH/SCWE-018.md",
+      "git_blob": "9f8215872bce37f77278bf30f24722132923ab57",
+      "description_sha256": "00f882f2981c4266e8fdd3f849733ddfd622cc20c3746b8a493697c3ad9be47b"
+    },
+    {
+      "id": "fm:reentrancy",
+      "source": "SCWE-046",
+      "source_path": "docs/SCWE/SCSVS-CODE/SCWE-046.md",
+      "git_blob": "7c3fff7ac43de754d66bdd88c5b6f71e793bb738",
+      "description_sha256": "67be0e56adaa5b6f3a956487e508708d284d31f7e8e283e4a2e8027c27393768"
+    },
+    {
+      "id": "fm:unchecked-call",
+      "source": "SCWE-048",
+      "source_path": "docs/SCWE/SCSVS-CODE/SCWE-048.md",
+      "git_blob": "df7476f809f3ff8d1611a74a340521c978e202dc",
+      "description_sha256": "39a404c3fbd2625aa66c1466f31550fadd399f07bd61b0cd7f204c3ea46464e3"
+    },
+    {
+      "id": "fm:integer-wraparound",
+      "source": "SCWE-047",
+      "source_path": "docs/SCWE/SCSVS-CODE/SCWE-047.md",
+      "git_blob": "88e36b9522ce0ac1ce30f47ca74186c3f3a88626",
+      "description_sha256": "83d1e324b223c93f007395c0568b491118b271af0d3233c2ccf502ea52f9e602"
+    },
+    {
+      "id": "fm:upgrade-authorization",
+      "source": "SCWE-005",
+      "source_path": "docs/SCWE/SCSVS-ARCH/SCWE-005.md",
+      "git_blob": "c4b6d1c414e191e434ac563dfc5f76195f93d9a3",
+      "description_sha256": "9a583464f7dfe4c092e4a9bd937caa90d8f360e85a8d970d7a5da3f6f64e81ea"
+    },
+    {
+      "id": "fm:gas-bound-progress",
+      "source": "SCWE-058",
+      "source_path": "docs/SCWE/SCSVS-DEFI/SCWE-058.md",
+      "git_blob": "1b6426586d07809c8686301f4b846447a0b9cffa",
+      "description_sha256": "73a7e68b59602f4aa3ea60f56139e9e0550d47d7d9161d90ecc7e81b9ef3bf50"
+    },
+    {
+      "id": "fm:oracle-price-integrity",
+      "source": "SCWE-028",
+      "source_path": "docs/SCWE/SCSVS-ORACLE/SCWE-028.md",
+      "git_blob": "dc12b04ecb87a5770d2367f615733b0b2c9c60f2",
+      "description_sha256": "761a711330a7abfa750c1ed816bc7333fbbdca81cf4861c7439bdebcbfa71365"
+    },
+    {
+      "id": "fm:oracle-response-validity",
+      "source": "SCWE-086",
+      "source_path": "docs/SCWE/SCSVS-ORACLE/SCWE-086.md",
+      "git_blob": "1fa4f60dddc2711c79a2138a11f71c55567ceb0c",
+      "description_sha256": "06b32cb3403aa8c56c15d3738ffa4b57778602468729d2789dea1375a0b3d97c"
+    },
+    {
+      "id": "fm:swap-output-bound",
+      "source": "SCWE-090",
+      "source_path": "docs/SCWE/SCSVS-CODE/SCWE-090.md",
+      "git_blob": "836862d66c90e8af08d10476373a74d6561f141e",
+      "description_sha256": "1df6a51393918aef3f2fc5617af7e7fc96667c1a5f486e9e7d82f6421c2082f0"
+    },
+    {
+      "id": "fm:boundary-state",
+      "source": "SCWE-083",
+      "source_path": "docs/SCWE/SCSVS-COMP/SCWE-083.md",
+      "git_blob": "d74e0547cf8da67d125512f9feb5640ac8b27796",
+      "description_sha256": "721768b53d045ea96643ebff34d5cb2b1bdc4ee39fa2c58a786dff871d5a6ad3"
+    },
+    {
+      "id": "fm:transaction-order",
+      "source": "SCWE-052",
+      "source_path": "docs/SCWE/SCSVS-ARCH/SCWE-052.md",
+      "git_blob": "c58f2c258b459764ff742fcff06daac3c9f182a5",
+      "description_sha256": "ed8434f191bcd2ce7409a5bc52c003672bed409f863e12f79237565195c69b2e"
+    },
+    {
+      "id": "fm:predictable-randomness",
+      "source": "SCWE-024",
+      "source_path": "docs/SCWE/SCSVS-BLOCK/SCWE-024.md",
+      "git_blob": "b3f299d91156396bcf0fcceec00ff076f592fbfd",
+      "description_sha256": "9efb4e3635e7acebdc972afe49e5da346d1d1a3b4c99463a2d97a99e3cd821ee"
+    },
+    {
+      "id": "fm:message-replay",
+      "source": "SCWE-022",
+      "source_path": "docs/SCWE/SCSVS-COMM/SCWE-022.md",
+      "git_blob": "45a816e265a208245efb5a2998a9f04e908b55af",
+      "description_sha256": "367fe559ae8473bdd412e26992e01a91392de825af66397ba27a8f0f8d328dce"
+    },
+    {
+      "id": "fm:signature-identity",
+      "source": "SCWE-054",
+      "source_path": "docs/SCWE/SCSVS-CRYPTO/SCWE-054.md",
+      "git_blob": "a973f01b40fdaee20877063557aebe05d0f7846d",
+      "description_sha256": "0d0445c40af3b53acf99259e8421b1434ef4632c38211ad6b8cae08146a1b128"
+    }
+  ],
+  "query_sources": [
+    {
+      "case_id": "swc-101",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-101.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; first 1 sentence(s)",
+      "license": "MIT",
+      "source_file_sha256": "b3e92ad316f18dbf66dcff84c95e1f4098b9af6f58e266cb976eb6f1441020c3",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-104",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-104.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; first 2 sentence(s)",
+      "license": "MIT",
+      "source_file_sha256": "e72eb0b426f152f7385b4e6fb5e79d14c0dbe47ea604502fbd416482a786ce4b",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-107",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-107.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; first 1 sentence(s)",
+      "license": "MIT",
+      "source_file_sha256": "f4f28ab0c63e31f7281c26455f75d45675f5cde32d0d00ec008309695d70fdcf",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-115",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-115.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; first 2 sentence(s)",
+      "license": "MIT",
+      "source_file_sha256": "f574eb58b903a60289e5a8795649be6212e922b5118cba620580c210d3b91d91",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-117",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-117.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; first 1 sentence(s)",
+      "license": "MIT",
+      "source_file_sha256": "fdc7c5786ec1d2dbffec6e6c17b6eff517f920241b51ace4be1062b1e82d9704",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-120",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-120.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; first 3 sentence(s)",
+      "license": "MIT",
+      "source_file_sha256": "00b58f968d294d3122a430dd0ee760e6e4cfafd199f794e244d23cb93effbf4f",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-121",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-121.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; first 2 sentence(s)",
+      "license": "MIT",
+      "source_file_sha256": "f6e11dfcb16596978186e6ab310dbcf47959345c54e52b8e577bff6db40d4776",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-128",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-128.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; complete section",
+      "license": "MIT",
+      "source_file_sha256": "d125315bc7ca32cffd650f03a657687dc07d12578ca129ca049110c17fc7cd7b",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-102",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-102.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; complete section",
+      "license": "MIT",
+      "source_file_sha256": "1aa990c30eacce2ec150bb21f5439718b81f006c2d5c581b050399985381bf24",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    },
+    {
+      "case_id": "swc-103",
+      "url": "https://github.com/SmartContractSecurity/SWC-registry/blob/1b6227074ecd180b374e4844153afdda0332f979/entries/docs/SWC-103.md",
+      "revision": "1b6227074ecd180b374e4844153afdda0332f979",
+      "extraction": "Description section; complete section",
+      "license": "MIT",
+      "source_file_sha256": "e3204a86483d80524e6e942a257752896b46907aa943d34cbd395fc3035d5d97",
+      "label_status": "AI-proposed crosswalk, not independently adjudicated"
+    }
+  ]
+}
