@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/figtracer/buggraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/buggraph/actions/workflows/ci.yml)
 
-Full OWASP coverage for UltraFuzz with 94% less agent context.
+All 156 OWASP classes for UltraFuzz with 94% fewer planner-catalog tokens.
 
 Buggraph gives agents a compact map of vulnerability classes, then fetches detailed
 descriptions, code examples, and concrete findings only when selected. The Rust CLI
@@ -19,8 +19,8 @@ taxonomy relationships.
 
 ## Results
 
-On the 156-record OWASP snapshot, the locked `gpt-4o` and `gpt-5.6-sol`
-tokenizers produce the same counts:
+A live `gpt-5.6-sol` request confirmed the locked tokenizer counts for the
+156-record OWASP snapshot:
 
 | Input | Tokens |
 | --- | ---: |
