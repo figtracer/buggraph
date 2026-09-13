@@ -34,6 +34,14 @@ fn imports_exact_markdown_in_stable_id_order() {
     assert_eq!(corpus.nodes[1].definition, first);
     assert_eq!(corpus.nodes[0].summary, "Second record");
     assert_eq!(corpus.nodes[1].summary, "First record: Exact β.");
+    assert_eq!(corpus.revision, "owasp-scwe-aaaaaaaa-source-v2");
+    assert_eq!(
+        corpus.sources[0].url,
+        format!(
+            "https://github.com/OWASP/owasp-scs/blob/{}/docs/SCWE/SCSVS-ARCH/SCWE-001.md",
+            "a".repeat(40)
+        )
+    );
     assert!(Graph::compile(corpus).is_ok());
 
     fs::remove_dir_all(root).unwrap();

@@ -63,7 +63,9 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
         sources.push(Source {
             id: source_id.clone(),
             title: format!("{source_id}: {title}"),
-            url: format!("https://scs.owasp.org/SCWE/view/{source_id}/"),
+            url: format!(
+                "https://github.com/OWASP/owasp-scs/blob/{revision}/docs/SCWE/{group}/{source_id}.md"
+            ),
             revision: revision.to_owned(),
             license: LICENSE.into(),
         });
@@ -84,7 +86,7 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
     sources.sort_unstable_by(|left, right| left.id.cmp(&right.id));
     nodes.sort_unstable_by(|left, right| left.id.cmp(&right.id));
     Ok(Corpus {
-        revision: format!("owasp-scwe-{}-source-v1", &revision[..8]),
+        revision: format!("owasp-scwe-{}-source-v2", &revision[..8]),
         sources,
         nodes,
         edges: Vec::<Edge>::new(),
@@ -129,23 +131,13 @@ fn semantic_summary(title: &str, text: &str) -> String {
         return title.to_owned();
     }
     let mut end = description.len();
-    let mut count = 0;
-    let mut sentence_end = false;
-    for (offset, character) in description.char_indices() {
+    for (count, (offset, _)) in description.char_indices().enumerate() {
         if count == MAX_DESCRIPTION_CHARS {
             end = offset;
             break;
         }
-        count += 1;
-        if matches!(character, '.' | '!' | '?') && count >= MAX_DESCRIPTION_CHARS / 2 {
-            end = offset + character.len_utf8();
-            sentence_end = true;
-            break;
-        }
     }
-    let shortened = if sentence_end {
-        description[..end].to_owned()
-    } else if end < description.len() {
+    let shortened = if end < description.len() {
         let prefix = &description[..end];
         let boundary = prefix.rfind(char::is_whitespace).unwrap_or(prefix.len());
         format!("{}…", prefix[..boundary].trim_end())
@@ -207,13 +199,15 @@ mod tests {
     #[test]
     fn extracts_a_bounded_description_without_splitting_unicode() {
         let text = format!(
-            "---\nid: SCWE-001\ntitle: Example\n---\n\n## Description\n{} fin. More text.\n\n## Remediation\nOther.\n",
-            "é".repeat(100)
+            "---\nid: SCWE-001\ntitle: Example\n---\n\n## Description\n{} block.number and (e.g. identifiers) {}\n\n## Remediation\nOther.\n",
+            "é".repeat(90),
+            "tail ".repeat(30)
         );
         let summary = semantic_summary("Example", &text);
         assert!(summary.starts_with("Example: "));
-        assert!(summary.ends_with(" fin."));
-        assert!(!summary.contains("More text"));
+        assert!(summary.ends_with('…'));
+        assert!(summary.contains("block.number and (e.g. identifiers)"));
+        assert!(summary.chars().count() <= "Example: ".chars().count() + 161);
         assert!(!summary.contains("Other"));
     }
 }

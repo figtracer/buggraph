@@ -33,12 +33,12 @@ On the source-complete 156-record OWASP snapshot (`gpt-4o` encoding):
 | Model input | Tokens |
 | --- | ---: |
 | UltraFuzz planner catalog | 143,407 |
-| Complete Buggraph routing inventory | 7,156 (−95%) |
-| Inventory plus eight retrieved complete documents (mean) | 13,060 (−91%) |
+| Complete Buggraph routing inventory | 7,868 (−95%) |
+| Inventory plus eight retrieved complete documents (mean) | 14,046 (−90%) |
 
 All 156 inventory IDs resolve to byte-identical pinned Markdown. In a blinded 12-case
 routing replay, the inventory agreed with the full catalog on 10 top-ranked classes;
-their top-three sets overlapped by 72% on average. This measures routing preservation,
+their top-three sets overlapped by 64% on average. This measures routing preservation,
 not vulnerability detection.
 
 On a pinned external [Bastet CSV snapshot](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
