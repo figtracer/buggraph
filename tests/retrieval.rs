@@ -2,7 +2,7 @@ use buggraph::{
     BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, RetrievalMode, TokenCounter,
 };
 use serde_json::{Value, json};
-use std::process::Command;
+use std::{fs, process::Command};
 
 fn graph() -> Graph {
     Graph::compile(serde_json::from_str::<Corpus>(include_str!("../data/curated.json")).unwrap())
@@ -96,6 +96,22 @@ fn taxonomy_omits_instances_and_instance_search_returns_them() {
     );
     assert!(resolved.jsonl.contains("Exact finding detail."));
     assert_eq!(resolved.tokens, counter.count(&resolved.jsonl));
+    let ordered = graph
+        .resolve_ordered_with_options(
+            &["fm:dos", "finding:dust"],
+            &counter,
+            BundleOptions {
+                mode: RetrievalMode::IdOrder,
+                detail: Detail::Full,
+                format: BundleFormat::Json,
+                max_tokens: 2048,
+            },
+        )
+        .unwrap();
+    assert_eq!(
+        ordered.hits.iter().map(|hit| hit.id).collect::<Vec<_>>(),
+        ["fm:dos", "finding:dust"]
+    );
     assert!(
         graph
             .resolve_with_options(&["fm:dos", "fm:dos"], &counter, options(2048))
@@ -607,4 +623,48 @@ fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
         let slot = record["sources"][0].as_u64().unwrap() as usize;
         assert_eq!(value["sources"][slot], source.url);
     }
+}
+
+#[test]
+fn route_ultrafuzz_bundle_returns_ranked_records_in_one_call() {
+    let threat_model =
+        std::env::temp_dir().join(format!("buggraph-route-bundle-{}.json", std::process::id()));
+    fs::write(
+        &threat_model,
+        serde_json::to_vec(&json!({
+            "schema_version": "ultrafuzz.threat-model.v1",
+            "invariants": [{
+                "id": "invariant:liquidation",
+                "name": "Liquidation progress",
+                "statement": "A borrower cannot prevent liquidation with a dust repayment"
+            }],
+            "threats": [],
+            "attack_surfaces": [],
+            "coverage_gaps": []
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+        .args([
+            "route-ultrafuzz-bundle",
+            "data/owasp.json",
+            threat_model.to_str().unwrap(),
+            "gpt-4o",
+            "4096",
+            "2",
+            "summary",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let bundle = serde_json::from_slice::<Value>(&output.stdout).unwrap();
+    let metadata = serde_json::from_slice::<Value>(&output.stderr).unwrap();
+    assert_eq!(bundle["records"].as_array().unwrap().len(), 2);
+    assert_eq!(metadata["schema"], "buggraph/ultrafuzz-route-v1");
+    assert_eq!(metadata["selected"].as_array().unwrap().len(), 2);
 }

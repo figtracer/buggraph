@@ -42,7 +42,7 @@ git clone https://github.com/figtracer/buggraph.git
 cd buggraph
 cargo install --path . --locked
 
-buggraph route-ultrafuzz data/owasp.json threat-model.json 16 > route.json
+buggraph route-ultrafuzz-bundle data/owasp.json threat-model.json gpt-4o 8192 16 full --compact
 buggraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
 buggraph explore data/owasp.json gpt-4o 4096 full 8 2 "liquidation denial of service" --compact
 ```
