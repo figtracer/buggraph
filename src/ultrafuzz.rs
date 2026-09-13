@@ -120,6 +120,14 @@ impl Graph {
             for (index, hit) in self
                 .rank(&query.text, &[], RetrievalMode::Bm25)
                 .into_iter()
+                .filter(|hit| {
+                    self.node(hit.id).is_some_and(|node| {
+                        !node
+                            .facets
+                            .iter()
+                            .any(|facet| facet.starts_with("taxonomy:"))
+                    })
+                })
                 .take(RESULTS_PER_QUERY)
                 .enumerate()
             {

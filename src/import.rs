@@ -5,11 +5,24 @@ use std::{collections::HashSet, fs, path::Path};
 
 const LICENSE: &str = "CC-BY-SA-4.0";
 
-/// Import every SCWE Markdown source without inferring taxonomy edges.
+struct ScsvsGroup {
+    id: String,
+    title: String,
+    description: String,
+}
+
+/// Import every SCWE Markdown source and its explicit SCSVS hierarchy.
 pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
     if revision.len() != 40 || !revision.bytes().all(|byte| byte.is_ascii_hexdigit()) {
         return Err("OWASP revision must be a 40-character commit hash".into());
     }
+    let scsvs_path = root.join("docs/SCSVS/scsvs.yaml");
+    let scsvs_text = fs::read_to_string(&scsvs_path).map_err(|error| error.to_string())?;
+    let groups = scsvs_groups(&scsvs_text)?;
+    let group_ids = groups
+        .iter()
+        .map(|group| group.id.to_lowercase())
+        .collect::<HashSet<_>>();
     let scwe_root = root.join("docs/SCWE");
     let mut paths = Vec::new();
     for group in sorted_entries(&scwe_root)? {
@@ -36,8 +49,59 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
         return Err("OWASP source tree contains no SCWE Markdown files".into());
     }
 
-    let mut sources = Vec::with_capacity(paths.len());
-    let mut nodes = Vec::with_capacity(paths.len());
+    let mut sources = Vec::with_capacity(paths.len() + 1);
+    sources.push(Source {
+        id: "SCSVS".into(),
+        title: "Smart Contract Security Verification Standard (SCSVS)".into(),
+        url: format!("https://github.com/OWASP/owasp-scs/blob/{revision}/docs/SCSVS/scsvs.yaml"),
+        revision: revision.to_owned(),
+        license: LICENSE.into(),
+    });
+    let mut nodes = Vec::with_capacity(paths.len() + groups.len() + 1);
+    nodes.push(Node {
+        id: "taxonomy:scsvs".into(),
+        kind: Kind::FailureMode,
+        summary: "Smart contract security failure modes".into(),
+        definition: String::new(),
+        facets: vec!["taxonomy:root".into()],
+        exclusions: Vec::new(),
+        sources: vec!["SCSVS".into()],
+        applicability: Vec::new(),
+        mappings: vec!["SCSVS".into()],
+        review: ReviewStatus::Imported,
+        code: Vec::new(),
+    });
+    let mut edges = Vec::with_capacity(paths.len() + groups.len());
+    for group in groups {
+        let id = category_node_id(&group.id.to_lowercase())?;
+        let title = category_title(&group.id, &group.title)?;
+        let summary = if group.description.is_empty() || group.description == "TBD" {
+            title.to_owned()
+        } else {
+            format!("{title}: {}", group.description)
+        };
+        nodes.push(Node {
+            id: id.clone(),
+            kind: Kind::FailureMode,
+            summary,
+            definition: String::new(),
+            facets: vec![
+                "taxonomy:category".into(),
+                format!("category:{}", group.id.to_lowercase()),
+            ],
+            exclusions: Vec::new(),
+            sources: vec!["SCSVS".into()],
+            applicability: Vec::new(),
+            mappings: vec![group.id],
+            review: ReviewStatus::Imported,
+            code: Vec::new(),
+        });
+        edges.push(Edge {
+            from: id,
+            relation: crate::Relation::Specializes,
+            to: "taxonomy:scsvs".into(),
+        });
+    }
     let mut seen = HashSet::with_capacity(paths.len());
     for (group, path) in paths {
         let text = fs::read_to_string(&path).map_err(|error| error.to_string())?;
@@ -45,6 +109,11 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
         let source_id = scalar(metadata, "id")?.to_owned();
         let title = scalar(metadata, "title")?.to_owned();
         let category = inline_list_item(metadata, "scsvs-cg")?.to_lowercase();
+        if !group_ids.contains(&category) {
+            return Err(format!(
+                "SCWE frontmatter references unknown category {category}"
+            ));
+        }
         let stem = path
             .file_stem()
             .and_then(|value| value.to_str())
@@ -70,8 +139,9 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
             revision: revision.to_owned(),
             license: LICENSE.into(),
         });
+        let id = format!("scwe:{}", number.to_lowercase());
         nodes.push(Node {
-            id: format!("scwe:{}", number.to_lowercase()),
+            id: id.clone(),
             kind: Kind::FailureMode,
             summary: semantic_summary(&title, &text),
             definition: text,
@@ -83,15 +153,100 @@ pub fn import_owasp(root: &Path, revision: &str) -> Result<Corpus, String> {
             review: ReviewStatus::Imported,
             code: Vec::new(),
         });
+        edges.push(Edge {
+            from: id,
+            relation: crate::Relation::Specializes,
+            to: category_node_id(&category)?,
+        });
     }
     sources.sort_unstable_by(|left, right| left.id.cmp(&right.id));
     nodes.sort_unstable_by(|left, right| left.id.cmp(&right.id));
     Ok(Corpus {
-        revision: format!("owasp-scwe-{}-source-v3", &revision[..8]),
+        revision: format!("owasp-scwe-{}-source-v4", &revision[..8]),
         sources,
         nodes,
-        edges: Vec::<Edge>::new(),
+        edges,
     })
+}
+
+fn category_title<'a>(id: &str, source_title: &'a str) -> Result<&'a str, String> {
+    if source_title != "TBD" {
+        return Ok(source_title);
+    }
+    match id {
+        "SCSVS-AUTH" => Ok("Authorization and access control"),
+        "SCSVS-BLOCK" => Ok("Block and transaction properties"),
+        "SCSVS-BRIDGE" => Ok("Cross-chain bridges"),
+        "SCSVS-COMM" => Ok("Communication and external calls"),
+        "SCSVS-COMP" => Ok("Arithmetic and computation"),
+        "SCSVS-CRYPTO" => Ok("Cryptography"),
+        "SCSVS-DEFI" => Ok("Decentralized finance"),
+        "SCSVS-GOV" => Ok("Governance"),
+        "SCSVS-ORACLE" => Ok("Oracles and price feeds"),
+        _ => Err(format!("SCSVS group {id} has no usable title")),
+    }
+}
+
+fn category_node_id(category: &str) -> Result<String, String> {
+    category
+        .strip_prefix("scsvs-")
+        .map(|suffix| format!("scsvs:{suffix}"))
+        .ok_or_else(|| format!("invalid SCSVS category {category}"))
+}
+
+fn scsvs_groups(text: &str) -> Result<Vec<ScsvsGroup>, String> {
+    let lines = text.lines().collect::<Vec<_>>();
+    let mut groups = Vec::new();
+    let mut seen = HashSet::new();
+    let mut index = 0;
+    while index < lines.len() {
+        let Some(id) = lines[index].strip_prefix("- gid: ").map(str::trim) else {
+            index += 1;
+            continue;
+        };
+        if !id.starts_with("SCSVS-")
+            || !id
+                .bytes()
+                .all(|byte| byte.is_ascii_uppercase() || byte == b'-')
+            || !seen.insert(id.to_owned())
+        {
+            return Err(format!("invalid or duplicate SCSVS group {id}"));
+        }
+        let mut title = None;
+        let mut description = Vec::new();
+        index += 1;
+        while index < lines.len() && !lines[index].starts_with("- gid: ") {
+            if let Some(value) = lines[index].strip_prefix("  title: ") {
+                title = Some(value.trim().trim_matches('\'').trim().to_owned());
+            } else if let Some(value) = lines[index].strip_prefix("  description: ") {
+                description.push(value.trim());
+                index += 1;
+                while index < lines.len() {
+                    let line = lines[index];
+                    if let Some(value) = line.strip_prefix("    ") {
+                        description.push(value.trim());
+                        index += 1;
+                    } else {
+                        break;
+                    }
+                }
+                continue;
+            }
+            index += 1;
+        }
+        let title = title
+            .filter(|title| !title.is_empty())
+            .ok_or_else(|| format!("SCSVS group {id} requires a title"))?;
+        groups.push(ScsvsGroup {
+            id: id.to_owned(),
+            title,
+            description: description.join(" "),
+        });
+    }
+    if groups.is_empty() {
+        return Err("SCSVS source contains no groups".into());
+    }
+    Ok(groups)
 }
 
 fn semantic_summary(title: &str, text: &str) -> String {

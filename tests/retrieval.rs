@@ -534,10 +534,11 @@ fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
     let graph =
         Graph::compile(serde_json::from_str::<Corpus>(include_str!("../data/owasp.json")).unwrap())
             .unwrap();
-    assert_eq!(graph.corpus().nodes.len(), 156);
-    assert_eq!(graph.corpus().sources.len(), 156);
-    assert!(graph.corpus().edges.is_empty());
-    assert_eq!(graph.corpus().revision, "owasp-scwe-fefd476b-source-v3");
+    assert_eq!(graph.corpus().nodes.len(), 168);
+    assert_eq!(graph.corpus().sources.len(), 157);
+    assert_eq!(graph.corpus().edges.len(), 167);
+    assert_eq!(graph.corpus().revision, "owasp-scwe-fefd476b-source-v4");
+    assert_eq!(graph.descendants("taxonomy:scsvs").unwrap().len(), 168);
     assert_eq!(
         graph
             .corpus()
@@ -561,6 +562,7 @@ fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
             .corpus()
             .nodes
             .iter()
+            .filter(|node| node.id.starts_with("scwe:"))
             .all(|node| !node.definition.is_empty()
                 && matches!(node.review, buggraph::ReviewStatus::Imported))
     );
@@ -590,7 +592,11 @@ fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
     assert!(value["omitted"].is_u64());
     for record in value["records"].as_array().unwrap() {
         let node = graph.node(record["id"].as_str().unwrap()).unwrap();
-        assert_eq!(record["definition"], node.definition);
+        if node.definition.is_empty() {
+            assert!(record.get("definition").is_none());
+        } else {
+            assert_eq!(record["definition"], node.definition);
+        }
         assert_eq!(record["facets"], json!(node.facets));
         let source = &graph
             .corpus()

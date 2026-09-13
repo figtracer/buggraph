@@ -3,12 +3,14 @@
 `owasp.json` imports all 156 SCWE records present in the pinned snapshot. Titles and
 complete Markdown source bytes are copied from the corresponding files, including
 frontmatter, relationships, descriptions, remediation, examples, and fenced code;
-155 records contain fenced examples. Categories come from source directory names,
-source IDs are retained as mappings, and node IDs use `scwe:NNN`. Each record is
-marked `imported`; no independent review or inferred relationships are claimed.
-The deterministic `import-owasp` command produced the snapshot without normalizing
-line endings or surrounding whitespace. This is source inventory coverage, not
-exhaustive coverage of smart contract weaknesses.
+155 records contain fenced examples. The snapshot also imports the SCSVS root and
+11 groups, then connects each SCWE to its explicit `scsvs-cg` mapping. Group names
+replace upstream `TBD` placeholders with concise expansions of the group IDs. Source
+IDs are retained as mappings, and SCWE node IDs use `scwe:NNN`. Each record is marked
+`imported`; no independent review is claimed. The deterministic `import-owasp`
+command produced the snapshot without normalizing SCWE line endings or surrounding
+whitespace. This is source inventory coverage, not exhaustive coverage of smart
+contract weaknesses.
 
 The separate `curated.json` starter taxonomy adapts 16 entries from the
 [OWASP Smart Contract Weakness Enumeration](https://github.com/OWASP/owasp-scs),
