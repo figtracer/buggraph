@@ -8,27 +8,9 @@ not an independent audit-report benchmark. See [attribution](../data/ATTRIBUTION
 cargo run --locked -- eval data/curated.json data/eval.json gpt-4o 2048 3
 ```
 
-Run recorded on 2026-09-13 with the pinned Rust toolchain and dependency lockfile.
-The 2,048-token cap and k=3 are explicit diagnostic settings, not recommended model
-defaults. All modes use the same corpus, judgments, token budget, and record cap.
-
-| Split | Mode | Recall@3 | MRR@3 | nDCG@3 | Negative empty rate | Mean tokens |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| dev | id_order | 0.250 | 0.167 | 0.188 | 0.000 | 316.0 |
-| test | id_order | 0.045 | 0.045 | 0.035 | 0.000 | 316.0 |
-| dev | bm25 | 0.938 | 1.000 | 0.942 | 0.500 | 299.1 |
-| test | bm25 | 0.909 | 1.000 | 0.930 | 0.667 | 307.4 |
-| dev | bm25_ancestors | 1.000 | 1.000 | 1.000 | 0.500 | 308.3 |
-| test | bm25_ancestors | 1.000 | 1.000 | 1.000 | 0.667 | 304.3 |
-
-The raw report includes [every retrieved ID and per-case metric](../data/eval-results.json).
-The [follow-up experiment](experiments.md) removes redundant ancestor labels and
-finds no gain in specific-class recall from graph expansion on this suite.
-Ancestor expansion recovers explicitly labeled broader concepts in this suite. Both
-lexical modes return results for the near-miss exclusion queries: lexical retrieval
-does not decide semantic applicability. The perfect positive scores on some rows
-are not evidence of generalization; the suite is small and authored with knowledge
-of the taxonomy. No parameters were tuned on its test split.
+Choose the token budget and record cap explicitly. All modes use the same corpus,
+judgments, token budget, and record cap. Redirect stdout to retain a local JSON report
+with every retrieved ID and per-case metric. Keep experiment outputs outside the repo.
 
 ## Metrics and validation
 

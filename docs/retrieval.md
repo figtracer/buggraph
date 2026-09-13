@@ -43,4 +43,4 @@ Packing is greedy, not an optimal relevance-per-token solver. Recounting growing
 text trades CPU for exact budgeting and can be expensive for many candidates.
 Tokenizer initialization is cached per process. No disk index, memory mapping,
 embedding database, or parallel retrieval is required. Measure representative
-workloads before adding these. See [benchmarks](../BENCHMARKS.md).
+workloads before adding these. See [benchmark instructions](../BENCHMARKS.md).

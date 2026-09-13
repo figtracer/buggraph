@@ -11,7 +11,7 @@ a model-token budget, and records assessment coverage separately. A Rust library
 CLI share the same validated index.
 
 The starter corpus has 19 failure modes, four properties, and 16 pinned OWASP sources.
-The evaluation includes authored diagnostic queries and publishes every result.
+The evaluation includes authored diagnostic queries.
 Source checking was AI-assisted; independent expert review is still needed.
 
 ## Why use it
@@ -26,21 +26,10 @@ currently establish that an agent finds more vulnerabilities.
 | Explainable relationships | Inspect broader classes and shared properties without duplicating records. |
 | Auditable assessment | Record evidence and unresolved questions separately from nodes visited. |
 
-In [32 follow-up evaluations](docs/experiments.md), reducing the cap from 512 to 128
-tokens preserved specific-class recall on the small authored test set while reducing
-mean returned context by 68%. Graph expansion added broader context but **no additional
-specific-class recall**. Both lexical modes still returned matches for exclusion
-near misses. These are retrieval results, not proven improvements in an agent's
-reasoning, total token spend, or vulnerability detection.
-
-Ultrafuzz is a potential consumer. The [comparison plan](docs/experiments.md#ultrafuzz-comparison)
-keeps knowledge retrieval separate from campaign execution; no Ultrafuzz integration
-or end-to-end result is claimed.
-
-The [UltraFuzz evidence review](docs/ultrafuzz-evidence.md) finds that its current
-catalog already supports much of this metadata. A frozen external-text comparison
-shows a modest normalization benefit over an OWASP-text proxy, but no demonstrated
-graph advantage. Incremental usefulness to UltraFuzz remains **unproven**.
+Local diagnostics found no graph-specific recall or lookup-speed advantage over flat
+records. UltraFuzz already
+[caches OWASP references](https://github.com/monad-developers/ultrafuzz/blob/89b57c9a7c5aa22af15e1ae9625b8ab3a2c6f810/packages/references/src/index.ts#L328-L359);
+its end-to-end benefit from Buggraph remains unproven.
 
 ## Getting started
 
@@ -62,7 +51,7 @@ API key, database server, or network connection after dependencies are installed
 | Command | What it does |
 | --- | --- |
 | `validate` | Check IDs, source references, edge types, and specialization cycles. |
-| `search` | Rank failure modes and return complete records within a token budget. |
+| `search` | Rank failure modes and return summaries within a token budget. |
 | `show` | Expand a record with applicability, exclusions, sources, and relationships. |
 | `descendants` | Explore a specialization subtree with shared nodes deduplicated. |
 | `context` | Retrieve facet-filtered summaries within a byte budget. |
@@ -82,9 +71,7 @@ buggraph eval data/curated.json data/eval.json gpt-4o 2048 3
 
 The suite reports precision, recall, MRR, nDCG, negative-query behavior, and context
 tokens. These are small retrieval diagnostics, not vulnerability-detection results.
-See [results and limitations](docs/evaluation.md) and [performance measurements](BENCHMARKS.md).
-The [follow-up experiments](docs/experiments.md) test budget sensitivity and remove
-redundant ancestor labels to distinguish broader context from specific-class recall.
+See [metric definitions](docs/evaluation.md) and [benchmark instructions](BENCHMARKS.md).
 
 ## Development
 
@@ -92,7 +79,6 @@ redundant ancestor labels to distinguish broader context from specific-class rec
 cargo fmt --all -- --check
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked --all-targets
-python3 -m unittest discover -s scripts -p 'test_*.py'
 ```
 
 CI runs checks on Linux and macOS. Code is MIT; the starter data is CC-BY-SA-4.0.

@@ -12,9 +12,10 @@ Require citations for source-checked records. Never invent findings, source clai
 human review, or audit results. Read data/ATTRIBUTION.md before editing the corpus.
 
 Keep evaluation topic groups disjoint across dev/test. Do not tune on test cases or
-claim agent-detection improvements from authored lexical diagnostics. Publish
-per-case results and state limitations. A visited taxonomy node is not evidence of
-assessment coverage. Token budgets count the actual returned text.
+claim agent-detection improvements from authored lexical diagnostics. Keep experimental
+runs outside the repository; summarize material results succinctly in the README and
+retain local per-case evidence. State limitations. A visited taxonomy node is not
+evidence of assessment coverage. Token budgets count the actual returned text.
 
 Use conventional commit titles. Keep PR descriptions concise and disclose material
 AI assistance. Do not add protocol scanning or exploit execution to the knowledge

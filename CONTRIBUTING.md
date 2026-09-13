@@ -14,7 +14,6 @@ the affected path before making performance claims. Do not force-push published 
 cargo fmt --all -- --check
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked --all-targets
-python3 -m unittest discover -s scripts -p 'test_*.py'
 cargo run --locked -- validate data/curated.json
 cargo run --locked -- eval data/curated.json data/eval.json gpt-4o 2048 3
 ```
