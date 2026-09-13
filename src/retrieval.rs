@@ -22,12 +22,12 @@ pub(crate) struct SearchIndex {
 }
 
 impl SearchIndex {
-    pub(crate) fn build(nodes: &[Node]) -> Self {
+    pub(crate) fn build(nodes: &[Node], kind: Kind) -> Self {
         let mut postings = HashMap::<String, Vec<(usize, f64)>>::new();
         let mut lengths = vec![0; nodes.len()];
         let mut documents = 0;
         for (index, node) in nodes.iter().enumerate() {
-            if node.kind == Kind::FailureMode {
+            if node.kind == kind {
                 documents += 1;
                 let mut frequencies = HashMap::<String, usize>::new();
                 // Exclusions and source titles are not positive relevance evidence.
@@ -189,8 +189,35 @@ pub struct InventoryContext {
 impl Graph {
     /// Return every node and edge in a compact, self-describing routing inventory.
     pub fn inventory(&self, counter: &TokenCounter) -> InventoryContext {
-        let mut facet_table = self.facets.keys().collect::<Vec<_>>();
+        self.inventory_where(counter, |_| true)
+    }
+
+    /// Return every failure mode, property, and edge between them without findings.
+    pub fn taxonomy(&self, counter: &TokenCounter) -> InventoryContext {
+        self.inventory_where(counter, |node| node.kind != Kind::Finding)
+    }
+
+    fn inventory_where(
+        &self,
+        counter: &TokenCounter,
+        include: impl Fn(&Node) -> bool,
+    ) -> InventoryContext {
+        let included = self
+            .corpus
+            .nodes
+            .iter()
+            .filter(|node| include(node))
+            .collect::<Vec<_>>();
+        let ids = included
+            .iter()
+            .map(|node| node.id.as_str())
+            .collect::<HashSet<_>>();
+        let mut facet_table = included
+            .iter()
+            .flat_map(|node| &node.facets)
+            .collect::<Vec<_>>();
         facet_table.sort_unstable();
+        facet_table.dedup();
         let facet_slots = facet_table
             .iter()
             .enumerate()
@@ -200,6 +227,7 @@ impl Graph {
             .corpus
             .nodes
             .iter()
+            .filter(|node| ids.contains(node.id.as_str()))
             .map(|node| {
                 serde_json::json!([
                     node.id,
@@ -216,6 +244,7 @@ impl Graph {
             .corpus
             .edges
             .iter()
+            .filter(|edge| ids.contains(edge.from.as_str()) && ids.contains(edge.to.as_str()))
             .map(|edge| serde_json::json!([edge.from, edge.relation, edge.to]))
             .collect::<Vec<_>>();
         let value = serde_json::json!({
@@ -230,7 +259,7 @@ impl Graph {
         let jsonl = format!("{value}\n");
         InventoryContext {
             tokens: counter.count(&jsonl),
-            records: self.corpus.nodes.len(),
+            records: included.len(),
             jsonl,
         }
     }
@@ -270,6 +299,19 @@ impl Graph {
         options: BundleOptions,
     ) -> RankedContext<'_> {
         let ranked = self.rank(query, facets, options.mode);
+        let total = ranked.len();
+        self.pack_ranked(ranked, counter, options, total, usize::MAX)
+    }
+
+    /// Rank and pack concrete findings, with facets selecting taxonomy branches.
+    pub fn instances_with_options(
+        &self,
+        query: &str,
+        facets: &[&str],
+        counter: &TokenCounter,
+        options: BundleOptions,
+    ) -> RankedContext<'_> {
+        let ranked = self.rank_kind(query, facets, options.mode, Kind::Finding);
         let total = ranked.len();
         self.pack_ranked(ranked, counter, options, total, usize::MAX)
     }
@@ -506,11 +548,21 @@ impl Graph {
     /// Rank only failure modes. Ancestors are explicit structural context and keep
     /// the originating lexical score; they are not independent semantic matches.
     pub fn rank(&self, query: &str, facets: &[&str], mode: RetrievalMode) -> Vec<Hit<'_>> {
+        self.rank_kind(query, facets, mode, Kind::FailureMode)
+    }
+
+    fn rank_kind(
+        &self,
+        query: &str,
+        facets: &[&str],
+        mode: RetrievalMode,
+        kind: Kind,
+    ) -> Vec<Hit<'_>> {
         // Unfiltered lexical queries touch only term postings, not every node.
         let candidates =
             (!facets.is_empty()).then(|| self.matching(facets).into_iter().collect::<HashSet<_>>());
         let eligible = |index: usize| {
-            self.corpus.nodes[index].kind == Kind::FailureMode
+            self.corpus.nodes[index].kind == kind
                 && candidates.as_ref().is_none_or(|set| set.contains(&index))
         };
         let mut ranked = match mode {
@@ -519,14 +571,16 @@ impl Graph {
                 .map(|i| (i, 0.0))
                 .collect::<Vec<_>>(),
             _ => self
-                .search
+                .searches
+                .get(&kind)
+                .expect("compiled search index for public node kinds")
                 .scores(query)
                 .into_iter()
                 .filter(|(i, _)| eligible(*i))
                 .collect(),
         };
         ranked.sort_unstable_by(|(a, x), (b, y)| y.total_cmp(x).then(a.cmp(b)));
-        if !matches!(mode, RetrievalMode::Bm25Ancestors) {
+        if kind != Kind::FailureMode || !matches!(mode, RetrievalMode::Bm25Ancestors) {
             return ranked
                 .into_iter()
                 .map(|(index, score)| Hit {

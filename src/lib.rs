@@ -18,6 +18,9 @@ pub use evaluation::{EvalCase, EvalReport, EvalSuite, Split};
 mod import;
 pub use import::import_owasp;
 
+mod bastet;
+pub use bastet::import_bastet;
+
 /// Authoring format; revision identifies the exact corpus snapshot.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -86,7 +89,7 @@ pub struct Source {
     pub license: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Kind {
     FailureMode,
@@ -119,7 +122,7 @@ pub struct Graph {
     children: Vec<Vec<usize>>,
     parents: Vec<Vec<usize>>,
     summaries: Vec<String>,
-    search: retrieval::SearchIndex,
+    searches: HashMap<Kind, retrieval::SearchIndex>,
 }
 
 /// Exact byte-budgeted JSONL. Selection is deterministic ID order, not relevance ranking.
@@ -271,7 +274,10 @@ impl Graph {
                 line
             })
             .collect();
-        let search = retrieval::SearchIndex::build(&corpus.nodes);
+        let searches = [Kind::FailureMode, Kind::Property, Kind::Finding]
+            .into_iter()
+            .map(|kind| (kind, retrieval::SearchIndex::build(&corpus.nodes, kind)))
+            .collect();
         Ok(Self {
             corpus,
             ids,
@@ -279,7 +285,7 @@ impl Graph {
             children,
             parents,
             summaries,
-            search,
+            searches,
         })
     }
 

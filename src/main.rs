@@ -2,7 +2,7 @@
 
 use buggraph::{
     BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, Ledger, RetrievalMode,
-    TokenCounter, expand_bundle, import_owasp,
+    TokenCounter, expand_bundle, import_bastet, import_owasp,
 };
 use serde_json::Value;
 use std::{
@@ -13,7 +13,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
@@ -22,7 +22,23 @@ enum ServeRequest {
         version: u8,
         id: String,
     },
+    Taxonomy {
+        version: u8,
+        id: String,
+    },
     Bundle {
+        version: u8,
+        id: String,
+        mode: RetrievalMode,
+        max_tokens: usize,
+        detail: Detail,
+        query: String,
+        #[serde(default)]
+        facets: Vec<String>,
+        #[serde(default)]
+        compact: bool,
+    },
+    Instances {
         version: u8,
         id: String,
         mode: RetrievalMode,
@@ -64,7 +80,9 @@ impl ServeRequest {
     fn version(&self) -> u8 {
         match self {
             Self::Inventory { version, .. }
+            | Self::Taxonomy { version, .. }
             | Self::Bundle { version, .. }
+            | Self::Instances { version, .. }
             | Self::Show { version, .. }
             | Self::Explore { version, .. }
             | Self::Descendants { version, .. } => *version,
@@ -74,7 +92,9 @@ impl ServeRequest {
     fn id(&self) -> &str {
         match self {
             Self::Inventory { id, .. }
+            | Self::Taxonomy { id, .. }
             | Self::Bundle { id, .. }
+            | Self::Instances { id, .. }
             | Self::Show { id, .. }
             | Self::Explore { id, .. }
             | Self::Descendants { id, .. } => id,
@@ -185,6 +205,17 @@ fn serve(graph: &Graph, counter: &TokenCounter) -> Result<(), Box<dyn Error>> {
                         "records": inventory.records,
                     })
                 }
+                ServeRequest::Taxonomy { id, .. } => {
+                    let inventory = graph.taxonomy(counter);
+                    serde_json::json!({
+                        "version": 1,
+                        "id": id,
+                        "ok": true,
+                        "context": inventory.jsonl,
+                        "tokens": inventory.tokens,
+                        "records": inventory.records,
+                    })
+                }
                 ServeRequest::Bundle {
                     id,
                     mode,
@@ -197,6 +228,34 @@ fn serve(graph: &Graph, counter: &TokenCounter) -> Result<(), Box<dyn Error>> {
                 } => {
                     let facets = facets.iter().map(String::as_str).collect::<Vec<_>>();
                     let context = graph.bundle_with_options(
+                        &query,
+                        &facets,
+                        counter,
+                        BundleOptions {
+                            mode,
+                            detail,
+                            max_tokens,
+                            format: if compact {
+                                BundleFormat::Compact
+                            } else {
+                                BundleFormat::Json
+                            },
+                        },
+                    );
+                    context_response(id, context)
+                }
+                ServeRequest::Instances {
+                    id,
+                    mode,
+                    max_tokens,
+                    detail,
+                    query,
+                    facets,
+                    compact,
+                    ..
+                } => {
+                    let facets = facets.iter().map(String::as_str).collect::<Vec<_>>();
+                    let context = graph.instances_with_options(
                         &query,
                         &facets,
                         counter,
@@ -301,6 +360,14 @@ fn run() -> Result<(), Box<dyn Error>> {
         fs::write(&args[3], output)?;
         return Ok(());
     }
+    if args[0] == "import-bastet" && args.len() == 5 {
+        let corpus = import_bastet(std::path::Path::new(&args[1]), &args[2], &args[3])?;
+        Graph::compile(serde_json::from_value(serde_json::to_value(&corpus)?)?)?;
+        let mut output = serde_json::to_string_pretty(&corpus)?;
+        output.push('\n');
+        fs::write(&args[4], output)?;
+        return Ok(());
+    }
     let corpus = serde_json::from_slice::<Corpus>(&fs::read(&args[1])?)?;
     let graph = Graph::compile(corpus)?;
     if args[0] == "serve" && args.len() == 3 {
@@ -310,6 +377,12 @@ fn run() -> Result<(), Box<dyn Error>> {
     if args[0] == "inventory" && args.len() == 3 {
         let counter = TokenCounter::for_model(&args[2])?;
         let inventory = graph.inventory(&counter);
+        io::stdout().lock().write_all(inventory.jsonl.as_bytes())?;
+        return Ok(());
+    }
+    if args[0] == "taxonomy" && args.len() == 3 {
+        let counter = TokenCounter::for_model(&args[2])?;
+        let inventory = graph.taxonomy(&counter);
         io::stdout().lock().write_all(inventory.jsonl.as_bytes())?;
         return Ok(());
     }
@@ -349,13 +422,13 @@ fn run() -> Result<(), Box<dyn Error>> {
                 .write_all(result.context.jsonl.as_bytes())?;
             return Ok(());
         }
-        "search" | "bundle" if args.len() >= 6 => {
+        "search" | "bundle" | "instances" if args.len() >= 6 => {
             let mode = serde_json::from_value::<RetrievalMode>(serde_json::Value::String(
                 args[2].clone(),
             ))?;
             let counter = TokenCounter::for_model(&args[3])?;
             let max_tokens = args[4].parse::<usize>()?;
-            let bundled = args[0] == "bundle";
+            let bundled = args[0] != "search";
             let (query, facet_start, detail) = if bundled {
                 if args.len() < 7 {
                     return Err(USAGE.into());
@@ -374,7 +447,23 @@ fn run() -> Result<(), Box<dyn Error>> {
                 .iter()
                 .map(String::as_str)
                 .collect::<Vec<_>>();
-            let context = if bundled {
+            let context = if args[0] == "instances" {
+                graph.instances_with_options(
+                    query,
+                    &facets,
+                    &counter,
+                    BundleOptions {
+                        mode,
+                        detail,
+                        max_tokens,
+                        format: if compact {
+                            BundleFormat::Compact
+                        } else {
+                            BundleFormat::Json
+                        },
+                    },
+                )
+            } else if bundled {
                 graph.bundle_with_options(
                     query,
                     &facets,

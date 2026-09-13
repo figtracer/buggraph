@@ -33,6 +33,44 @@ fn inventory_contains_every_node_and_edge_with_exact_model_tokens() {
 }
 
 #[test]
+fn taxonomy_omits_instances_and_instance_search_returns_them() {
+    let corpus = json!({"revision":"instances-v1", "nodes":[
+        {"id":"fm:dos","kind":"failure_mode","summary":"Denial of service","facets":["tag:dos"]},
+        {"id":"property:progress","kind":"property","summary":"Operations make progress"},
+        {"id":"finding:dust","kind":"finding","summary":"One wei repayment prevents liquidation","definition":"Exact finding detail.","facets":["tag:dos","subtag:dust"]}
+    ], "edges":[
+        {"from":"fm:dos","relation":"violates","to":"property:progress"},
+        {"from":"finding:dust","relation":"instance_of","to":"fm:dos"}
+    ]});
+    let graph = Graph::compile(serde_json::from_value(corpus).unwrap()).unwrap();
+    let counter = TokenCounter::for_model("gpt-4o").unwrap();
+
+    let taxonomy = graph.taxonomy(&counter);
+    let value = serde_json::from_str::<Value>(&taxonomy.jsonl).unwrap();
+    assert_eq!(taxonomy.records, 2);
+    assert_eq!(value["records"].as_array().unwrap().len(), 2);
+    assert_eq!(value["edges"].as_array().unwrap().len(), 1);
+    assert!(!taxonomy.jsonl.contains("finding:dust"));
+    assert_eq!(taxonomy.tokens, counter.count(&taxonomy.jsonl));
+
+    let instances = graph.instances_with_options(
+        "repayment prevents liquidation",
+        &["tag:dos"],
+        &counter,
+        BundleOptions {
+            mode: RetrievalMode::Bm25,
+            detail: Detail::Full,
+            format: BundleFormat::Json,
+            max_tokens: 2048,
+        },
+    );
+    assert_eq!(instances.hits.len(), 1);
+    assert_eq!(instances.hits[0].id, "finding:dust");
+    assert!(instances.jsonl.contains("Exact finding detail."));
+    assert_eq!(instances.tokens, counter.count(&instances.jsonl));
+}
+
+#[test]
 fn lexical_ranking_respects_facets_and_returns_no_match_for_unknown_terms() {
     let graph = graph();
     let hits = graph.rank("stale oracle response freshness", &[], RetrievalMode::Bm25);

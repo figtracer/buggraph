@@ -42,6 +42,17 @@ fn persistent_service_reuses_state_and_recovers_from_bad_requests() {
             .contains("buggraph/inventory-v1")
     );
 
+    writeln!(
+        stdin,
+        "{}",
+        json!({"version": 1, "id": "taxonomy", "op": "taxonomy"})
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let taxonomy = read_json(&mut stdout);
+    assert_eq!(taxonomy["ok"], true);
+    assert_eq!(taxonomy["records"], 3);
+
     writeln!(stdin, "not json").unwrap();
     stdin.flush().unwrap();
     let malformed = read_json(&mut stdout);
@@ -72,6 +83,25 @@ fn persistent_service_reuses_state_and_recovers_from_bad_requests() {
             .encode_ordinary(context)
             .len()
     );
+
+    writeln!(
+        stdin,
+        "{}",
+        json!({
+            "version": 1,
+            "id": "instances",
+            "op": "instances",
+            "mode": "bm25",
+            "max_tokens": 2048,
+            "detail": "full",
+            "query": "liquidation"
+        })
+    )
+    .unwrap();
+    stdin.flush().unwrap();
+    let instances = read_json(&mut stdout);
+    assert_eq!(instances["ok"], true);
+    assert_eq!(instances["selected"].as_array().unwrap().len(), 0);
 
     writeln!(
         stdin,

@@ -40,6 +40,13 @@ applicability. It has no inferred specialization edges. Its inventory covers a p
 retains its existing `fm:` IDs and evaluation labels; the two files are not silently
 merged or deduplicated.
 
+`import-bastet` verifies the input CSV's SHA-256 and imports only rows with a Tag.
+Tags and atomic comma-separated Subtags become failure modes; labeled findings become
+`finding` nodes with their exact CSV descriptions and classification facets. A
+Tag/Subtag specialization is emitted only when the source row has one unambiguous Tag.
+Multi-tag rows keep every label on the finding without guessing pairings. The external
+dataset is not bundled in this repository and remains under CC-BY-NC-4.0.
+
 Code excerpts contain `language`, a registry `source` ID already attached to the
 node, positive one-based `start_line`, and nonempty `text`. Text and whitespace
 are retained exactly. The engine validates associations, not source file contents

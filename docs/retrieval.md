@@ -7,10 +7,12 @@ alive behind a versioned JSON-lines protocol; ordinary CLI commands reload them.
 
 Start `buggraph serve CORPUS MODEL` and wait for its readiness line. Each subsequent
 stdin line is one request and produces exactly one stdout line. `op: "inventory"`
-returns every node and edge as a self-describing routing table. Bundle requests use
+returns every node and edge as a self-describing routing table; `op: "taxonomy"`
+omits concrete findings and their instance edges. Bundle requests use
 the ordinary retrieval fields plus `version`, a correlation `id`, and `op: "bundle"`.
 The response carries the exact token-counted bundle in `context`; extract that string
-unchanged before forwarding it to a model. `op: "show"` accepts `record_id`. Errors
+unchanged before forwarding it to a model. `op: "instances"` uses the same bundle
+fields but ranks only concrete findings. `op: "show"` accepts `record_id`. Errors
 are per request, so malformed input does not discard the loaded index. EOF stops the
 process.
 
@@ -30,12 +32,19 @@ model-token count available through the library or service response. It omits fu
 definitions and provenance metadata; retrieve those by ID with `show` or a full bundle.
 The inventory does not rank or remove classes.
 
+`taxonomy CORPUS MODEL` is the smaller exhaustive routing layer for corpora that also
+contain concrete findings. It retains every failure mode, property, and relationship
+between those classes. `instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [facets
+...]` then searches only findings, so a caller can select a Tag or Subtag facet before
+spending tokens on source examples.
+
 `id_order` returns failure modes in stable ID order, the original flat baseline.
 `bm25` ranks positive lexical matches. `bm25_ancestors` interleaves each match with
 its unique broader failure modes, nearest ancestors first. Ancestors retain the
 originating score; they are structural context, not independent semantic matches.
 
-BM25 indexes summary, definition, applicability, and facets. Exclusions and source
+BM25 maintains separate failure-mode and finding indexes over summary, definition,
+applicability, and facets. Exclusions and source
 titles are not positive relevance evidence. Terms are Unicode alphanumeric runs,
 lowercased; query terms are deduplicated. There is no stemming, learned synonym
 expansion, embedding service, relevance threshold, or semantic negation handling.
