@@ -22,6 +22,8 @@ defaults. All modes use the same corpus, judgments, token budget, and record cap
 | test | bm25_ancestors | 1.000 | 1.000 | 1.000 | 0.667 | 304.3 |
 
 The raw report includes [every retrieved ID and per-case metric](../data/eval-results.json).
+The [follow-up experiment](experiments.md) removes redundant ancestor labels and
+finds no gain in specific-class recall from graph expansion on this suite.
 Ancestor expansion recovers explicitly labeled broader concepts in this suite. Both
 lexical modes return results for the near-miss exclusion queries: lexical retrieval
 does not decide semantic applicability. The perfect positive scores on some rows

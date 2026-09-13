@@ -14,6 +14,29 @@ The starter corpus has 19 failure modes, four properties, and 16 pinned OWASP so
 The evaluation includes authored diagnostic queries and publishes every result.
 Source checking was AI-assisted; independent expert review is still needed.
 
+## Why use it
+
+Buggraph makes security knowledge easier to retrieve, cite, and budget. It does not
+currently establish that an agent finds more vulnerabilities.
+
+| Benefit | What is available now |
+| --- | --- |
+| Smaller context | Retrieve relevant summaries within an exact token cap, then expand selected records. |
+| Reusable knowledge | Stable failure-mode IDs, source references, applicability notes, and exclusions. |
+| Explainable relationships | Inspect broader classes and shared properties without duplicating records. |
+| Auditable assessment | Record evidence and unresolved questions separately from nodes visited. |
+
+In [32 follow-up evaluations](docs/experiments.md), reducing the cap from 512 to 128
+tokens preserved specific-class recall on the small authored test set while reducing
+mean returned context by 68%. Graph expansion added broader context but **no additional
+specific-class recall**. Both lexical modes still returned matches for exclusion
+near misses. These are retrieval results, not proven improvements in an agent's
+reasoning, total token spend, or vulnerability detection.
+
+Ultrafuzz is a potential consumer. The [comparison plan](docs/experiments.md#ultrafuzz-comparison)
+keeps knowledge retrieval separate from campaign execution; no Ultrafuzz integration
+or end-to-end result is claimed.
+
 ## Getting started
 
 Install [Rust](https://rustup.rs), then build with the pinned toolchain:
@@ -55,6 +78,8 @@ buggraph eval data/curated.json data/eval.json gpt-4o 2048 3
 The suite reports precision, recall, MRR, nDCG, negative-query behavior, and context
 tokens. These are small retrieval diagnostics, not vulnerability-detection results.
 See [results and limitations](docs/evaluation.md) and [performance measurements](BENCHMARKS.md).
+The [follow-up experiments](docs/experiments.md) test budget sensitivity and remove
+redundant ancestor labels to distinguish broader context from specific-class recall.
 
 ## Development
 
@@ -62,6 +87,7 @@ See [results and limitations](docs/evaluation.md) and [performance measurements]
 cargo fmt --all -- --check
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked --all-targets
+python3 -m unittest discover -s scripts -p 'test_*.py'
 ```
 
 CI runs checks on Linux and macOS. Code is MIT; the starter data is CC-BY-SA-4.0.

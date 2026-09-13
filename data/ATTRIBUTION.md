@@ -23,6 +23,9 @@ from audits or incidents are included.
 Topic groups are disjoint across dev/test, but the same author created the corpus
 adaptations and questions. This is not independent evidence of retrieval quality on
 unseen audit reports. `eval-results.json` records reproducible local results.
+`experiment-results.json` records all budget and label-ablation runs, including
+the transformed relevance labels and per-case output. Transforming labels does not
+make the suite independent or remove its lexical and authoring biases.
 
 Files under `data/` use CC-BY-SA-4.0. Retain attribution and identify changes when
 redistributing adaptations. Linked sources retain their upstream terms. Code and
