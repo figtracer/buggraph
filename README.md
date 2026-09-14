@@ -1,11 +1,11 @@
-# buggraph
+# bugraph
 
-[![CI](https://github.com/figtracer/buggraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/buggraph/actions/workflows/ci.yml)
+[![CI](https://github.com/figtracer/bugraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/bugraph/actions/workflows/ci.yml)
 
 Route an UltraFuzz threat model to the most relevant OWASP bug classes in about
 8.2 ms, locally and with zero model tokens.
 
-Buggraph compiles the OWASP Smart Contract Security Project into a Rust-searchable
+Bugraph compiles the OWASP Smart Contract Security Project into a Rust-searchable
 DAG, ranks its failure modes from threats and invariants, and returns a fixed-size
 route. Agents receive the selected complete descriptions and code examples instead
 of reading and comparing the whole OWASP catalog.
@@ -26,7 +26,7 @@ categories, represented by 168 nodes and 167 edges.
 | --- | ---: |
 | Full UltraFuzz OWASP planner catalog | 143,407 GPT-5.6 tokens |
 | UltraFuzz capability registry used before routing | 272 GPT-5.6 tokens |
-| Buggraph route selection | 0 model tokens |
+| Bugraph route selection | 0 model tokens |
 | 5 × 1,000 one-shot K=16 routes | 8.17 ms median each |
 | Route + K=16 UltraFuzz goal plan | 0 model tokens; 8.92 ms median |
 
@@ -39,14 +39,14 @@ imports 104 classes, 572 audit findings, and 846 edges.
 ## Use
 
 ```sh
-git clone https://github.com/figtracer/buggraph.git
-cd buggraph
+git clone https://github.com/figtracer/bugraph.git
+cd bugraph
 cargo install --path . --locked
 
-buggraph route-ultrafuzz-bundle data/owasp.json threat-model.json gpt-4o 8192 16 full --compact
-buggraph route-ultrafuzz-plan data/owasp.json threat-model.json vulnerability-db/catalog.json 16
-buggraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
-buggraph explore data/owasp.json gpt-4o 4096 full 8 2 "liquidation denial of service" --compact
+bugraph route-ultrafuzz-bundle data/owasp.json threat-model.json gpt-4o 8192 16 full --compact
+bugraph route-ultrafuzz-plan data/owasp.json threat-model.json vulnerability-db/catalog.json 16
+bugraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
+bugraph explore data/owasp.json gpt-4o 4096 full 8 2 "liquidation denial of service" --compact
 ```
 
 See [retrieval](docs/retrieval.md), [encoding](docs/packing.md),

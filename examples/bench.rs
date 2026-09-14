@@ -1,6 +1,6 @@
 //! Reproducible synthetic comparison of flat filtering and indexed filtering.
 
-use buggraph::{Corpus, Graph, Kind, Node};
+use bugraph::{Corpus, Graph, Kind, Node};
 use std::{env, hint::black_box, time::Instant};
 
 fn main() {

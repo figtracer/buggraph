@@ -259,7 +259,7 @@ impl Graph {
             });
         }
         Ok(UltraFuzzRoute {
-            schema: "buggraph/ultrafuzz-route-v1",
+            schema: "bugraph/ultrafuzz-route-v1",
             corpus_revision: &self.corpus().revision,
             threat_model_sha256: format!("{:x}", Sha256::digest(threat_model)),
             query_count: queries.len(),
@@ -453,7 +453,7 @@ impl Graph {
                     "title": record.title,
                     "goal_prompt": format!("Your /goal is to find a vulnerability of type {{{{class:{}}}}} using {threat_placeholders}.", record.id),
                     "replacements": replacements,
-                    "selection_rationale": "Buggraph routed this class from the verified threat model using local deterministic retrieval.",
+                    "selection_rationale": "Bugraph routed this class from the verified threat model using local deterministic retrieval.",
                 })
             })
             .collect::<Vec<_>>();
@@ -706,7 +706,7 @@ mod tests {
         .unwrap();
         let graph = graph();
         let route = graph.route_ultrafuzz(&bytes, 2).unwrap();
-        assert_eq!(route.schema, "buggraph/ultrafuzz-route-v1");
+        assert_eq!(route.schema, "bugraph/ultrafuzz-route-v1");
         assert_eq!(route.query_count, 2);
         assert_eq!(route.selected[0].id, "rounding");
         assert_eq!(route.selected.len(), 1);

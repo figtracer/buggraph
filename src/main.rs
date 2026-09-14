@@ -1,6 +1,6 @@
 //! Local JSON interface for taxonomy validation and knowledge retrieval.
 
-use buggraph::{
+use bugraph::{
     BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, Ledger, RetrievalMode,
     TokenCounter, expand_bundle, import_bastet, import_owasp,
 };
@@ -13,7 +13,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph route-ultrafuzz CORPUS THREAT_MODEL MAX_CLASSES\n       buggraph route-ultrafuzz-plan CORPUS THREAT_MODEL PLANNER_CATALOG MAX_CLASSES\n       buggraph route-ultrafuzz-bundle CORPUS THREAT_MODEL MODEL MAX_TOKENS MAX_CLASSES DETAIL [--compact]\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: bugraph validate CORPUS\n       bugraph inventory CORPUS MODEL\n       bugraph taxonomy CORPUS MODEL\n       bugraph route-ultrafuzz CORPUS THREAT_MODEL MAX_CLASSES\n       bugraph route-ultrafuzz-plan CORPUS THREAT_MODEL PLANNER_CATALOG MAX_CLASSES\n       bugraph route-ultrafuzz-bundle CORPUS THREAT_MODEL MODEL MAX_TOKENS MAX_CLASSES DETAIL [--compact]\n       bugraph context CORPUS MAX_BYTES [dimension:value ...]\n       bugraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       bugraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       bugraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       bugraph resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...] [--compact]\n       bugraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       bugraph serve CORPUS MODEL\n       bugraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       bugraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       bugraph expand BUNDLE_JSON\n       bugraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       bugraph show CORPUS ID\n       bugraph descendants CORPUS ID\n       bugraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
@@ -113,7 +113,7 @@ impl ServeRequest {
     }
 }
 
-fn context_response(id: String, context: buggraph::RankedContext<'_>) -> Value {
+fn context_response(id: String, context: bugraph::RankedContext<'_>) -> Value {
     serde_json::json!({
         "version": 1,
         "id": id,
@@ -125,7 +125,7 @@ fn context_response(id: String, context: buggraph::RankedContext<'_>) -> Value {
     })
 }
 
-fn exploration_response(id: String, result: buggraph::ExplorationContext<'_>) -> Value {
+fn exploration_response(id: String, result: bugraph::ExplorationContext<'_>) -> Value {
     let selected = result
         .context
         .hits
