@@ -14,7 +14,9 @@ const RESULTS_PER_QUERY: usize = 10;
 // difference between a precise first hit and generic records repeated near the
 // bottom of many lists, allowing the latter to crowd out the former.
 const RRF_OFFSET: usize = 0;
-const CATEGORY_REPEAT_PENALTY: f64 = 0.25;
+// Prefer category breadth when relevance is close, while retaining a clearly
+// stronger target-specific result from an already represented category.
+const CATEGORY_REPEAT_PENALTY: f64 = 0.15;
 
 #[derive(Deserialize)]
 struct ThreatModel {
@@ -668,6 +670,16 @@ mod tests {
             + reciprocal_rank(COVERAGE_GAP_WEIGHT, 3);
 
         assert!(specific > repeated_generic);
+    }
+
+    #[test]
+    fn category_diversity_is_a_soft_penalty() {
+        let specific_repeat = adjusted_score(3.0, Some(1));
+        let weaker_new_category = adjusted_score(2.5, None);
+        let fourth_repeat = adjusted_score(3.0, Some(4));
+
+        assert!(specific_repeat > weaker_new_category);
+        assert!(fourth_repeat < weaker_new_category);
     }
 
     #[test]
