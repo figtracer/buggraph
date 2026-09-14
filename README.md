@@ -3,7 +3,7 @@
 [![CI](https://github.com/figtracer/buggraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/buggraph/actions/workflows/ci.yml)
 
 Route an UltraFuzz threat model to the most relevant OWASP bug classes in about
-8.5 ms, locally and with zero model tokens.
+8.2 ms, locally and with zero model tokens.
 
 Buggraph compiles the OWASP Smart Contract Security Project into a Rust-searchable
 DAG, ranks its failure modes from threats and invariants, and returns a fixed-size
@@ -27,7 +27,7 @@ categories, represented by 168 nodes and 167 edges.
 | Full UltraFuzz OWASP planner catalog | 143,407 GPT-5.6 tokens |
 | UltraFuzz capability registry used before routing | 272 GPT-5.6 tokens |
 | Buggraph route selection | 0 model tokens |
-| 1,000 one-shot K=16 routes | 8.49 ms each |
+| 5 × 1,000 one-shot K=16 routes | 8.17 ms median each |
 
 The route benchmark includes process startup, corpus parsing, BM25 ranking,
 weighted fusion, hashing, and JSON serialization.
