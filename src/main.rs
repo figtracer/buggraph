@@ -13,7 +13,7 @@ use std::{
     process::ExitCode,
 };
 
-const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph route-ultrafuzz CORPUS THREAT_MODEL MAX_CLASSES\n       buggraph route-ultrafuzz-bundle CORPUS THREAT_MODEL MODEL MAX_TOKENS MAX_CLASSES DETAIL [--compact]\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
+const USAGE: &str = "Usage: buggraph validate CORPUS\n       buggraph inventory CORPUS MODEL\n       buggraph taxonomy CORPUS MODEL\n       buggraph route-ultrafuzz CORPUS THREAT_MODEL MAX_CLASSES\n       buggraph route-ultrafuzz-plan CORPUS THREAT_MODEL PLANNER_CATALOG MAX_CLASSES\n       buggraph route-ultrafuzz-bundle CORPUS THREAT_MODEL MODEL MAX_TOKENS MAX_CLASSES DETAIL [--compact]\n       buggraph context CORPUS MAX_BYTES [dimension:value ...]\n       buggraph search CORPUS MODE MODEL MAX_TOKENS QUERY [dimension:value ...]\n       buggraph bundle CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph instances CORPUS MODE MODEL MAX_TOKENS DETAIL QUERY [dimension:value ...] [--compact]\n       buggraph resolve CORPUS MODEL MAX_TOKENS DETAIL ID [ID ...] [--compact]\n       buggraph explore CORPUS MODEL MAX_TOKENS DETAIL MAX_DIRECT DEPTH QUERY [dimension:value ...] [--compact]\n       buggraph serve CORPUS MODEL\n       buggraph import-owasp SOURCE_ROOT COMMIT OUTPUT\n       buggraph import-bastet CSV SHA256 SOURCE_URL OUTPUT\n       buggraph expand BUNDLE_JSON\n       buggraph eval CORPUS SUITE MODEL MAX_TOKENS K\n       buggraph show CORPUS ID\n       buggraph descendants CORPUS ID\n       buggraph coverage CORPUS LEDGER\nModes: id_order, bm25, bm25_ancestors\nDetail: summary, full";
 
 #[derive(serde::Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
@@ -446,6 +446,19 @@ fn run() -> Result<(), Box<dyn Error>> {
             "{}",
             serde_json::to_string_pretty(&route)?
         )?;
+        return Ok(());
+    }
+    if args[0] == "route-ultrafuzz-plan" && args.len() == 5 {
+        let threat_model = fs::read(&args[2])?;
+        let planner_catalog = fs::read(&args[3])?;
+        let (route, plan) =
+            graph.route_ultrafuzz_plan(&threat_model, &planner_catalog, args[4].parse()?)?;
+        writeln!(
+            io::stdout().lock(),
+            "{}",
+            serde_json::to_string_pretty(&plan)?
+        )?;
+        writeln!(io::stderr().lock(), "{}", serde_json::to_string(&route)?)?;
         return Ok(());
     }
     if args[0] == "route-ultrafuzz-bundle" && (args.len() == 7 || args.len() == 8) {
