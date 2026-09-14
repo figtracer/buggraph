@@ -2,6 +2,7 @@
 
 use crate::{Graph, RetrievalMode};
 use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value, json};
 use sha2::{Digest, Sha256};
 use std::collections::{HashMap, HashSet};
 
@@ -31,6 +32,10 @@ struct ThreatModel {
 struct Capability {
     id: String,
     status: CapabilityStatus,
+    #[serde(default)]
+    rationale: Option<String>,
+    #[serde(default)]
+    evidence: Vec<Value>,
 }
 
 #[derive(Deserialize)]
@@ -73,6 +78,34 @@ struct Threat {
     invariant_ids: Vec<String>,
     #[serde(default)]
     attack_surface_ids: Vec<String>,
+}
+
+#[derive(Deserialize)]
+struct PlannerCatalog {
+    schema_version: String,
+    database_schema_version: u64,
+    database_aggregate_sha256: String,
+    records: Vec<PlannerRecord>,
+}
+
+#[derive(Deserialize)]
+struct PlannerRecord {
+    id: String,
+    title: String,
+    capabilities: PlannerCapabilities,
+    source_sha256: String,
+    source_size_bytes: u64,
+    selected_artifact_path: String,
+}
+
+#[derive(Default, Deserialize)]
+struct PlannerCapabilities {
+    #[serde(default)]
+    required: Vec<String>,
+    #[serde(default)]
+    optional: Vec<String>,
+    #[serde(default)]
+    incompatible: Vec<String>,
 }
 
 struct Query {
@@ -230,6 +263,275 @@ impl Graph {
             selected,
         })
     }
+
+    /// Build the complete UltraFuzz goal plan locally from a routed planner catalog.
+    pub fn route_ultrafuzz_plan(
+        &self,
+        threat_model: &[u8],
+        planner_catalog: &[u8],
+        max_classes: usize,
+    ) -> Result<(UltraFuzzRoute<'_>, Value), String> {
+        let model = serde_json::from_slice::<ThreatModel>(threat_model)
+            .map_err(|error| format!("invalid threat model: {error}"))?;
+        let catalog = serde_json::from_slice::<PlannerCatalog>(planner_catalog)
+            .map_err(|error| format!("invalid planner catalog: {error}"))?;
+        if catalog.schema_version != "ultrafuzz.vulnerability-db.planner-catalog.v1" {
+            return Err(format!(
+                "unsupported planner catalog schema: {}",
+                catalog.schema_version
+            ));
+        }
+        let route = self.route_ultrafuzz(threat_model, max_classes)?;
+        let records = catalog
+            .records
+            .iter()
+            .map(|record| (record.id.as_str(), record))
+            .collect::<HashMap<_, _>>();
+        let routed_ids = route
+            .selected
+            .iter()
+            .map(|selection| ultrafuzz_class_id(selection.id))
+            .collect::<Vec<_>>();
+        if routed_ids.len() != catalog.records.len()
+            || routed_ids
+                .iter()
+                .any(|id| !records.contains_key(id.as_str()))
+        {
+            return Err(
+                "planner catalog must contain every routed class and no other records".into(),
+            );
+        }
+
+        let capabilities = model
+            .capabilities
+            .iter()
+            .map(|capability| (capability.id.as_str(), capability))
+            .collect::<HashMap<_, _>>();
+        let routed_records = route
+            .selected
+            .iter()
+            .zip(routed_ids.iter())
+            .map(|(selection, id)| {
+                (
+                    selection,
+                    *records
+                        .get(id.as_str())
+                        .expect("routed catalog membership was checked"),
+                )
+            })
+            .collect::<Vec<_>>();
+        let mut applicable = Vec::new();
+        let decisions = routed_records
+            .iter()
+            .map(|(_, record)| {
+                let decisive = record
+                    .capabilities
+                    .required
+                    .iter()
+                    .any(|id| capabilities.get(id.as_str()).is_some_and(|value| matches!(value.status, CapabilityStatus::Absent)))
+                    || record.capabilities.incompatible.iter().any(|id| {
+                        capabilities
+                            .get(id.as_str())
+                            .is_some_and(|value| matches!(value.status, CapabilityStatus::Present))
+                    });
+                if !decisive {
+                    applicable.push(record.id.as_str());
+                }
+                let checks = [
+                    ("required", &record.capabilities.required),
+                    ("optional", &record.capabilities.optional),
+                    ("incompatible", &record.capabilities.incompatible),
+                ]
+                .into_iter()
+                .flat_map(|(requirement, ids)| {
+                    let capabilities = &capabilities;
+                    ids.iter().map(move |id| {
+                        let capability = capabilities.get(id.as_str());
+                        json!({
+                            "capability_id": id,
+                            "requirement": requirement,
+                            "observed_status": capability.map_or("unknown", |value| value.status.as_str()),
+                            "evidence": capability.map_or_else(Vec::new, |value| value.evidence.clone()),
+                            "rationale": capability.map_or_else(
+                                || "This capability was not established by the upstream threat model.".to_owned(),
+                                |value| value.rationale.clone().unwrap_or_else(|| "Not recorded in the upstream threat model.".to_owned()),
+                            ),
+                        })
+                    })
+                })
+                .collect::<Vec<_>>();
+                json!({
+                    "class_id": record.id,
+                    "decision": if decisive { "inapplicable" } else { "applicable" },
+                    "checks": checks,
+                    "rationale": if decisive {
+                        "A required capability is proven absent or an incompatible capability is proven present."
+                    } else {
+                        "No required capability is proven absent and no incompatible capability is proven present."
+                    },
+                })
+            })
+            .collect::<Vec<_>>();
+
+        let selected_record = |record: &PlannerRecord| {
+            json!({
+                "id": record.id,
+                "path": record.selected_artifact_path,
+                "sha256": record.source_sha256,
+                "size_bytes": record.source_size_bytes,
+            })
+        };
+        let class_goals = routed_records
+            .iter()
+            .filter(|(_, record)| applicable.contains(&record.id.as_str()))
+            .map(|(selection, record)| {
+                let threat_ids = model
+                    .threats
+                    .iter()
+                    .filter(|threat| {
+                        let query_id = format!("threat:{}", threat.id);
+                        selection
+                            .evidence
+                            .iter()
+                            .any(|evidence| evidence.query_id == query_id)
+                    })
+                    .map(|threat| threat.id.as_str())
+                    .collect::<Vec<_>>();
+                let coverage_gap = threat_ids.is_empty();
+                let threat_keys = if coverage_gap {
+                    vec!["threat-model:coverage-gap"]
+                } else {
+                    threat_ids.clone()
+                };
+                let mut replacements = Map::new();
+                replacements.insert(format!("class:{}", record.id), json!(record.title));
+                if coverage_gap {
+                    replacements.insert(
+                        "threat-model:coverage-gap".into(),
+                        json!(format!("Unmodeled coverage for {}", record.title)),
+                    );
+                } else {
+                    for threat in model
+                        .threats
+                        .iter()
+                        .filter(|threat| threat_ids.contains(&threat.id.as_str()))
+                    {
+                        replacements.insert(threat.id.clone(), json!(threat.title));
+                    }
+                }
+                let attack_surface_ids = model
+                    .threats
+                    .iter()
+                    .filter(|threat| threat_ids.contains(&threat.id.as_str()))
+                    .flat_map(|threat| threat.attack_surface_ids.iter().cloned())
+                    .fold(Vec::new(), |mut ids, id| {
+                        if !ids.contains(&id) {
+                            ids.push(id);
+                        }
+                        ids
+                    });
+                let threat_placeholders = threat_keys
+                    .iter()
+                    .map(|id| format!("{{{{{id}}}}}"))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                json!({
+                    "kind": "class",
+                    "id": record.id,
+                    "node_id": format!("dynamic:class:{}", record.id),
+                    "class_id": record.id,
+                    "class_replacement_key": format!("class:{}", record.id),
+                    "threat_ids": threat_ids,
+                    "threat_replacement_keys": threat_keys,
+                    "attack_surface_ids": attack_surface_ids,
+                    "coverage_gap": coverage_gap,
+                    "selected_record": selected_record(record),
+                    "title": record.title,
+                    "goal_prompt": format!("Your /goal is to find a vulnerability of type {{{{class:{}}}}} using {threat_placeholders}.", record.id),
+                    "replacements": replacements,
+                    "selection_rationale": "Buggraph routed this class from the verified threat model using local deterministic retrieval.",
+                })
+            })
+            .collect::<Vec<_>>();
+        let threat_goals = model
+            .threats
+            .iter()
+            .map(|threat| {
+                let class_ids = class_goals
+                    .iter()
+                    .filter(|goal| {
+                        goal["threat_ids"]
+                            .as_array()
+                            .is_some_and(|ids| ids.iter().any(|id| id == &threat.id))
+                    })
+                    .map(|goal| goal["id"].clone())
+                    .collect::<Vec<_>>();
+                json!({
+                    "kind": "threat",
+                    "id": threat.id,
+                    "node_id": format!("dynamic:threat:{}", threat.id),
+                    "threat_ids": [threat.id.as_str()],
+                    "class_ids": class_ids,
+                    "attack_surface_ids": threat.attack_surface_ids,
+                    "title": threat.title,
+                    "goal_prompt": format!("Your /goal is to find any vulnerability affecting {{{{{}}}}}.", threat.id),
+                    "replacements": { threat.id.clone(): threat.title.clone() },
+                    "selection_rationale": "The additive policy creates one goal for every verified modeled threat.",
+                })
+            })
+            .collect::<Vec<_>>();
+        let selected_records = routed_records
+            .iter()
+            .filter(|(_, record)| applicable.contains(&record.id.as_str()))
+            .map(|(_, record)| selected_record(record))
+            .collect::<Vec<_>>();
+        let plan = json!({
+            "schema_version": "ultrafuzz.goal-plan.v1",
+            "policy": "additive-v1",
+            "threat_model_sha256": format!("{:x}", Sha256::digest(threat_model)),
+            "vulnerability_database": {
+                "planner_catalog_schema_version": catalog.schema_version,
+                "snapshot_manifest_schema_version": "ultrafuzz.vulnerability-db.snapshot.v1",
+                "database_schema_version": catalog.database_schema_version,
+                "aggregate_sha256": catalog.database_aggregate_sha256,
+                "catalog_sha256": format!("{:x}", Sha256::digest(planner_catalog)),
+            },
+            "catalog_class_ids": routed_ids,
+            "modeled_threat_ids": model.threats.iter().map(|threat| threat.id.as_str()).collect::<Vec<_>>(),
+            "threat_goals": threat_goals,
+            "class_goals": class_goals,
+            "applicability_decisions": decisions,
+            "selected_class_records": selected_records,
+            "roaming_goal": {
+                "node_id": "goal-roaming",
+                "prompt_path": "strategies/roaming-goal.md",
+                "purpose": "Challenge the taxonomy and threat model for uncovered target-specific failures.",
+            },
+            "counts": {
+                "threats": model.threats.len(),
+                "applicable_classes": applicable.len(),
+                "inapplicable_classes": catalog.records.len() - applicable.len(),
+                "dynamic_goals": model.threats.len() + applicable.len(),
+                "total_goals": model.threats.len() + applicable.len() + 1,
+            },
+        });
+        Ok((route, plan))
+    }
+}
+
+impl CapabilityStatus {
+    fn as_str(&self) -> &'static str {
+        match self {
+            Self::Present => "present",
+            Self::Absent => "absent",
+            Self::Unknown => "unknown",
+        }
+    }
+}
+
+fn ultrafuzz_class_id(id: &str) -> String {
+    id.strip_prefix("scwe:")
+        .map_or_else(|| id.to_owned(), |number| format!("scwe-{number}"))
 }
 
 fn category(node: &crate::Node) -> Option<&str> {
@@ -396,5 +698,50 @@ mod tests {
 
         let wrong = br#"{"schema_version":"ultrafuzz.threat-model.v2"}"#;
         assert!(graph.route_ultrafuzz(wrong, 1).is_err());
+
+        let catalog = serde_json::to_vec(&json!({
+            "schema_version": "ultrafuzz.vulnerability-db.planner-catalog.v1",
+            "database_schema_version": 4,
+            "database_aggregate_sha256": "a".repeat(64),
+            "records": [{
+                "id": "rounding",
+                "title": "Rounding",
+                "capabilities": {
+                    "required": [],
+                    "optional": ["scsvs-comp"],
+                    "incompatible": []
+                },
+                "source_sha256": "b".repeat(64),
+                "source_size_bytes": 42,
+                "selected_artifact_path": "vulnerability-db/selected/rounding.md"
+            }]
+        }))
+        .unwrap();
+        let (_, plan) = graph.route_ultrafuzz_plan(&bytes, &catalog, 2).unwrap();
+        assert_eq!(plan["threat_goals"].as_array().unwrap().len(), 1);
+        assert_eq!(plan["class_goals"].as_array().unwrap().len(), 1);
+        assert_eq!(plan["class_goals"][0]["id"], "rounding");
+        assert_eq!(
+            plan["class_goals"][0]["threat_ids"],
+            json!(["threat:dilution"])
+        );
+        assert_eq!(plan["counts"]["dynamic_goals"], 2);
+        assert_eq!(
+            plan["applicability_decisions"][0]["checks"][0]["observed_status"],
+            "unknown"
+        );
+
+        let extra_catalog = serde_json::to_vec(&json!({
+            "schema_version": "ultrafuzz.vulnerability-db.planner-catalog.v1",
+            "database_schema_version": 4,
+            "database_aggregate_sha256": "a".repeat(64),
+            "records": []
+        }))
+        .unwrap();
+        assert!(
+            graph
+                .route_ultrafuzz_plan(&bytes, &extra_catalog, 2)
+                .is_err()
+        );
     }
 }

@@ -28,6 +28,7 @@ categories, represented by 168 nodes and 167 edges.
 | UltraFuzz capability registry used before routing | 272 GPT-5.6 tokens |
 | Buggraph route selection | 0 model tokens |
 | 5 × 1,000 one-shot K=16 routes | 8.17 ms median each |
+| Route + K=16 UltraFuzz goal plan | 0 model tokens; 8.92 ms median |
 
 The route benchmark includes process startup, corpus parsing, BM25 ranking,
 weighted fusion, hashing, and JSON serialization.
@@ -43,6 +44,7 @@ cd buggraph
 cargo install --path . --locked
 
 buggraph route-ultrafuzz-bundle data/owasp.json threat-model.json gpt-4o 8192 16 full --compact
+buggraph route-ultrafuzz-plan data/owasp.json threat-model.json vulnerability-db/catalog.json 16
 buggraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
 buggraph explore data/owasp.json gpt-4o 4096 full 8 2 "liquidation denial of service" --compact
 ```
