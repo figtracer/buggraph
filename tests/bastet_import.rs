@@ -1,4 +1,4 @@
-use buggraph::{
+use bugraph::{
     BundleFormat, BundleOptions, Detail, Graph, Relation, RetrievalMode, TokenCounter,
     import_bastet,
 };
@@ -8,7 +8,7 @@ use std::{fs, path::PathBuf};
 
 fn temporary_file(name: &str, contents: &str) -> PathBuf {
     let path =
-        std::env::temp_dir().join(format!("buggraph-bastet-{}-{name}.csv", std::process::id()));
+        std::env::temp_dir().join(format!("bugraph-bastet-{}-{name}.csv", std::process::id()));
     fs::write(&path, contents).unwrap();
     path
 }

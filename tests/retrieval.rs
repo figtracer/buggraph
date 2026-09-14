@@ -1,4 +1,4 @@
-use buggraph::{
+use bugraph::{
     BundleFormat, BundleOptions, Corpus, Detail, EvalSuite, Graph, RetrievalMode, TokenCounter,
 };
 use serde_json::{Value, json};
@@ -24,7 +24,7 @@ fn inventory_contains_every_node_and_edge_with_exact_model_tokens() {
     let counter = TokenCounter::for_model("gpt-4o").unwrap();
     let inventory = graph.inventory(&counter);
     let value = serde_json::from_str::<Value>(&inventory.jsonl).unwrap();
-    assert_eq!(value["schema"], "buggraph/inventory-v1");
+    assert_eq!(value["schema"], "bugraph/inventory-v1");
     assert_eq!(inventory.records, graph.corpus().nodes.len());
     assert_eq!(
         value["records"].as_array().unwrap().len(),
@@ -422,7 +422,7 @@ fn source_checked_records_require_resolvable_provenance() {
 
 #[test]
 fn search_cli_obeys_budget_and_unknown_model_fails() {
-    let bin = env!("CARGO_BIN_EXE_buggraph");
+    let bin = env!("CARGO_BIN_EXE_bugraph");
     let output = Command::new(bin)
         .args([
             "search",
@@ -580,9 +580,9 @@ fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
             .iter()
             .filter(|node| node.id.starts_with("scwe:"))
             .all(|node| !node.definition.is_empty()
-                && matches!(node.review, buggraph::ReviewStatus::Imported))
+                && matches!(node.review, bugraph::ReviewStatus::Imported))
     );
-    let output = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+    let output = Command::new(env!("CARGO_BIN_EXE_bugraph"))
         .args([
             "bundle",
             "data/owasp.json",
@@ -628,7 +628,7 @@ fn reference_corpus_and_bundle_cli_return_pinned_descriptions() {
 #[test]
 fn route_ultrafuzz_bundle_returns_ranked_records_in_one_call() {
     let threat_model =
-        std::env::temp_dir().join(format!("buggraph-route-bundle-{}.json", std::process::id()));
+        std::env::temp_dir().join(format!("bugraph-route-bundle-{}.json", std::process::id()));
     fs::write(
         &threat_model,
         serde_json::to_vec(&json!({
@@ -645,7 +645,7 @@ fn route_ultrafuzz_bundle_returns_ranked_records_in_one_call() {
         .unwrap(),
     )
     .unwrap();
-    let output = Command::new(env!("CARGO_BIN_EXE_buggraph"))
+    let output = Command::new(env!("CARGO_BIN_EXE_bugraph"))
         .args([
             "route-ultrafuzz-bundle",
             "data/owasp.json",
@@ -665,6 +665,6 @@ fn route_ultrafuzz_bundle_returns_ranked_records_in_one_call() {
     let bundle = serde_json::from_slice::<Value>(&output.stdout).unwrap();
     let metadata = serde_json::from_slice::<Value>(&output.stderr).unwrap();
     assert_eq!(bundle["records"].as_array().unwrap().len(), 2);
-    assert_eq!(metadata["schema"], "buggraph/ultrafuzz-route-v1");
+    assert_eq!(metadata["schema"], "bugraph/ultrafuzz-route-v1");
     assert_eq!(metadata["selected"].as_array().unwrap().len(), 2);
 }
