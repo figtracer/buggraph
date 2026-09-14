@@ -336,6 +336,35 @@ impl Graph {
                 return Err(format!("duplicate ID: {}", pair[0]));
             }
         }
+        self.resolve_ranked(ids, counter, options)
+    }
+
+    /// Resolve explicit IDs in caller priority order, so a token cap retains the
+    /// highest-priority records first.
+    pub fn resolve_ordered_with_options<'a>(
+        &'a self,
+        ids: &[&'a str],
+        counter: &TokenCounter,
+        options: BundleOptions,
+    ) -> Result<RankedContext<'a>, String> {
+        if ids.is_empty() {
+            return Err("resolve requires at least one ID".into());
+        }
+        let mut seen = HashSet::with_capacity(ids.len());
+        for id in ids {
+            if !seen.insert(*id) {
+                return Err(format!("duplicate ID: {id}"));
+            }
+        }
+        self.resolve_ranked(ids.to_vec(), counter, options)
+    }
+
+    fn resolve_ranked<'a>(
+        &'a self,
+        ids: Vec<&'a str>,
+        counter: &TokenCounter,
+        options: BundleOptions,
+    ) -> Result<RankedContext<'a>, String> {
         let ranked = ids
             .into_iter()
             .map(|id| {

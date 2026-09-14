@@ -2,49 +2,38 @@
 
 [![CI](https://github.com/figtracer/buggraph/actions/workflows/ci.yml/badge.svg)](https://github.com/figtracer/buggraph/actions/workflows/ci.yml)
 
-All 156 OWASP classes for UltraFuzz with 94% fewer planner-catalog tokens.
+Route an UltraFuzz threat model to the most relevant OWASP bug classes in about
+8.2 ms, locally and with zero model tokens.
 
-Buggraph gives agents a compact map of vulnerability classes, then fetches detailed
-descriptions, code examples, and concrete findings only when selected. The Rust CLI
-runs locally with stable IDs, exact model-token budgets, BM25 search, and typed
-taxonomy relationships.
+Buggraph compiles the OWASP Smart Contract Security Project into a Rust-searchable
+DAG, ranks its failure modes from threats and invariants, and returns a fixed-size
+route. Agents receive the selected complete descriptions and code examples instead
+of reading and comparing the whole OWASP catalog.
 
 ## Why use it
 
-- Cover the full vulnerability inventory without loading every document.
-- Route from categories to failure modes and concrete audit findings in one call.
-- Fetch selected records by ID with deterministic ordering and citations.
-- Keep retrieval local, fast, reproducible, and bounded to the agent's token budget.
-- Measure taxonomy coverage from the nodes and relationships explored.
+- Select exactly the number of bug classes a campaign can afford.
+- Keep ranking, graph traversal, token counting, and serialization off the model.
+- Retrieve complete pinned records with stable IDs and citations in one call.
+- Measure coverage from the categories, failure modes, and findings explored.
 
 ## Results
 
-A live `gpt-5.6-sol` request confirmed the locked tokenizer counts for the
-156-record OWASP snapshot:
+The pinned OWASP snapshot contains 156 complete SCWE records under 11 SCSVS
+categories, represented by 168 nodes and 167 edges.
 
-| Input | Tokens |
+| Operation | Result |
 | --- | ---: |
-| UltraFuzz planner catalog | 143,407 |
-| Buggraph routing inventory | 7,868 (−95%) |
-| UltraFuzz routing inventory with all 11 capabilities | 9,290 (−94%) |
-| Threat-model capability registry | 272 (>99% smaller) |
-| Routing inventory plus eight complete documents | 14,046 (−90%) |
+| Full UltraFuzz OWASP planner catalog | 143,407 GPT-5.6 tokens |
+| UltraFuzz capability registry used before routing | 272 GPT-5.6 tokens |
+| Buggraph route selection | 0 model tokens |
+| 5 × 1,000 one-shot K=16 routes | 8.17 ms median each |
 
-In a paired `gpt-5.6-luna` UltraFuzz campaign over the same source commit, graph,
-configuration, and eight selected classes:
+The route benchmark includes process startup, corpus parsing, BM25 ranking,
+weighted fusion, hashing, and JSON serialization.
 
-| Input | Planner fresh tokens | Threat hunts | Triaged true positives |
-| --- | ---: | ---: | ---: |
-| Full OWASP | 161,599 | 12 | 4 |
-| Buggraph | 156,469 (−3.2%) | 13 | 8 |
-
-Three findings absent from the full-OWASP run were reproduced independently with
-focused Foundry tests: fee-baseline dilution, strategy-removal accounting loss,
-and an ERC-4626 `maxMint` unit mismatch.
-
-Importing the source-labeled [Bastet dataset](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
-produced 104 classes, 572 findings, and 846 edges. Its complete class taxonomy uses
-7,916 tokens, compared with 56,689 tokens for all 676 records (−86%).
+The optional source-labeled [Bastet dataset](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
+imports 104 classes, 572 audit findings, and 846 edges.
 
 ## Use
 
@@ -53,10 +42,9 @@ git clone https://github.com/figtracer/buggraph.git
 cd buggraph
 cargo install --path . --locked
 
-buggraph inventory data/owasp.json gpt-4o
-buggraph bundle data/owasp.json bm25 gpt-4o 2048 full "liquidation denial of service" --compact
+buggraph route-ultrafuzz-bundle data/owasp.json threat-model.json gpt-4o 8192 16 full --compact
 buggraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
-buggraph instances corpus.json bm25 gpt-4o 4096 full "dust liquidation" tag:dos --compact
+buggraph explore data/owasp.json gpt-4o 4096 full 8 2 "liquidation denial of service" --compact
 ```
 
 See [retrieval](docs/retrieval.md), [encoding](docs/packing.md),

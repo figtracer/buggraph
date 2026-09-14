@@ -1,6 +1,13 @@
 {
-  "revision": "owasp-scwe-fefd476b-source-v3",
+  "revision": "owasp-scwe-fefd476b-source-v4",
   "sources": [
+    {
+      "id": "SCSVS",
+      "title": "Smart Contract Security Verification Standard (SCSVS)",
+      "url": "https://github.com/OWASP/owasp-scs/blob/fefd476b83074666ada2d816f103436a18e1ece4/docs/SCSVS/scsvs.yaml",
+      "revision": "fefd476b83074666ada2d816f103436a18e1ece4",
+      "license": "CC-BY-SA-4.0"
+    },
     {
       "id": "SCWE-001",
       "title": "SCWE-001: Improper Contract Architecture",
@@ -1095,6 +1102,215 @@
     }
   ],
   "nodes": [
+    {
+      "id": "scsvs:arch",
+      "kind": "failure_mode",
+      "summary": "Architecture, Design, and Threat Modeling: This group focuses on the design and architecture of smart contracts, ensuring that they are secure by design and built with modularity, upgradability, and separation of concerns in mind. It emphasizes the importance of threat modeling to identify and mitigate risks early in the design phase.",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-arch"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-ARCH"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:auth",
+      "kind": "failure_mode",
+      "summary": "Authorization and access control",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-auth"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-AUTH"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:block",
+      "kind": "failure_mode",
+      "summary": "Block and transaction properties",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-block"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-BLOCK"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:bridge",
+      "kind": "failure_mode",
+      "summary": "Cross-chain bridges",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-bridge"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-BRIDGE"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:code",
+      "kind": "failure_mode",
+      "summary": "Policies, Procedures, and Code Management",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-code"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-CODE"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:comm",
+      "kind": "failure_mode",
+      "summary": "Communication and external calls",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-comm"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-COMM"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:comp",
+      "kind": "failure_mode",
+      "summary": "Arithmetic and computation",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-comp"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-COMP"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:crypto",
+      "kind": "failure_mode",
+      "summary": "Cryptography",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-crypto"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-CRYPTO"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:defi",
+      "kind": "failure_mode",
+      "summary": "Decentralized finance",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-defi"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-DEFI"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:gov",
+      "kind": "failure_mode",
+      "summary": "Governance",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-gov"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-GOV"
+      ],
+      "review": "imported"
+    },
+    {
+      "id": "scsvs:oracle",
+      "kind": "failure_mode",
+      "summary": "Oracles and price feeds",
+      "definition": "",
+      "facets": [
+        "taxonomy:category",
+        "category:scsvs-oracle"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS-ORACLE"
+      ],
+      "review": "imported"
+    },
     {
       "id": "scwe:001",
       "kind": "failure_mode",
@@ -3902,7 +4118,861 @@
         "SCWE-156"
       ],
       "review": "imported"
+    },
+    {
+      "id": "taxonomy:scsvs",
+      "kind": "failure_mode",
+      "summary": "Smart contract security failure modes",
+      "definition": "",
+      "facets": [
+        "taxonomy:root"
+      ],
+      "exclusions": [],
+      "sources": [
+        "SCSVS"
+      ],
+      "applicability": [],
+      "mappings": [
+        "SCSVS"
+      ],
+      "review": "imported"
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "from": "scsvs:arch",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:code",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:gov",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:auth",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:comm",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:crypto",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:oracle",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:block",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:bridge",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:defi",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scsvs:comp",
+      "relation": "specializes",
+      "to": "taxonomy:scsvs"
+    },
+    {
+      "from": "scwe:001",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:002",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:003",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:004",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:005",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:006",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:051",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:052",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:064",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:070",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:071",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:080",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:098",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:099",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:117",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:118",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:119",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:145",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:150",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:016",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:017",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:018",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:019",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:020",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:038",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:045",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:049",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:050",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:105",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:106",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:129",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:139",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:147",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:155",
+      "relation": "specializes",
+      "to": "scsvs:auth"
+    },
+    {
+      "from": "scwe:024",
+      "relation": "specializes",
+      "to": "scsvs:block"
+    },
+    {
+      "from": "scwe:031",
+      "relation": "specializes",
+      "to": "scsvs:block"
+    },
+    {
+      "from": "scwe:065",
+      "relation": "specializes",
+      "to": "scsvs:block"
+    },
+    {
+      "from": "scwe:073",
+      "relation": "specializes",
+      "to": "scsvs:block"
+    },
+    {
+      "from": "scwe:127",
+      "relation": "specializes",
+      "to": "scsvs:block"
+    },
+    {
+      "from": "scwe:153",
+      "relation": "specializes",
+      "to": "scsvs:block"
+    },
+    {
+      "from": "scwe:032",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:033",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:034",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:087",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:094",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:096",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:132",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:133",
+      "relation": "specializes",
+      "to": "scsvs:bridge"
+    },
+    {
+      "from": "scwe:007",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:008",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:009",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:010",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:011",
+      "relation": "specializes",
+      "to": "scsvs:arch"
+    },
+    {
+      "from": "scwe:013",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:014",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:039",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:040",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:041",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:046",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:047",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:048",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:053",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:060",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:061",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:062",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:066",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:067",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:068",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:069",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:072",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:076",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:089",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:090",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:091",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:092",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:093",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:095",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:097",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:120",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:121",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:122",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:123",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:124",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:137",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:141",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:143",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:144",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:146",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:152",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:154",
+      "relation": "specializes",
+      "to": "scsvs:code"
+    },
+    {
+      "from": "scwe:021",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:022",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:023",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:035",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:042",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:063",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:103",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:104",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:107",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:108",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:128",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:134",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:138",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:149",
+      "relation": "specializes",
+      "to": "scsvs:comm"
+    },
+    {
+      "from": "scwe:057",
+      "relation": "specializes",
+      "to": "scsvs:comp"
+    },
+    {
+      "from": "scwe:083",
+      "relation": "specializes",
+      "to": "scsvs:comp"
+    },
+    {
+      "from": "scwe:110",
+      "relation": "specializes",
+      "to": "scsvs:comp"
+    },
+    {
+      "from": "scwe:111",
+      "relation": "specializes",
+      "to": "scsvs:comp"
+    },
+    {
+      "from": "scwe:135",
+      "relation": "specializes",
+      "to": "scsvs:comp"
+    },
+    {
+      "from": "scwe:025",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:026",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:027",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:054",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:055",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:056",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:074",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:084",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:114",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:115",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:131",
+      "relation": "specializes",
+      "to": "scsvs:crypto"
+    },
+    {
+      "from": "scwe:036",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:058",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:059",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:077",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:082",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:109",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:116",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:125",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:126",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:148",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:151",
+      "relation": "specializes",
+      "to": "scsvs:defi"
+    },
+    {
+      "from": "scwe:012",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:015",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:037",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:043",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:044",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:075",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:078",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:079",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:081",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:100",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:101",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:102",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:136",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:140",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:142",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:156",
+      "relation": "specializes",
+      "to": "scsvs:gov"
+    },
+    {
+      "from": "scwe:028",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:029",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:030",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:085",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:086",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:088",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:112",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:113",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    },
+    {
+      "from": "scwe:130",
+      "relation": "specializes",
+      "to": "scsvs:oracle"
+    }
+  ]
 }

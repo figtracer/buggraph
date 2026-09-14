@@ -21,6 +21,9 @@ pub use import::import_owasp;
 mod bastet;
 pub use bastet::import_bastet;
 
+mod ultrafuzz;
+pub use ultrafuzz::{UltraFuzzRoute, UltraFuzzRouteEvidence, UltraFuzzRouteSelection};
+
 /// Authoring format; revision identifies the exact corpus snapshot.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
