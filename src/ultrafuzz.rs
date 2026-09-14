@@ -3,17 +3,20 @@
 use crate::{Graph, RetrievalMode};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 const THREAT_WEIGHT: f64 = 4.0;
 const INVARIANT_WEIGHT: f64 = 2.0;
 const COVERAGE_GAP_WEIGHT: f64 = 1.0;
 const RESULTS_PER_QUERY: usize = 10;
 const RRF_OFFSET: usize = 60;
+const CATEGORY_REPEAT_PENALTY: f64 = 0.25;
 
 #[derive(Deserialize)]
 struct ThreatModel {
     schema_version: String,
+    #[serde(default)]
+    capabilities: Vec<Capability>,
     #[serde(default)]
     attack_surfaces: Vec<NamedItem>,
     #[serde(default)]
@@ -22,6 +25,20 @@ struct ThreatModel {
     threats: Vec<Threat>,
     #[serde(default)]
     coverage_gaps: Vec<NamedItem>,
+}
+
+#[derive(Deserialize)]
+struct Capability {
+    id: String,
+    status: CapabilityStatus,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum CapabilityStatus {
+    Present,
+    Absent,
+    Unknown,
 }
 
 #[derive(Deserialize)]
@@ -114,6 +131,12 @@ impl Graph {
             return Err("threat model has no routing queries".into());
         }
 
+        let absent_categories = model
+            .capabilities
+            .iter()
+            .filter(|capability| matches!(capability.status, CapabilityStatus::Absent))
+            .map(|capability| capability.id.as_str())
+            .collect::<HashSet<_>>();
         let mut scores = HashMap::<&str, f64>::new();
         let mut evidence = HashMap::<&str, Vec<UltraFuzzRouteEvidence>>::new();
         for query in &queries {
@@ -126,6 +149,7 @@ impl Graph {
                             .facets
                             .iter()
                             .any(|facet| facet.starts_with("taxonomy:"))
+                            && category(node).is_none_or(|value| !absent_categories.contains(value))
                     })
                 })
                 .take(RESULTS_PER_QUERY)
@@ -147,10 +171,43 @@ impl Graph {
         ranked.sort_unstable_by(|(left_id, left), (right_id, right)| {
             right.total_cmp(left).then(left_id.cmp(right_id))
         });
-        let selected = ranked
-            .into_iter()
-            .take(max_classes)
-            .map(|(id, score)| {
+        let mut category_counts = HashMap::<&str, usize>::new();
+        let mut selected = Vec::with_capacity(max_classes.min(ranked.len()));
+        while !ranked.is_empty() && selected.len() < max_classes {
+            let best = ranked
+                .iter()
+                .enumerate()
+                .max_by(|(_, (left_id, left)), (_, (right_id, right))| {
+                    let left_category = self.node(left_id).and_then(category);
+                    let right_category = self.node(right_id).and_then(category);
+                    let left = adjusted_score(
+                        *left,
+                        left_category
+                            .and_then(|value| category_counts.get(value))
+                            .copied(),
+                    );
+                    let right = adjusted_score(
+                        *right,
+                        right_category
+                            .and_then(|value| category_counts.get(value))
+                            .copied(),
+                    );
+                    left.total_cmp(&right).then(right_id.cmp(left_id))
+                })
+                .map(|(index, _)| index)
+                .expect("nonempty candidates have a best route");
+            let (id, raw_score) = ranked.swap_remove(best);
+            let node_category = self.node(id).and_then(category);
+            let score = adjusted_score(
+                raw_score,
+                node_category
+                    .and_then(|value| category_counts.get(value))
+                    .copied(),
+            );
+            if let Some(node_category) = node_category {
+                *category_counts.entry(node_category).or_default() += 1;
+            }
+            selected.push({
                 let mut evidence = evidence.remove(id).expect("a score has routing evidence");
                 evidence.sort_unstable_by(|left, right| {
                     left.query_id
@@ -162,8 +219,8 @@ impl Graph {
                     score,
                     evidence,
                 }
-            })
-            .collect();
+            });
+        }
         Ok(UltraFuzzRoute {
             schema: "buggraph/ultrafuzz-route-v1",
             corpus_revision: &self.corpus().revision,
@@ -173,6 +230,16 @@ impl Graph {
             selected,
         })
     }
+}
+
+fn category(node: &crate::Node) -> Option<&str> {
+    node.facets
+        .iter()
+        .find_map(|facet| facet.strip_prefix("category:"))
+}
+
+fn adjusted_score(score: f64, prior_category_selections: Option<usize>) -> f64 {
+    score / (1.0 + CATEGORY_REPEAT_PENALTY * prior_category_selections.unwrap_or_default() as f64)
 }
 
 impl ThreatModel {
@@ -268,7 +335,10 @@ mod tests {
                 kind: Kind::FailureMode,
                 summary: summary.into(),
                 definition: String::new(),
-                facets: Vec::new(),
+                facets: vec![format!(
+                    "category:scsvs-{}",
+                    if id == "rounding" { "comp" } else { "code" }
+                )],
                 exclusions: Vec::new(),
                 sources: Vec::new(),
                 applicability: Vec::new(),
@@ -312,6 +382,17 @@ mod tests {
         assert_eq!(route.selected.len(), 1);
         assert_eq!(route.threat_model_sha256.len(), 64);
         assert!(graph.route_ultrafuzz(&bytes, 0).is_err());
+
+        let mut absent = serde_json::from_slice::<serde_json::Value>(&bytes).unwrap();
+        absent["capabilities"] = json!([{"id":"scsvs-comp","status":"absent"}]);
+        let absent = serde_json::to_vec(&absent).unwrap();
+        assert!(
+            graph
+                .route_ultrafuzz(&absent, 2)
+                .unwrap()
+                .selected
+                .is_empty()
+        );
 
         let wrong = br#"{"schema_version":"ultrafuzz.threat-model.v2"}"#;
         assert!(graph.route_ultrafuzz(wrong, 1).is_err());
