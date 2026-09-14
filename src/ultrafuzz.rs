@@ -10,7 +10,10 @@ const THREAT_WEIGHT: f64 = 4.0;
 const INVARIANT_WEIGHT: f64 = 2.0;
 const COVERAGE_GAP_WEIGHT: f64 = 1.0;
 const RESULTS_PER_QUERY: usize = 10;
-const RRF_OFFSET: usize = 60;
+// These are short, target-specific result lists. An offset would flatten the
+// difference between a precise first hit and generic records repeated near the
+// bottom of many lists, allowing the latter to crowd out the former.
+const RRF_OFFSET: usize = 0;
 const CATEGORY_REPEAT_PENALTY: f64 = 0.25;
 
 #[derive(Deserialize)]
@@ -188,8 +191,7 @@ impl Graph {
                 .take(RESULTS_PER_QUERY)
                 .enumerate()
             {
-                *scores.entry(hit.id).or_default() +=
-                    query.weight / (RRF_OFFSET + index + 1) as f64;
+                *scores.entry(hit.id).or_default() += reciprocal_rank(query.weight, index + 1);
                 evidence
                     .entry(hit.id)
                     .or_default()
@@ -544,6 +546,10 @@ fn adjusted_score(score: f64, prior_category_selections: Option<usize>) -> f64 {
     score / (1.0 + CATEGORY_REPEAT_PENALTY * prior_category_selections.unwrap_or_default() as f64)
 }
 
+fn reciprocal_rank(weight: f64, rank: usize) -> f64 {
+    weight / (RRF_OFFSET + rank) as f64
+}
+
 impl ThreatModel {
     fn queries(&self) -> Vec<Query> {
         let invariants = self
@@ -652,6 +658,16 @@ mod tests {
             edges: Vec::new(),
         })
         .unwrap()
+    }
+
+    #[test]
+    fn reciprocal_rank_preserves_strong_specific_hits() {
+        let specific = reciprocal_rank(THREAT_WEIGHT, 1);
+        let repeated_generic = reciprocal_rank(THREAT_WEIGHT, 4)
+            + reciprocal_rank(INVARIANT_WEIGHT, 3)
+            + reciprocal_rank(COVERAGE_GAP_WEIGHT, 3);
+
+        assert!(specific > repeated_generic);
     }
 
     #[test]
