@@ -33,12 +33,13 @@ categories, represented by 168 nodes and 167 edges.
 The route benchmark includes process startup, corpus parsing, BM25 ranking,
 weighted fusion, hashing, and JSON serialization.
 
-Beyond OWASP, [vault standards](data/vaults.json) adds six curated failure modes
-and two properties from ERC-4626 and ERC-7540, with applicability notes and pinned
-sources. Search it with `bugraph bundle data/vaults.json bm25 gpt-4o 4096 full "vault previews"`.
+Beyond OWASP: six curated vault failure modes and two properties from
+[ERC-4626/7540](data/vaults.json), plus [62 Solidity compiler advisories](datasets/solidity/README.md)
+with summaries and all 66 affected-version entries. Each corpus is separately searchable.
 
 The optional source-labeled [Bastet dataset](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
-imports 104 classes, 572 audit findings, and 846 edges.
+imports 104 class labels, 572 tagged finding rows, and 846 edges from the tested
+snapshot; it is not bundled, and row tags do not establish completed review.
 
 ## Use
 
@@ -51,6 +52,7 @@ bugraph route-ultrafuzz-bundle data/owasp.json threat-model.json gpt-4o 8192 16 
 bugraph route-ultrafuzz-plan data/owasp.json threat-model.json vulnerability-db/catalog.json 16
 bugraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
 bugraph explore data/owasp.json gpt-4o 4096 full 8 2 "liquidation denial of service" --compact
+bugraph instances datasets/solidity/corpus.json bm25 gpt-4o 4096 full "ABI encoding"
 ```
 
 See [retrieval](docs/retrieval.md), [encoding](docs/packing.md),
@@ -64,5 +66,6 @@ cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked --all-targets
 ```
 
-Code is MIT. Bundled data is CC-BY-SA-4.0. External Bastet inputs use
+Code is MIT; `data/` is CC-BY-SA-4.0; the separate Solidity corpus is
+[GPL-3.0](datasets/solidity/LICENSE). External Bastet inputs use
 [CC-BY-NC-4.0](https://arxiv.org/html/2606.03387v1#S5).

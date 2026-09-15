@@ -32,4 +32,7 @@ jobs:
       - run: cargo test --locked --all-targets
       - run: cargo run --locked -- validate data/owasp.json
       - run: cargo run --locked -- validate data/curated.json
+      - run: cargo run --locked -- validate data/vaults.json
+      - run: cargo run --locked -- validate datasets/solidity/corpus.json
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py'
       - run: cargo run --locked -- eval data/curated.json data/eval.json gpt-4o 2048 3

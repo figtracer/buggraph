@@ -2,6 +2,12 @@
 
 Both `data/owasp.json` and `data/curated.json` contain a corpus revision, source
 registry, nodes, and typed edges.
+The separately selectable `datasets/solidity/corpus.json` holds compiler advisory
+summaries and affected-version alternatives under its own license. Advisories
+are finding nodes linked to a compiler-correctness category; repeated upstream
+identifiers retain all release-branch conditions in one record. This corpus does
+not add OWASP SCWE classes to the UltraFuzz planner catalog.
+
 The versioned JSON files are the editable source of truth. Corpus revision labels
 must change when definitions or relationships change; Git identifies exact content.
 
