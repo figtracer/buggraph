@@ -1,5 +1,5 @@
 {
-  "revision": "protocol-audits-v2",
+  "revision": "protocol-audits-v3",
   "sources": [
     {
       "id": "audit:size-h04",
@@ -76,6 +76,27 @@
       "title": "Cantina Managed Bitcorn OFT 3.2.1; R0bert and Om Parikh",
       "url": "https://cdn.cantina.xyz/reports/cantina_bitcorn_july2025.pdf",
       "revision": "sha256:cbbdb93db8c6d4b30210e975c48ee894e7260999e8f223f9d669260cf6e265bb",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:vault-v2-cantina-interest-deadline",
+      "title": "Cantina Morpho Vault V2 Competition 3.1.1; samuraii77 and co-reporters",
+      "url": "https://github.com/morpho-org/vault-v2/blob/a0ba9df0ea697a080c0de69c18b84738cfb3bef7/audits/2025-07-15-competition.pdf",
+      "revision": "sha256:a0b10221a8ec69bfc05dbb61251edbc3932457a19b13851ff6588494c19817bb",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:vault-v2-cantina-loss-calculation",
+      "title": "Cantina Morpho Vault V2 Competition 3.1.2; Audittens and co-reporters",
+      "url": "https://github.com/morpho-org/vault-v2/blob/a0ba9df0ea697a080c0de69c18b84738cfb3bef7/audits/2025-07-15-competition.pdf",
+      "revision": "sha256:a0b10221a8ec69bfc05dbb61251edbc3932457a19b13851ff6588494c19817bb",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:vault-v2-cantina-double-loss",
+      "title": "Cantina Morpho Vault V2 Competition 3.1.3; Audittens and co-reporters",
+      "url": "https://github.com/morpho-org/vault-v2/blob/a0ba9df0ea697a080c0de69c18b84738cfb3bef7/audits/2025-07-15-competition.pdf",
+      "revision": "sha256:a0b10221a8ec69bfc05dbb61251edbc3932457a19b13851ff6588494c19817bb",
       "license": "NOASSERTION"
     }
   ],
@@ -745,6 +766,157 @@
         "a29178f"
       ],
       "review": "source_checked"
+    },
+    {
+      "id": "mode:deadline-interest-accrual",
+      "kind": "failure_mode",
+      "summary": "Expired rate schedule erases unaccrued interest.",
+      "definition": "An interest controller returns zero after its deadline even when the next accrual spans time before that deadline. Earned interest from the earlier interval is omitted from recognized assets and share redemptions. Accrue each elapsed interval under the rate that applied to it.",
+      "applicability": [
+        "Interest accrues lazily when a user or administrator interacts.",
+        "A scheduled rate ends before the next accrual."
+      ],
+      "exclusions": [
+        "A checkpoint at the deadline or carry-forward of earned interest removes this path."
+      ],
+      "facets": [
+        "protocol:vault",
+        "operation:accrual",
+        "mechanism:rate-boundary",
+        "mode:deadline-interest-accrual"
+      ],
+      "sources": [
+        "audit:vault-v2-cantina-interest-deadline"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:stale-adapter-allocation-loss",
+      "kind": "failure_mode",
+      "summary": "Loss realization compares values from different accrual epochs.",
+      "definition": "Adapter allocation accounting updates on allocation changes while vault total assets also accrue interest between those changes. Comparing stale allocation against current redeemable value can revert or understate realized loss, leaving vault assets overstated. Reconcile valuation epochs before recognizing a loss.",
+      "applicability": [
+        "Vault interest accrues without synchronizing adapter allocations.",
+        "Loss recognition uses adapter allocation as its baseline."
+      ],
+      "exclusions": [
+        "An adapter baseline updated with the same accrual events removes this mismatch."
+      ],
+      "facets": [
+        "protocol:vault",
+        "operation:loss-recognition",
+        "mechanism:valuation-epoch",
+        "mode:stale-adapter-allocation-loss"
+      ],
+      "sources": [
+        "audit:vault-v2-cantina-loss-calculation"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:masked-loss-double-count",
+      "kind": "failure_mode",
+      "summary": "Cash inflow masks an adapter loss before it is realized again.",
+      "definition": "A vault interest controller estimates profit from the net change in cash and adapter value. When excess cash masks an adapter loss, the loss first suppresses profit that would otherwise be credited; a separate loss-realization call then deducts the same loss. Reconcile cash and adapter changes into one economic delta before updating share value.",
+      "applicability": [
+        "Cash balance can exceed recorded idle assets through donations or deallocation penalties.",
+        "Profit estimation and loss realization use separate baselines."
+      ],
+      "exclusions": [
+        "If the cash and adapter baselines are synchronized before either update, this double-counting path is absent."
+      ],
+      "facets": [
+        "protocol:vault",
+        "operation:accrual",
+        "operation:loss-recognition",
+        "mechanism:double-counted-loss",
+        "mode:masked-loss-double-count"
+      ],
+      "sources": [
+        "audit:vault-v2-cantina-double-loss"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:vault-v2-interest-deadline",
+      "kind": "finding",
+      "summary": "Morpho Vault V2 manual interest controller could omit pre-deadline accrual.",
+      "definition": "Cantina Vault V2 Competition 3.1.1 reported that a lazy accrual after the manual controller deadline could omit interest earned before it. The final report assigns Medium severity and contains no sponsor disposition for this finding.",
+      "applicability": [
+        "Historical audited snapshot at commit 5938a924 only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or remediation."
+      ],
+      "facets": [
+        "mode:deadline-interest-accrual",
+        "project:morpho-vault-v2",
+        "severity:medium",
+        "report-status:published-no-disposition"
+      ],
+      "sources": [
+        "audit:vault-v2-cantina-interest-deadline"
+      ],
+      "mappings": [
+        "3.1.1",
+        "audited-commit:5938a924"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:vault-v2-stale-loss",
+      "kind": "finding",
+      "summary": "Morpho Vault V2 adapter allocation lagged accrued vault assets during loss realization.",
+      "definition": "Cantina Vault V2 Competition 3.1.2 reported that allocation state lagged interest already included in total assets, making loss realization revert or underreport losses. The final report assigns Medium severity and contains no sponsor disposition for this finding.",
+      "applicability": [
+        "Historical audited snapshot at commit 5938a924 only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or remediation."
+      ],
+      "facets": [
+        "mode:stale-adapter-allocation-loss",
+        "project:morpho-vault-v2",
+        "severity:medium",
+        "report-status:published-no-disposition"
+      ],
+      "sources": [
+        "audit:vault-v2-cantina-loss-calculation"
+      ],
+      "mappings": [
+        "3.1.2",
+        "audited-commit:5938a924"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:vault-v2-double-loss",
+      "kind": "finding",
+      "summary": "Morpho Vault V2 controller could count a masked adapter loss twice.",
+      "definition": "Cantina Vault V2 Competition 3.1.3 reported that excess vault cash could mask an adapter loss during interest estimation, before realizeLoss deducted it again. The final report assigns Medium severity and contains no sponsor disposition for this finding.",
+      "applicability": [
+        "Historical audited snapshot at commit 5938a924 only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or remediation."
+      ],
+      "facets": [
+        "mode:masked-loss-double-count",
+        "project:morpho-vault-v2",
+        "severity:medium",
+        "report-status:published-no-disposition"
+      ],
+      "sources": [
+        "audit:vault-v2-cantina-double-loss"
+      ],
+      "mappings": [
+        "3.1.3",
+        "audited-commit:5938a924"
+      ],
+      "review": "source_checked"
     }
   ],
   "edges": [
@@ -937,6 +1109,51 @@
       "from": "finding:cantina:bitcorn-repayment",
       "relation": "instance_of",
       "to": "mode:paused-repayment-unwind"
+    },
+    {
+      "from": "mode:deadline-interest-accrual",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:deadline-interest-accrual",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:stale-adapter-allocation-loss",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:stale-adapter-allocation-loss",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:masked-loss-double-count",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:masked-loss-double-count",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "finding:cantina:vault-v2-interest-deadline",
+      "relation": "instance_of",
+      "to": "mode:deadline-interest-accrual"
+    },
+    {
+      "from": "finding:cantina:vault-v2-stale-loss",
+      "relation": "instance_of",
+      "to": "mode:stale-adapter-allocation-loss"
+    },
+    {
+      "from": "finding:cantina:vault-v2-double-loss",
+      "relation": "instance_of",
+      "to": "mode:masked-loss-double-count"
     }
   ]
 }
