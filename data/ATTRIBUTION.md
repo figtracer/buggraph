@@ -29,7 +29,7 @@ The 19 failure modes are source-checked; four property records remain draft.
 Source comparisons and adaptations were performed with OpenAI Codex assistance.
 No independent human review is claimed. This is not an exhaustive catalog, audit,
 list of affected deployments, or OWASP-endorsed taxonomy. No finding instances
-from audits or incidents are included.
+from audits or incidents are included in `curated.json`.
 
 `eval.json` contains original AI-authored diagnostic questions and relevance labels.
 Topic groups are disjoint across dev/test, but the same author created the corpus
@@ -53,3 +53,23 @@ and property relationships. Source checking was performed with OpenAI Codex
 assistance, without independent human review. These are standards-derived records,
 not published audit findings or claims of novel bug classes absent from OWASP.
 The corpus is separately selectable; `owasp.json` remains the pinned OWASP import.
+
+## Protocol audit findings
+
+`protocols.json` contains original factual summaries of five published findings
+and five generalized failure modes, four broader categories, and three properties.
+Sources are Code4rena's Size (2024-06), INIT Capital (2023-12), and prePO (2022-12)
+reports. Each source entry credits the primary reporter and co-reporters, links to
+the report section, and records the SHA-256 of the HTML observed on 2026-09-15.
+Original issue links identify the submissions; the reports supply final severity
+and sponsor disposition. Full author lists remain in the cited reports.
+
+The prose and graph relationships were curated with OpenAI Codex assistance and
+checked against those sources. `source_checked` does not mean independent human
+review or vulnerability reproduction. Fix claims are explicitly attributed to the
+report; no present-day deployment status is inferred.
+
+These original summaries and classifications use CC-BY-SA-4.0. Source reports retain
+their own rights: source license metadata is `NOASSERTION`, not a claim that report
+text is CC-licensed. Report text, code, and reproductions are not redistributed.
+The five-mode corpus is a starting collection, not an exhaustive audit taxonomy.

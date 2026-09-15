@@ -1,0 +1,497 @@
+{
+  "revision": "protocol-audits-v1",
+  "sources": [
+    {
+      "id": "audit:size-h04",
+      "title": "Code4rena 2024-06-size H-04; ether_sky and co-reporters",
+      "url": "https://code4rena.com/reports/2024-06-size#h-04-users-wont-liquidate-positions-because-the-logic-used-to-calculate-the-liquidators-profit-is-incorrect",
+      "revision": "sha256:a42ee1f2017b783ef822e3b8c6ac6b4c0b1541702ae27fd6bf9d4e8ceb4463ff",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:init-m09",
+      "title": "Code4rena 2023-12-initcapital M-09; rvierdiiev and co-reporters",
+      "url": "https://code4rena.com/reports/2023-12-initcapital#m-09-if-wlp-is-blacklisted-then-user-will-not-be-able-to-withdraw-it",
+      "revision": "sha256:1532745a1bc2a6a166c7fccfa2393b78a55a9ab817c5d8a719da09f9dd162954",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:init-m10",
+      "title": "Code4rena 2023-12-initcapital M-10; ladboy233 and rvierdiiev",
+      "url": "https://code4rena.com/reports/2023-12-initcapital#m-10-lack-of-way-to-handle-not-fully-repaid-bad-debt-after-liquidation-after-the-lending-pool-share-or-wlp-are-fully-seized",
+      "revision": "sha256:1532745a1bc2a6a166c7fccfa2393b78a55a9ab817c5d8a719da09f9dd162954",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:prepo-h01",
+      "title": "Code4rena 2022-12-prepo H-01; zaskoh and co-reporters",
+      "url": "https://code4rena.com/reports/2022-12-prepo#h-01-griefing--blocking--delaying-users-to-withdraw",
+      "revision": "sha256:a93b73232f2b9845241098ee45ff42af4c6a8f0d30ba0d48ef86ebcefe7077c3",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:prepo-m02",
+      "title": "Code4rena 2022-12-prepo M-02; Koolex and co-reporters",
+      "url": "https://code4rena.com/reports/2022-12-prepo#m-02-the-recipient-receives-free-collateral-token-if-an-erc20-token-that-deducts-a-fee-on-transfer-used-as-basetoken",
+      "revision": "sha256:a93b73232f2b9845241098ee45ff42af4c6a8f0d30ba0d48ef86ebcefe7077c3",
+      "license": "NOASSERTION"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "protocol:availability",
+      "kind": "failure_mode",
+      "summary": "Required protocol operations fail to make progress.",
+      "definition": "An otherwise eligible operation cannot complete under the intended lifecycle.",
+      "applicability": [],
+      "exclusions": [],
+      "facets": [
+        "impact:availability"
+      ],
+      "sources": [
+        "audit:size-h04",
+        "audit:init-m09",
+        "audit:prepo-h01"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "protocol:accounting",
+      "kind": "failure_mode",
+      "summary": "Protocol accounting diverges from economic state.",
+      "definition": "Recorded claims, obligations, or payments disagree with their specified economic meaning.",
+      "applicability": [],
+      "exclusions": [],
+      "facets": [
+        "impact:accounting"
+      ],
+      "sources": [
+        "audit:size-h04",
+        "audit:init-m10",
+        "audit:prepo-m02"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "protocol:liquidation",
+      "kind": "failure_mode",
+      "summary": "Liquidation fails its intended economic function.",
+      "definition": "Unhealthy positions require a viable settlement mechanism.",
+      "applicability": [],
+      "exclusions": [],
+      "facets": [
+        "operation:liquidation",
+        "protocol:lending"
+      ],
+      "sources": [
+        "audit:size-h04"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "protocol:withdrawal",
+      "kind": "failure_mode",
+      "summary": "Eligible withdrawals cannot complete.",
+      "definition": "Withdrawal controls prevent intended exits.",
+      "applicability": [],
+      "exclusions": [],
+      "facets": [
+        "operation:withdrawal"
+      ],
+      "sources": [
+        "audit:init-m09",
+        "audit:prepo-h01"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "property:protocol-progress",
+      "kind": "property",
+      "summary": "Eligible operations retain a completion path.",
+      "definition": "Lifecycle transitions preserve intended progress.",
+      "applicability": [],
+      "exclusions": [],
+      "facets": [
+        "impact:availability"
+      ],
+      "sources": [
+        "audit:init-m09",
+        "audit:prepo-h01"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "property:protocol-accounting",
+      "kind": "property",
+      "summary": "Claims reflect recoverable economic value.",
+      "definition": "Recognized claims reconcile with assets and realized losses.",
+      "applicability": [],
+      "exclusions": [],
+      "facets": [
+        "impact:accounting"
+      ],
+      "sources": [
+        "audit:init-m10",
+        "audit:prepo-m02"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "property:liquidation-reward",
+      "kind": "property",
+      "summary": "Liquidation compensation uses consistent units.",
+      "definition": "Compensation follows the documented reward model.",
+      "applicability": [],
+      "exclusions": [],
+      "facets": [
+        "operation:liquidation"
+      ],
+      "sources": [
+        "audit:size-h04"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:liquidation-reward-units",
+      "kind": "failure_mode",
+      "summary": "Liquidation rewards mix debt and collateral denominations.",
+      "definition": "A reward formula combines values measured in different token units. Decimal scaling then changes compensation and can remove the intended liquidation incentive. Normalize values into the payout denomination before applying reward arithmetic.",
+      "applicability": [
+        "Debt and collateral use different denominations."
+      ],
+      "exclusions": [
+        "Low market profitability alone does not establish a formula defect."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:liquidation",
+        "mechanism:unit-mismatch",
+        "mode:liquidation-reward-units"
+      ],
+      "sources": [
+        "audit:size-h04"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:delisted-collateral-exit",
+      "kind": "failure_mode",
+      "summary": "Collateral delisting disables existing withdrawals.",
+      "definition": "A listing check intended for admission also gates exit. Removing support then prevents withdrawal of previously accepted collateral. Separate admission policy from safe unwind eligibility.",
+      "applicability": [
+        "Collateral can be delisted after deposit."
+      ],
+      "exclusions": [
+        "Explicit temporary freezes with a documented exit process require separate assessment."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:withdrawal",
+        "mechanism:lifecycle-policy",
+        "mode:delisted-collateral-exit"
+      ],
+      "sources": [
+        "audit:init-m09"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:residual-bad-debt",
+      "kind": "failure_mode",
+      "summary": "Residual debt has no loss-recognition path.",
+      "definition": "After collateral exhaustion, residual debt remains booked without a settlement or write-off path. Accounting continues to treat unrecoverable obligations as value. Define explicit loss recognition for terminal debt states.",
+      "applicability": [
+        "Liquidation can exhaust collateral before debt."
+      ],
+      "exclusions": [
+        "Bad debt itself is not proof that its accounting is incorrect."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:debt-settlement",
+        "mechanism:loss-recognition",
+        "mode:residual-bad-debt"
+      ],
+      "sources": [
+        "audit:init-m10"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:withdrawal-epoch-scope",
+      "kind": "failure_mode",
+      "summary": "Withdrawal counters and reset state have different scopes.",
+      "definition": "Per-user usage counters rely on a shared period-reset marker. Period rollover may leave individual counters stale. Track period membership consistently with the scope of each quota.",
+      "applicability": [
+        "Withdrawals use periodically renewed user quotas."
+      ],
+      "exclusions": [
+        "An intentionally shared global quota is a different policy."
+      ],
+      "facets": [
+        "operation:withdrawal",
+        "mechanism:epoch-accounting",
+        "mode:withdrawal-epoch-scope"
+      ],
+      "sources": [
+        "audit:prepo-h01"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:net-receipt-credit",
+      "kind": "failure_mode",
+      "summary": "Deposit credit exceeds the assets actually received.",
+      "definition": "Accounting credits a requested transfer amount although token mechanics reduce net receipts. Claims and downstream accounting become inconsistent with backing. Reconcile credited value with actual supported-token receipt semantics.",
+      "applicability": [
+        "Supported assets may charge transfer fees."
+      ],
+      "exclusions": [
+        "A reliably enforced exclusion of such assets removes this prerequisite."
+      ],
+      "facets": [
+        "operation:deposit",
+        "mechanism:transfer-accounting",
+        "mode:net-receipt-credit"
+      ],
+      "sources": [
+        "audit:prepo-m02"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:c4:size-h04",
+      "kind": "finding",
+      "summary": "Size liquidation compensation used inconsistent units.",
+      "definition": "Size H-04 reports denomination-mismatched rewards. The sponsor confirmed the finding and reported a fix in PR 118.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments."
+      ],
+      "facets": [
+        "mode:liquidation-reward-units",
+        "project:size",
+        "severity:high",
+        "report-status:confirmed-fix-reported"
+      ],
+      "sources": [
+        "audit:size-h04"
+      ],
+      "mappings": [
+        "https://github.com/code-423n4/2024-06-size-findings/issues/21",
+        "H-04"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:c4:init-m09",
+      "kind": "finding",
+      "summary": "INIT delisting could block existing collateral withdrawals.",
+      "definition": "INIT M-09 was acknowledged. The report narrows the remaining impact to withdrawals under the sponsor’s stated delisting sequence.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments."
+      ],
+      "facets": [
+        "mode:delisted-collateral-exit",
+        "project:init",
+        "severity:medium",
+        "report-status:acknowledged"
+      ],
+      "sources": [
+        "audit:init-m09"
+      ],
+      "mappings": [
+        "https://github.com/code-423n4/2023-12-initcapital-findings/issues/13",
+        "M-09"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:c4:init-m10",
+      "kind": "finding",
+      "summary": "INIT lacked residual debt settlement after collateral exhaustion.",
+      "definition": "INIT M-10 reports unhandled remaining debt affecting pool accounting. The sponsor confirmed it.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments."
+      ],
+      "facets": [
+        "mode:residual-bad-debt",
+        "project:init",
+        "severity:medium",
+        "report-status:confirmed"
+      ],
+      "sources": [
+        "audit:init-m10"
+      ],
+      "mappings": [
+        "https://github.com/code-423n4/2023-12-initcapital-findings/issues/9",
+        "M-10"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:c4:prepo-h01",
+      "kind": "finding",
+      "summary": "prePO user withdrawal counters could remain stale.",
+      "definition": "prePO H-01 reports inconsistent reset scope; the sponsor confirmed the finding.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments."
+      ],
+      "facets": [
+        "mode:withdrawal-epoch-scope",
+        "project:prepo",
+        "severity:high",
+        "report-status:confirmed"
+      ],
+      "sources": [
+        "audit:prepo-h01"
+      ],
+      "mappings": [
+        "https://github.com/code-423n4/2022-12-prepo-findings/issues/116",
+        "H-01"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:c4:prepo-m02",
+      "kind": "finding",
+      "summary": "prePO deposit credit could exceed net token receipts.",
+      "definition": "prePO M-02 concerns transfer-fee assets. The sponsor confirmed it; the judge assigned Medium severity.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments."
+      ],
+      "facets": [
+        "mode:net-receipt-credit",
+        "project:prepo",
+        "severity:medium",
+        "report-status:confirmed"
+      ],
+      "sources": [
+        "audit:prepo-m02"
+      ],
+      "mappings": [
+        "https://github.com/code-423n4/2022-12-prepo-findings/issues/52",
+        "M-02"
+      ],
+      "review": "source_checked"
+    }
+  ],
+  "edges": [
+    {
+      "from": "protocol:liquidation",
+      "relation": "specializes",
+      "to": "protocol:availability"
+    },
+    {
+      "from": "protocol:withdrawal",
+      "relation": "specializes",
+      "to": "protocol:availability"
+    },
+    {
+      "from": "mode:liquidation-reward-units",
+      "relation": "specializes",
+      "to": "protocol:liquidation"
+    },
+    {
+      "from": "mode:liquidation-reward-units",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:liquidation-reward-units",
+      "relation": "violates",
+      "to": "property:liquidation-reward"
+    },
+    {
+      "from": "mode:delisted-collateral-exit",
+      "relation": "specializes",
+      "to": "protocol:withdrawal"
+    },
+    {
+      "from": "mode:delisted-collateral-exit",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "mode:residual-bad-debt",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:residual-bad-debt",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:withdrawal-epoch-scope",
+      "relation": "specializes",
+      "to": "protocol:withdrawal"
+    },
+    {
+      "from": "mode:withdrawal-epoch-scope",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "mode:net-receipt-credit",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:net-receipt-credit",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "finding:c4:size-h04",
+      "relation": "instance_of",
+      "to": "mode:liquidation-reward-units"
+    },
+    {
+      "from": "finding:c4:init-m09",
+      "relation": "instance_of",
+      "to": "mode:delisted-collateral-exit"
+    },
+    {
+      "from": "finding:c4:init-m10",
+      "relation": "instance_of",
+      "to": "mode:residual-bad-debt"
+    },
+    {
+      "from": "finding:c4:prepo-h01",
+      "relation": "instance_of",
+      "to": "mode:withdrawal-epoch-scope"
+    },
+    {
+      "from": "finding:c4:prepo-m02",
+      "relation": "instance_of",
+      "to": "mode:net-receipt-credit"
+    }
+  ]
+}

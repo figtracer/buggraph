@@ -37,6 +37,10 @@ Beyond OWASP, [vault standards](data/vaults.json) adds six curated failure modes
 and two properties from ERC-4626 and ERC-7540, with applicability notes and pinned
 sources. Search it with `bugraph bundle data/vaults.json bm25 gpt-4o 4096 full "vault previews"`.
 
+[Protocol audit knowledge](docs/protocols.md) connects five published findings from
+Size, INIT Capital, and prePO to five reusable failure modes, four broader categories,
+and three properties. Records include applicability, exclusions, and report status.
+
 The optional source-labeled [Bastet dataset](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
 imports 104 classes, 572 audit findings, and 846 edges.
 
@@ -51,6 +55,7 @@ bugraph route-ultrafuzz-bundle data/owasp.json threat-model.json gpt-4o 8192 16 
 bugraph route-ultrafuzz-plan data/owasp.json threat-model.json vulnerability-db/catalog.json 16
 bugraph resolve data/owasp.json gpt-4o 8192 full scwe:037 scwe:141 --compact
 bugraph explore data/owasp.json gpt-4o 4096 full 8 2 "liquidation denial of service" --compact
+bugraph instances data/protocols.json bm25 gpt-4o 4096 full "withdrawal" --compact
 ```
 
 See [retrieval](docs/retrieval.md), [encoding](docs/packing.md),
