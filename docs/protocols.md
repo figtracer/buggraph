@@ -1,7 +1,7 @@
 # Protocol audit knowledge
 
 `data/protocols.json` separates reusable failure modes from historical findings.
-Fourteen findings from Code4rena, Blackthorn, and Cantina reports support fourteen narrow modes:
+Sixteen findings from Code4rena, Blackthorn, and Cantina reports support sixteen narrow modes:
 
 | Failure mode | Published example | Report status |
 | --- | --- | --- |
@@ -19,8 +19,10 @@ Fourteen findings from Code4rena, Blackthorn, and Cantina reports support fourte
 | Expired rate schedule omits earned interest | Morpho Vault V2 Cantina Competition 3.1.1 | Published; no disposition in report |
 | Stale adapter allocation understates loss | Morpho Vault V2 Cantina Competition 3.1.2 | Published; no disposition in report |
 | Net profit estimate counts an adapter loss twice | Morpho Vault V2 Cantina Competition 3.1.3 | Published; no disposition in report |
+| Public model update trusts caller-supplied market state | Silo Finance Cantina Dynamic Kink review | Fixed reported; High |
+| Pending rate configuration mutates live state | Silo Finance Cantina Dynamic Kink review | Fixed reported; Medium |
 
-The graph contains 35 nodes and 47 edges. `specializes` connects narrower modes
+The graph contains 40 nodes and 54 edges. `specializes` connects narrower modes
 to broader categories, `violates` links modes to properties, and `instance_of`
 connects historical findings to modes. The liquidation reward mode has both an
 accounting parent and a liquidation parent. These relationships are Bugraph's
@@ -45,7 +47,8 @@ Each citation identifies a report section and includes a SHA-256 digest of the
 observed HTML response or complete PDF. Morpho PDF URLs pin the GitHub commit
 `55995f27dd4afb8a61e99cd160c7b3a4afc67e54`; the Morpho Vault V2 Cantina PDF
 pins `a0ba9df0ea697a080c0de69c18b84738cfb3bef7` and covers audited commit
-`5938a924`. Bitcorn's Cantina PDF is hosted at a mutable URL. Raw report snapshots
+`5938a924`. Bitcorn's Cantina PDF and Silo's Cantina page are hosted at mutable URLs.
+Raw report snapshots
 are retained locally during curation and are not redistributed in the repository.
 Verified original issue links are retained as
 mappings. No report code or reproductions are bundled. See

@@ -1,5 +1,5 @@
 {
-  "revision": "protocol-audits-v3",
+  "revision": "protocol-audits-v4",
   "sources": [
     {
       "id": "audit:size-h04",
@@ -97,6 +97,20 @@
       "title": "Cantina Morpho Vault V2 Competition 3.1.3; Audittens and co-reporters",
       "url": "https://github.com/morpho-org/vault-v2/blob/a0ba9df0ea697a080c0de69c18b84738cfb3bef7/audits/2025-07-15-competition.pdf",
       "revision": "sha256:a0b10221a8ec69bfc05dbb61251edbc3932457a19b13851ff6588494c19817bb",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:silo-irm-auth",
+      "title": "Cantina Silo Finance Dynamic Kink Model; missing access control; Rikard Hjort",
+      "url": "https://cantina.xyz/portfolio/01da8f41-fa9f-4239-95f5-52d05cd34b8c",
+      "revision": "sha256:85eff4912bdf66425da4b09e7fabce29654d9cdce119373a7e4f8ed386750eec",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:silo-irm-pending",
+      "title": "Cantina Silo Finance Dynamic Kink Model; premature k reset; Rikard Hjort",
+      "url": "https://cantina.xyz/portfolio/01da8f41-fa9f-4239-95f5-52d05cd34b8c",
+      "revision": "sha256:85eff4912bdf66425da4b09e7fabce29654d9cdce119373a7e4f8ed386750eec",
       "license": "NOASSERTION"
     }
   ],
@@ -917,6 +931,125 @@
         "audited-commit:5938a924"
       ],
       "review": "source_checked"
+    },
+    {
+      "id": "protocol:interest-rate-state",
+      "kind": "failure_mode",
+      "summary": "Interest-rate state diverges from the intended model.",
+      "definition": "State transitions in an interest-rate model can alter borrowing and lending economics without the utilization or policy change the model expects.",
+      "applicability": [
+        "Protocol uses a stateful interest-rate model."
+      ],
+      "exclusions": [],
+      "facets": [
+        "protocol:lending",
+        "operation:interest-rate",
+        "impact:accounting"
+      ],
+      "sources": [
+        "audit:silo-irm-auth",
+        "audit:silo-irm-pending"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:unauthorized-rate-state-update",
+      "kind": "failure_mode",
+      "summary": "Public rate-model update trusts caller-supplied market state.",
+      "definition": "A stateful rate-model update is callable outside its owning lending market and accepts debt, collateral, or time inputs from that caller. An attacker can move the model state without an authorized market transition. Bind state updates to the canonical market caller and its observed inputs.",
+      "applicability": [
+        "Interest-rate updates are stateful and exposed through a public entrypoint."
+      ],
+      "exclusions": [
+        "A read-only quotation function cannot directly mutate the model state.",
+        "An enforced market-only caller check removes this path."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:interest-rate",
+        "mechanism:unauthorized-state-update",
+        "mode:unauthorized-rate-state-update"
+      ],
+      "sources": [
+        "audit:silo-irm-auth"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:pending-rate-config-leak",
+      "kind": "failure_mode",
+      "summary": "Pending configuration changes live rate state early.",
+      "definition": "Scheduling a timelocked rate-model configuration also mutates a live model parameter before the activation time. Rates change under an unactivated policy, and cancellation may leave the mutated state behind. Stage dependent state with the pending configuration and apply both at activation.",
+      "applicability": [
+        "Rate configuration has delayed activation or cancellation.",
+        "Scheduling mutates live model state."
+      ],
+      "exclusions": [
+        "An intentionally immediate parameter change is a different policy."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:interest-rate",
+        "mechanism:pending-state-leak",
+        "mode:pending-rate-config-leak"
+      ],
+      "sources": [
+        "audit:silo-irm-pending"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:silo-irm-auth",
+      "kind": "finding",
+      "summary": "Silo dynamic kink state update lacked a market-only caller check.",
+      "definition": "Cantina reported that getCompoundInterestRateAndUpdate accepted calls and rate inputs from parties other than the Silo, allowing the kink state to change outside its intended market update. The review assigns High severity and marks the finding fixed.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or independent verification of the fix."
+      ],
+      "facets": [
+        "mode:unauthorized-rate-state-update",
+        "project:silo-finance",
+        "severity:high",
+        "report-status:fixed-reported"
+      ],
+      "sources": [
+        "audit:silo-irm-auth"
+      ],
+      "mappings": [
+        "https://github.com/silo-finance/silo-contracts-v2/commit/3608d589853042d0851229cb1272890f34d9dc3f"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:silo-irm-pending",
+      "kind": "finding",
+      "summary": "Silo pending rate configuration reset the live kink early.",
+      "definition": "Cantina reported that scheduling a delayed configuration immediately reset the live k parameter to the new minimum, so even cancellation could leave interest rates changed. The review assigns Medium severity and marks the finding fixed.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or independent verification of the fix."
+      ],
+      "facets": [
+        "mode:pending-rate-config-leak",
+        "project:silo-finance",
+        "severity:medium",
+        "report-status:fixed-reported"
+      ],
+      "sources": [
+        "audit:silo-irm-pending"
+      ],
+      "mappings": [
+        "https://github.com/silo-finance/silo-contracts-v2/commit/2e1fb28602623e19d1aa62f9ae862d2d8fa7c89f"
+      ],
+      "review": "source_checked"
     }
   ],
   "edges": [
@@ -1154,6 +1287,41 @@
       "from": "finding:cantina:vault-v2-double-loss",
       "relation": "instance_of",
       "to": "mode:masked-loss-double-count"
+    },
+    {
+      "from": "protocol:interest-rate-state",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:unauthorized-rate-state-update",
+      "relation": "specializes",
+      "to": "protocol:interest-rate-state"
+    },
+    {
+      "from": "mode:unauthorized-rate-state-update",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:pending-rate-config-leak",
+      "relation": "specializes",
+      "to": "protocol:interest-rate-state"
+    },
+    {
+      "from": "mode:pending-rate-config-leak",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "finding:cantina:silo-irm-auth",
+      "relation": "instance_of",
+      "to": "mode:unauthorized-rate-state-update"
+    },
+    {
+      "from": "finding:cantina:silo-irm-pending",
+      "relation": "instance_of",
+      "to": "mode:pending-rate-config-leak"
     }
   ]
 }
