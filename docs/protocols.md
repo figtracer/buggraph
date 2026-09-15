@@ -1,7 +1,7 @@
 # Protocol audit knowledge
 
 `data/protocols.json` separates reusable failure modes from historical findings.
-Five findings from three published Code4rena reports support five narrow modes:
+Eleven findings from Code4rena, Blackthorn, and Cantina reports support eleven narrow modes:
 
 | Failure mode | Published example | Report status |
 | --- | --- | --- |
@@ -10,8 +10,14 @@ Five findings from three published Code4rena reports support five narrow modes:
 | Residual debt lacks loss recognition | INIT M-10 | Confirmed |
 | User withdrawal counters share a reset marker | prePO H-01 | Confirmed |
 | Deposit credit exceeds net receipts | prePO M-02 | Confirmed; final severity Medium |
+| Partial liquidation leaves residual dust | Morpho Midnight Cantina Solo 3.1.1 | Documented; won't fix |
+| Offer fills fragment borrower debt below recovery size | Morpho Midnight Cantina Competition 3.1.5 | Acknowledged |
+| Fixed-index liquidation uses stale collateral | Morpho Midnight Cantina Competition 3.1.8 | Mechanism acknowledged; impact qualified |
+| New credit enters a terminal loss state | Morpho Midnight Blackthorn M-1 | Resolved; fix reported |
+| Allocator deposits into a vault with unresolved losses | Bitcorn Cantina Managed 3.1.1 | Fix verified by auditor |
+| Pausing an adapter blocks repayment | Bitcorn Cantina Managed 3.2.1 | Fix verified by auditor |
 
-The graph contains 17 nodes and 18 edges. `specializes` connects narrower modes
+The graph contains 29 nodes and 38 edges. `specializes` connects narrower modes
 to broader categories, `violates` links modes to properties, and `instance_of`
 connects historical findings to modes. The liquidation reward mode has both an
 accounting parent and a liquidation parent. These relationships are Bugraph's
@@ -32,12 +38,13 @@ INIT M-09 specifically preserves the report's qualification: under the sponsor's
 stated delisting sequence, the remaining issue is blocked withdrawal. It is not
 classified here as demonstrated liquidation denial of service.
 
-Each citation points to the exact report section and includes a SHA-256 digest of
-the complete HTML response observed on 2026-09-15. URLs are mutable; the digest
-identifies the observed source, not an immutable hosting guarantee. Raw report
-snapshots are retained locally during curation, not redistributed in the repository.
-Original issue links are retained as mappings. No report code or reproductions are
-bundled. See [attribution](../data/ATTRIBUTION.md).
+Each citation identifies a report section and includes a SHA-256 digest of the
+observed HTML response or complete PDF. Morpho PDF URLs pin the GitHub commit
+`55995f27dd4afb8a61e99cd160c7b3a4afc67e54`; Bitcorn's Cantina PDF is hosted
+at a mutable URL. Raw report snapshots are retained locally during curation, not
+redistributed in the repository. Verified original issue links are retained as
+mappings. No report code or reproductions are bundled. See
+[attribution](../data/ATTRIBUTION.md).
 
 This corpus is separately selectable. It does not modify OWASP source records or
 automatically add new classes to UltraFuzz's SCWE planner catalog. Existing authored

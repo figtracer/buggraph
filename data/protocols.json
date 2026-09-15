@@ -1,5 +1,5 @@
 {
-  "revision": "protocol-audits-v1",
+  "revision": "protocol-audits-v2",
   "sources": [
     {
       "id": "audit:size-h04",
@@ -34,6 +34,48 @@
       "title": "Code4rena 2022-12-prepo M-02; Koolex and co-reporters",
       "url": "https://code4rena.com/reports/2022-12-prepo#m-02-the-recipient-receives-free-collateral-token-if-an-erc20-token-that-deducts-a-fee-on-transfer-used-as-basetoken",
       "revision": "sha256:a93b73232f2b9845241098ee45ff42af4c6a8f0d30ba0d48ef86ebcefe7077c3",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:midnight-stermi-dust",
+      "title": "StErMi, Cantina Solo Morpho Midnight 3.1.1",
+      "url": "https://github.com/morpho-org/midnight/blob/55995f27dd4afb8a61e99cd160c7b3a4afc67e54/audits/2026-05-19-stermi.pdf",
+      "revision": "sha256:5981bbc875d4a898ed61ecf10cee507d3549af74f481ed27d15575d94f1c3acc",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:midnight-cantina-fragmentation",
+      "title": "Cantina Competition Morpho Midnight 3.1.5; Agontuk1 and co-reporters",
+      "url": "https://github.com/morpho-org/midnight/blob/55995f27dd4afb8a61e99cd160c7b3a4afc67e54/audits/2026-05-29-cantina-competition.pdf",
+      "revision": "sha256:609ad563de4d44aacb05ba40a10643dc65c4264f9eccf9d3aa8e274321cd3f34",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:midnight-cantina-index",
+      "title": "Cantina Competition Morpho Midnight 3.1.8; kvar and co-reporters",
+      "url": "https://github.com/morpho-org/midnight/blob/55995f27dd4afb8a61e99cd160c7b3a4afc67e54/audits/2026-05-29-cantina-competition.pdf",
+      "revision": "sha256:609ad563de4d44aacb05ba40a10643dc65c4264f9eccf9d3aa8e274321cd3f34",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:midnight-blackthorn-m1",
+      "title": "Blackthorn Morpho Midnight M-1; collaborative review",
+      "url": "https://github.com/morpho-org/midnight/blob/55995f27dd4afb8a61e99cd160c7b3a4afc67e54/audits/2026-07-02-blackthorn.pdf",
+      "revision": "sha256:d508a12780528448d9b92c199ac9b14a3f4d0cf3a6c74809c007d18a40035bea",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:bitcorn-deposit",
+      "title": "Cantina Managed Bitcorn OFT 3.1.1; R0bert and Om Parikh",
+      "url": "https://cdn.cantina.xyz/reports/cantina_bitcorn_july2025.pdf",
+      "revision": "sha256:cbbdb93db8c6d4b30210e975c48ee894e7260999e8f223f9d669260cf6e265bb",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:bitcorn-repayment",
+      "title": "Cantina Managed Bitcorn OFT 3.2.1; R0bert and Om Parikh",
+      "url": "https://cdn.cantina.xyz/reports/cantina_bitcorn_july2025.pdf",
+      "revision": "sha256:cbbdb93db8c6d4b30210e975c48ee894e7260999e8f223f9d669260cf6e265bb",
       "license": "NOASSERTION"
     }
   ],
@@ -400,6 +442,309 @@
         "M-02"
       ],
       "review": "source_checked"
+    },
+    {
+      "id": "mode:residual-liquidation-dust",
+      "kind": "failure_mode",
+      "summary": "Partial liquidation leaves a subeconomic residual position.",
+      "definition": "A permitted partial liquidation can leave debt or collateral too small for a profitable follow-up liquidation. Test whether closeout rules, reward design, and lender claims retain a viable cleanup path; a permissive dust override alone does not require cleanup.",
+      "applicability": [
+        "Liquidation can partially settle a borrower position.",
+        "Follow-up settlement has per-position transaction costs."
+      ],
+      "exclusions": [
+        "Dust does not automatically become bad debt when borrower debt does not passively accrue.",
+        "A subsidized or batched cleanup path can change the economic conclusion."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:liquidation",
+        "mechanism:residual-dust",
+        "mode:residual-liquidation-dust"
+      ],
+      "sources": [
+        "audit:midnight-stermi-dust"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:dust-position-fragmentation",
+      "kind": "failure_mode",
+      "summary": "Offer fills create many uneconomic borrower debts.",
+      "definition": "An offer accepts arbitrarily small exposure-creating fills across borrower positions, while the minimum-size rule applies only during liquidation. One lender claim can then depend on many separate, unprofitable settlements. Enforce exposure sizing at admission or provide an economically viable aggregate recovery path.",
+      "applicability": [
+        "A maker offer can be filled in small amounts by multiple borrowers.",
+        "Recovery settles one borrower per transaction."
+      ],
+      "exclusions": [
+        "A liquidation-time dust rule does not by itself constrain debt creation.",
+        "Small positions alone do not prove recovery is uneconomic on every host chain."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:offer-fill",
+        "operation:liquidation",
+        "mechanism:position-fragmentation",
+        "mode:dust-position-fragmentation"
+      ],
+      "sources": [
+        "audit:midnight-cantina-fragmentation"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:stale-collateral-liquidation",
+      "kind": "failure_mode",
+      "summary": "Liquidation targets collateral that can move before execution.",
+      "definition": "A liquidator selects a collateral index from an earlier view of a borrower position. If collateral can be rotated after maturity, the named index can become empty before execution and the transaction reverts. Check whether execution-time selection or route design avoids stale targets.",
+      "applicability": [
+        "A borrower can change collateral composition after maturity.",
+        "Liquidation specifies a particular collateral index."
+      ],
+      "exclusions": [
+        "A smart-contract liquidator that reads the current position atomically can neutralize this stale-index path.",
+        "A reverting fixed-index attempt is not proof that all liquidation routes are blocked."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:liquidation",
+        "mechanism:stale-position",
+        "mode:stale-collateral-liquidation"
+      ],
+      "sources": [
+        "audit:midnight-cantina-index"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:terminal-loss-new-credit",
+      "kind": "failure_mode",
+      "summary": "Fresh credit inherits a terminal historical loss.",
+      "definition": "An obligation remains open to new credit after its loss accumulator reaches a terminal state. Applying that accumulator to newly entered credit can extinguish principal for a loss that predates entry. Guard new exposure at terminal states or reset accounting for a valid new epoch.",
+      "applicability": [
+        "Loss accumulation can saturate while an obligation remains fillable."
+      ],
+      "exclusions": [
+        "A loss applying only to incumbents is expected and distinct from slashing new credit."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:offer-fill",
+        "mechanism:loss-index-epoch",
+        "mode:terminal-loss-new-credit"
+      ],
+      "sources": [
+        "audit:midnight-blackthorn-m1"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:unrealized-loss-exit-liquidity",
+      "kind": "failure_mode",
+      "summary": "New vault deposits fund exits during unresolved losses.",
+      "definition": "An allocator deposits into a vault without checking pending losses in underlying positions. Fresh assets may supply exit liquidity for existing holders while the allocator retains claims it later cannot redeem fully. Check loss recognition and backing before allocating capital.",
+      "applicability": [
+        "A vault can have unrealized bad debt in underlying positions.",
+        "New deposits can be used to satisfy existing withdrawals."
+      ],
+      "exclusions": [
+        "A healthy vault or a reliable loss-aware entry policy removes this prerequisite.",
+        "The finding concerns an allocator depositing into a third-party vault, not every vault deposit."
+      ],
+      "facets": [
+        "protocol:vault",
+        "operation:deposit",
+        "operation:withdrawal",
+        "mechanism:unrealized-loss",
+        "mode:unrealized-loss-exit-liquidity"
+      ],
+      "sources": [
+        "audit:bitcorn-deposit"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:paused-repayment-unwind",
+      "kind": "failure_mode",
+      "summary": "Emergency pause also disables debt repayment.",
+      "definition": "A pause guard intended to halt risky adapter activity also gates repayment. An existing borrower or module then cannot reduce exposure or complete an unwind while the pause remains active. Separate safe debt settlement from the prohibited paused actions.",
+      "applicability": [
+        "Repayment routes through a pausable adapter.",
+        "Existing positions may need to unwind during a pause."
+      ],
+      "exclusions": [
+        "A deliberate debt-settlement freeze with an alternative safe repayment path requires separate assessment."
+      ],
+      "facets": [
+        "protocol:lending",
+        "operation:repayment",
+        "mechanism:pause-policy",
+        "mode:paused-repayment-unwind"
+      ],
+      "sources": [
+        "audit:bitcorn-repayment"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:midnight-stermi-dust",
+      "kind": "finding",
+      "summary": "Morpho Midnight liquidation could leave dust debt or collateral.",
+      "definition": "Cantina Solo 3.1.1 reported residual dust after partial liquidation. Morpho added documentation in PR 991 and chose not to change the mechanism; StErMi acknowledged. The report identifies possible future price, withdrawal, and oracle-liveness effects, not automatic bad debt.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments."
+      ],
+      "facets": [
+        "mode:residual-liquidation-dust",
+        "project:morpho-midnight",
+        "severity:low",
+        "report-status:documented-wont-fix"
+      ],
+      "sources": [
+        "audit:midnight-stermi-dust"
+      ],
+      "mappings": [
+        "3.1.1"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:midnight-fragmentation",
+      "kind": "finding",
+      "summary": "Morpho Midnight allowed debt fragmentation below its dust threshold.",
+      "definition": "Cantina Competition 3.1.5 reported small offer fills across borrower positions, while the recovery threshold applied only during liquidation. Morpho acknowledged the mechanism and said it was insufficiently documented.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or universal liquidation costs."
+      ],
+      "facets": [
+        "mode:dust-position-fragmentation",
+        "project:morpho-midnight",
+        "severity:low",
+        "report-status:acknowledged"
+      ],
+      "sources": [
+        "audit:midnight-cantina-fragmentation"
+      ],
+      "mappings": [
+        "3.1.5"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:midnight-stale-index",
+      "kind": "finding",
+      "summary": "Morpho Midnight post-maturity collateral rotation could invalidate fixed-index liquidation.",
+      "definition": "Cantina Competition 3.1.8 reported a stale selected collateral index. Morpho agreed that such a transaction can revert but assessed repeated delay as unlikely and noted atomic position reads by smart-contract liquidators as mitigation.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim that all liquidation paths fail or that lender loss is inevitable."
+      ],
+      "facets": [
+        "mode:stale-collateral-liquidation",
+        "project:morpho-midnight",
+        "severity:low",
+        "report-status:mechanism-acknowledged-impact-qualified"
+      ],
+      "sources": [
+        "audit:midnight-cantina-index"
+      ],
+      "mappings": [
+        "3.1.8"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:blackthorn:midnight-m1",
+      "kind": "finding",
+      "summary": "Morpho Midnight new lender credit could be slashed by a prior terminal loss.",
+      "definition": "Blackthorn M-1 reported fresh entry into an obligation with saturated loss index. The report marks the issue resolved and cites Morpho PR 743 as the fix.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No independent verification of the reported fix or claim about current deployments."
+      ],
+      "facets": [
+        "mode:terminal-loss-new-credit",
+        "project:morpho-midnight",
+        "severity:medium",
+        "report-status:resolved-fix-reported"
+      ],
+      "sources": [
+        "audit:midnight-blackthorn-m1"
+      ],
+      "mappings": [
+        "https://github.com/sherlock-audit/2026-04-morpho-midnight-apr-6th-2026/issues/23",
+        "https://github.com/morpho-org/midnight/pull/743",
+        "M-1"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:bitcorn-deposit",
+      "kind": "finding",
+      "summary": "Bitcorn allocator could deposit into a Morpho vault with unresolved bad debt.",
+      "definition": "Cantina Managed 3.1.1 found the module borrowed assets for a MetaMorpho deposit without checking underlying losses. The report says Bitcorn fixed this in PR 111 and Cantina verified the fix.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments beyond the report disposition."
+      ],
+      "facets": [
+        "mode:unrealized-loss-exit-liquidity",
+        "project:bitcorn",
+        "severity:medium",
+        "report-status:fix-verified-by-auditor"
+      ],
+      "sources": [
+        "audit:bitcorn-deposit"
+      ],
+      "mappings": [
+        "3.1.1",
+        "Bitcorn PR 111 (as cited in report)"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:bitcorn-repayment",
+      "kind": "finding",
+      "summary": "Bitcorn pause blocked its module repayment path.",
+      "definition": "Cantina Managed 3.2.1 reported that the adapter pause guard also reached repayment, preventing the module from unwinding an open borrow. The report says Bitcorn fixed this in commit a29178f and Cantina verified the fix.",
+      "applicability": [
+        "Historical audited snapshot only."
+      ],
+      "exclusions": [
+        "No claim about current deployments beyond the report disposition."
+      ],
+      "facets": [
+        "mode:paused-repayment-unwind",
+        "project:bitcorn",
+        "severity:low",
+        "report-status:fix-verified-by-auditor"
+      ],
+      "sources": [
+        "audit:bitcorn-repayment"
+      ],
+      "mappings": [
+        "3.2.1",
+        "a29178f"
+      ],
+      "review": "source_checked"
     }
   ],
   "edges": [
@@ -492,6 +837,106 @@
       "from": "finding:c4:prepo-m02",
       "relation": "instance_of",
       "to": "mode:net-receipt-credit"
+    },
+    {
+      "from": "mode:residual-liquidation-dust",
+      "relation": "specializes",
+      "to": "protocol:liquidation"
+    },
+    {
+      "from": "mode:residual-liquidation-dust",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "mode:dust-position-fragmentation",
+      "relation": "specializes",
+      "to": "protocol:liquidation"
+    },
+    {
+      "from": "mode:dust-position-fragmentation",
+      "relation": "specializes",
+      "to": "protocol:availability"
+    },
+    {
+      "from": "mode:dust-position-fragmentation",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "mode:stale-collateral-liquidation",
+      "relation": "specializes",
+      "to": "protocol:liquidation"
+    },
+    {
+      "from": "mode:stale-collateral-liquidation",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "mode:terminal-loss-new-credit",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:terminal-loss-new-credit",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:unrealized-loss-exit-liquidity",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:unrealized-loss-exit-liquidity",
+      "relation": "specializes",
+      "to": "protocol:withdrawal"
+    },
+    {
+      "from": "mode:unrealized-loss-exit-liquidity",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:paused-repayment-unwind",
+      "relation": "specializes",
+      "to": "protocol:availability"
+    },
+    {
+      "from": "mode:paused-repayment-unwind",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "finding:cantina:midnight-stermi-dust",
+      "relation": "instance_of",
+      "to": "mode:residual-liquidation-dust"
+    },
+    {
+      "from": "finding:cantina:midnight-fragmentation",
+      "relation": "instance_of",
+      "to": "mode:dust-position-fragmentation"
+    },
+    {
+      "from": "finding:cantina:midnight-stale-index",
+      "relation": "instance_of",
+      "to": "mode:stale-collateral-liquidation"
+    },
+    {
+      "from": "finding:blackthorn:midnight-m1",
+      "relation": "instance_of",
+      "to": "mode:terminal-loss-new-credit"
+    },
+    {
+      "from": "finding:cantina:bitcorn-deposit",
+      "relation": "instance_of",
+      "to": "mode:unrealized-loss-exit-liquidity"
+    },
+    {
+      "from": "finding:cantina:bitcorn-repayment",
+      "relation": "instance_of",
+      "to": "mode:paused-repayment-unwind"
     }
   ]
 }
