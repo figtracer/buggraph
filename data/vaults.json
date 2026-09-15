@@ -1,0 +1,230 @@
+{
+  "revision": "vault-standards-v1",
+  "sources": [
+    {
+      "id": "ERC-4626",
+      "title": "Joey Santoro et al., ERC-4626: Tokenized Vaults",
+      "url": "https://github.com/ethereum/ERCs/blob/cf8bff877b00d56cec0c60007a25bae0937d0d03/ERCS/erc-4626.md",
+      "revision": "cf8bff877b00d56cec0c60007a25bae0937d0d03",
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "ERC-7540",
+      "title": "Jeroen Offerijns et al., ERC-7540: Asynchronous ERC-4626 Tokenized Vaults",
+      "url": "https://github.com/ethereum/ERCs/blob/c0c9eb341d0f7c290140850af7ce0a2abed58900/ERCS/erc-7540.md",
+      "revision": "c0c9eb341d0f7c290140850af7ce0a2abed58900",
+      "license": "CC0-1.0"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "property:vault-preview",
+      "kind": "property",
+      "summary": "Vault previews respect operation-specific bounds.",
+      "definition": "Deposit and redeem previews bound received amounts from below; mint and withdraw previews bound required amounts from above, within the same transaction.",
+      "applicability": [
+        "Synchronous ERC-4626 operations."
+      ],
+      "exclusions": [
+        "ERC-7540 asynchronous flows override preview behavior."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-4626",
+        "mechanism:preview"
+      ],
+      "sources": [
+        "ERC-4626"
+      ],
+      "mappings": [
+        "ERC-4626"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:vault-preview-fees",
+      "kind": "failure_mode",
+      "summary": "Vault previews omit applicable fees.",
+      "definition": "Previews include the applicable entry or exit fee; fee-free conversion estimates serve a different purpose.",
+      "applicability": [
+        "Fee-charging synchronous vaults."
+      ],
+      "exclusions": [
+        "Fee-free vaults and conversion methods."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-4626",
+        "mechanism:preview"
+      ],
+      "sources": [
+        "ERC-4626"
+      ],
+      "mappings": [
+        "ERC-4626"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:vault-preview-bounds",
+      "kind": "failure_mode",
+      "summary": "Vault previews use the wrong directional bound.",
+      "definition": "Preview results violate the corresponding deposit, mint, withdraw, or redeem bound.",
+      "applicability": [
+        "Synchronous ERC-4626 operations."
+      ],
+      "exclusions": [
+        "Comparisons across changed state are insufficient evidence."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-4626",
+        "mechanism:preview"
+      ],
+      "sources": [
+        "ERC-4626"
+      ],
+      "mappings": [
+        "ERC-4626"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:vault-limit-overstatement",
+      "kind": "failure_mode",
+      "summary": "Vault maximum methods overstate executable capacity.",
+      "definition": "Maximum methods account for applicable limits and return zero when the corresponding operation is disabled.",
+      "applicability": [
+        "ERC-4626 maximum methods."
+      ],
+      "exclusions": [
+        "Preview methods deliberately ignore these limits."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-4626",
+        "mechanism:limits"
+      ],
+      "sources": [
+        "ERC-4626"
+      ],
+      "mappings": [
+        "ERC-4626"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "property:async-controller",
+      "kind": "property",
+      "summary": "Claims respect controller authorization.",
+      "definition": "Overloaded deposit and mint claims require the controller or its approved operator.",
+      "applicability": [
+        "ERC-7540 asynchronous deposits."
+      ],
+      "exclusions": [
+        "An authorized operator may differ from the receiver."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-7540",
+        "mechanism:authorization"
+      ],
+      "sources": [
+        "ERC-7540"
+      ],
+      "mappings": [
+        "ERC-7540"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:async-controller-confusion",
+      "kind": "failure_mode",
+      "summary": "Async claims confuse receiver with controller.",
+      "definition": "Claim authorization must refer to the controller whose request is consumed.",
+      "applicability": [
+        "ERC-7540 overloaded deposit and mint."
+      ],
+      "exclusions": [
+        "Distinct owner, controller, and receiver addresses are supported."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-7540",
+        "mechanism:authorization"
+      ],
+      "sources": [
+        "ERC-7540"
+      ],
+      "mappings": [
+        "ERC-7540"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:async-preview-assumption",
+      "kind": "failure_mode",
+      "summary": "An integration requires previews for an asynchronous flow.",
+      "definition": "Preview functions for the asynchronous direction must revert; adapters must distinguish synchronous and asynchronous capabilities.",
+      "applicability": [
+        "ERC-7540 adapters."
+      ],
+      "exclusions": [
+        "The synchronous direction of a partially asynchronous vault retains its preview behavior."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-7540",
+        "mechanism:integration"
+      ],
+      "sources": [
+        "ERC-7540"
+      ],
+      "mappings": [
+        "ERC-7540"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "fm:async-pending-progress",
+      "kind": "failure_mode",
+      "summary": "Pending vault requests lack a viable completion path.",
+      "definition": "Locked assets or shares can remain pending. Review the documented fulfillment policy and any cancellation mechanism.",
+      "applicability": [
+        "Asynchronous vault requests."
+      ],
+      "exclusions": [
+        "Cancellation is optional; delay alone does not establish a defect."
+      ],
+      "facets": [
+        "protocol:vault",
+        "standard:erc-7540",
+        "mechanism:availability"
+      ],
+      "sources": [
+        "ERC-7540"
+      ],
+      "mappings": [
+        "ERC-7540"
+      ],
+      "review": "source_checked"
+    }
+  ],
+  "edges": [
+    {
+      "from": "fm:vault-preview-fees",
+      "relation": "violates",
+      "to": "property:vault-preview"
+    },
+    {
+      "from": "fm:vault-preview-bounds",
+      "relation": "violates",
+      "to": "property:vault-preview"
+    },
+    {
+      "from": "fm:async-controller-confusion",
+      "relation": "violates",
+      "to": "property:async-controller"
+    }
+  ]
+}

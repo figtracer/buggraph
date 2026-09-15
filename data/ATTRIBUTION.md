@@ -39,3 +39,17 @@ unseen audit reports.
 Files under `data/` use CC-BY-SA-4.0. Retain attribution and identify changes when
 redistributing adaptations. Linked sources retain their upstream terms. Code and
 documentation outside `data/` are covered by the root MIT license.
+
+## Vault standards extension
+
+`vaults.json` contains six original failure-mode adaptations and two properties
+from ERC-4626 (Joey Santoro et al.) and ERC-7540 (Jeroen Offerijns et al.). Each
+source registry entry pins the exact Ethereum ERCs commit and credits the authors.
+Both specifications waive rights under CC0-1.0; these adaptations are distributed
+under the data directory’s CC-BY-SA-4.0 terms. Accessed 2026-09-15.
+
+Changes: concise failure-mode descriptions, applicability and exclusions, facets,
+and property relationships. Source checking was performed with OpenAI Codex
+assistance, without independent human review. These are standards-derived records,
+not published audit findings or claims of novel bug classes absent from OWASP.
+The corpus is separately selectable; `owasp.json` remains the pinned OWASP import.

@@ -33,6 +33,10 @@ categories, represented by 168 nodes and 167 edges.
 The route benchmark includes process startup, corpus parsing, BM25 ranking,
 weighted fusion, hashing, and JSON serialization.
 
+Beyond OWASP, [vault standards](data/vaults.json) adds six curated failure modes
+and two properties from ERC-4626 and ERC-7540, with applicability notes and pinned
+sources. Search it with `bugraph bundle data/vaults.json bm25 gpt-4o 4096 full "vault previews"`.
+
 The optional source-labeled [Bastet dataset](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
 imports 104 classes, 572 audit findings, and 846 edges.
 
