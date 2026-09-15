@@ -37,10 +37,11 @@ Beyond OWASP, [vault standards](data/vaults.json) adds six curated failure modes
 and two properties from ERC-4626 and ERC-7540, with applicability notes and pinned
 sources. Search it with `bugraph bundle data/vaults.json bm25 gpt-4o 4096 full "vault previews"`.
 
-[Protocol audit knowledge](docs/protocols.md) connects sixteen findings from
-Code4rena, Cantina, and Blackthorn to sixteen reusable failure modes. Morpho,
-Bitcorn, and Silo reports add dust recovery, terminal-loss entry, vault valuation,
-paused repayment, and interest-rate state cases.
+[Protocol audit knowledge](docs/protocols.md) connects twenty-six findings from
+Code4rena, Cantina, and Blackthorn to twenty-six reusable failure modes. Morpho,
+Bitcorn, Silo, InfiniFi, and Telcoin reports add dust recovery, terminal-loss entry,
+vault valuation, paused repayment, interest-rate state, epoch accounting, and
+validator-registry cases.
 
 The optional source-labeled [Bastet dataset](https://drive.google.com/file/d/19YBeCmPwx3aLZ9PZVGjjRDSYifBYpbLe/view)
 imports 104 classes, 572 audit findings, and 846 edges.

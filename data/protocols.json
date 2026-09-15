@@ -1,5 +1,5 @@
 {
-  "revision": "protocol-audits-v4",
+  "revision": "protocol-audits-v5",
   "sources": [
     {
       "id": "audit:size-h04",
@@ -111,6 +111,76 @@
       "title": "Cantina Silo Finance Dynamic Kink Model; premature k reset; Rikard Hjort",
       "url": "https://cantina.xyz/portfolio/01da8f41-fa9f-4239-95f5-52d05cd34b8c",
       "revision": "sha256:85eff4912bdf66425da4b09e7fabce29654d9cdce119373a7e4f8ed386750eec",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:infinifi-mint-restriction",
+      "title": "Cantina InfiniFi review; arbitrary minting grief; r0bert",
+      "url": "https://cantina.xyz/portfolio/d6c09146-05b0-4784-943e-17171b921edd",
+      "revision": "sha256:5c1e3c0d60c773b0621b1af8891954c9585a5255afa43849cc4f9b7c62bed06b",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:infinifi-double-reward",
+      "title": "Cantina InfiniFi review; double-claiming accrued rewards; r0bert",
+      "url": "https://cantina.xyz/portfolio/d6c09146-05b0-4784-943e-17171b921edd",
+      "revision": "sha256:5c1e3c0d60c773b0621b1af8891954c9585a5255afa43849cc4f9b7c62bed06b",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:infinifi-loss-denominator",
+      "title": "Cantina InfiniFi review; LockingController applyLosses accounting; r0bert",
+      "url": "https://cantina.xyz/portfolio/d6c09146-05b0-4784-943e-17171b921edd",
+      "revision": "sha256:5c1e3c0d60c773b0621b1af8891954c9585a5255afa43849cc4f9b7c62bed06b",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:infinifi-cancel-unwinding",
+      "title": "Cantina InfiniFi review; first-epoch cancelUnwinding accounting; r0bert",
+      "url": "https://cantina.xyz/portfolio/d6c09146-05b0-4784-943e-17171b921edd",
+      "revision": "sha256:5c1e3c0d60c773b0621b1af8891954c9585a5255afa43849cc4f9b7c62bed06b",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:infinifi-partial-redemption-rounding",
+      "title": "Cantina InfiniFi review; partial-funding receipt burn rounding; r0bert",
+      "url": "https://cantina.xyz/portfolio/d6c09146-05b0-4784-943e-17171b921edd",
+      "revision": "sha256:5c1e3c0d60c773b0621b1af8891954c9585a5255afa43849cc4f9b7c62bed06b",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:telcoin-delegation-payout",
+      "title": "Cantina Telcoin Tn Contracts review; validator bypasses delegator; phaze",
+      "url": "https://cantina.xyz/portfolio/bde1352c-e0f2-47db-b9f7-231ed1b20642",
+      "revision": "sha256:3ad2e3c64f960d6f45cab9d05e10407201fae2f247bd358d84414c3e9a506802",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:telcoin-validator-enumeration",
+      "title": "Cantina Telcoin Tn Contracts review; token ID gaps omit validators; phaze",
+      "url": "https://cantina.xyz/portfolio/bde1352c-e0f2-47db-b9f7-231ed1b20642",
+      "revision": "sha256:3ad2e3c64f960d6f45cab9d05e10407201fae2f247bd358d84414c3e9a506802",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:telcoin-terminal-slash",
+      "title": "Cantina Telcoin Tn Contracts review; consensus burn misses balance reset; phaze",
+      "url": "https://cantina.xyz/portfolio/bde1352c-e0f2-47db-b9f7-231ed1b20642",
+      "revision": "sha256:3ad2e3c64f960d6f45cab9d05e10407201fae2f247bd358d84414c3e9a506802",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:telcoin-epoch-config",
+      "title": "Cantina Telcoin Tn Contracts review; current-epoch issuance change; RustyRabbit",
+      "url": "https://cantina.xyz/portfolio/bde1352c-e0f2-47db-b9f7-231ed1b20642",
+      "revision": "sha256:3ad2e3c64f960d6f45cab9d05e10407201fae2f247bd358d84414c3e9a506802",
+      "license": "NOASSERTION"
+    },
+    {
+      "id": "audit:telcoin-bls-uniqueness",
+      "title": "Cantina Telcoin Tn Contracts review; duplicate BLS validator keys; phaze",
+      "url": "https://cantina.xyz/portfolio/bde1352c-e0f2-47db-b9f7-231ed1b20642",
+      "revision": "sha256:3ad2e3c64f960d6f45cab9d05e10407201fae2f247bd358d84414c3e9a506802",
       "license": "NOASSERTION"
     }
   ],
@@ -1050,6 +1120,529 @@
         "https://github.com/silo-finance/silo-contracts-v2/commit/2e1fb28602623e19d1aa62f9ae862d2d8fa7c89f"
       ],
       "review": "source_checked"
+    },
+    {
+      "id": "protocol:validator-registry",
+      "kind": "failure_mode",
+      "summary": "Validator registry state diverges from the active consensus set.",
+      "definition": "Validator identity, enumeration, or lifecycle state no longer represents the participants intended to secure consensus.",
+      "applicability": [
+        "Protocol maintains an onchain validator registry."
+      ],
+      "exclusions": [],
+      "facets": [
+        "protocol:consensus",
+        "operation:validator-registry"
+      ],
+      "sources": [
+        "audit:telcoin-validator-enumeration",
+        "audit:telcoin-bls-uniqueness"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "property:validator-key-uniqueness",
+      "kind": "property",
+      "summary": "Each validator identity has a unique consensus key.",
+      "definition": "The registry prevents two validator records from representing the same consensus signing identity.",
+      "applicability": [
+        "Consensus attributes participation by registered public key."
+      ],
+      "exclusions": [],
+      "facets": [
+        "protocol:consensus",
+        "property:identity-uniqueness"
+      ],
+      "sources": [
+        "audit:telcoin-bls-uniqueness"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:recipient-triggered-restriction-griefing",
+      "kind": "failure_mode",
+      "summary": "Arbitrary recipient actions refresh a target's restriction.",
+      "definition": "A permissionless operation lets its caller choose a recipient and refreshes that recipient's action lock as a side effect. Repeated dust operations can keep a user or protocol contract unable to transfer and can block dependent workflows. Require recipient consent or avoid extending restrictions from unsolicited state changes.",
+      "applicability": [
+        "A caller can mint or credit a minimal amount to an arbitrary address.",
+        "Receipt extends a transfer or action restriction for that address."
+      ],
+      "exclusions": [
+        "A restriction applied only to the consenting caller removes this griefing path."
+      ],
+      "facets": [
+        "operation:mint",
+        "mechanism:recipient-state-poisoning",
+        "impact:availability",
+        "mode:recipient-triggered-restriction-griefing"
+      ],
+      "sources": [
+        "audit:infinifi-mint-restriction"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:cross-state-epoch-double-reward",
+      "kind": "failure_mode",
+      "summary": "A same-epoch state transition earns rewards in both states.",
+      "definition": "A position receives an epoch's reward in its source state, then moves to another state whose accounting treats it as present for that same epoch. The position captures the distribution twice and dilutes other participants. Give each position one reward-bearing state at every epoch boundary.",
+      "applicability": [
+        "Rewards are accounted separately across lifecycle modules.",
+        "A position can transition after one module accrues but before the epoch ends."
+      ],
+      "exclusions": [
+        "A transition checkpoint that excludes the destination from the current epoch removes this path."
+      ],
+      "facets": [
+        "operation:reward-accrual",
+        "mechanism:epoch-state-overlap",
+        "mode:cross-state-epoch-double-reward"
+      ],
+      "sources": [
+        "audit:infinifi-double-reward"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:shrinking-allocation-denominator",
+      "kind": "failure_mode",
+      "summary": "Sequential allocation mutates the shared denominator.",
+      "definition": "A loop allocates one economic total across buckets but reduces the denominator after each bucket. Later allocations use a larger effective fraction, so their sum can exceed the intended loss or payment and corrupt aggregate state. Compute all proportional shares from one immutable baseline.",
+      "applicability": [
+        "One amount is distributed proportionally across multiple buckets."
+      ],
+      "exclusions": [
+        "A true remainder-allocation algorithm that reduces both numerator and denominator consistently is distinct."
+      ],
+      "facets": [
+        "operation:loss-allocation",
+        "mechanism:mutating-denominator",
+        "mode:shrinking-allocation-denominator"
+      ],
+      "sources": [
+        "audit:infinifi-loss-denominator"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:unapplied-schedule-cancellation",
+      "kind": "failure_mode",
+      "summary": "Cancellation subtracts a scheduled delta before application.",
+      "definition": "A lifecycle cancellation removes a position's scheduled slope or weight from aggregate state before the corresponding scheduled addition has been processed. Persisting that premature subtraction corrupts later accounting and can cause underflow. Cancel pending deltas in their schedule or first advance aggregate state through the effective boundary.",
+      "applicability": [
+        "Aggregate state advances lazily across scheduled epoch deltas.",
+        "A position can cancel at the first effective epoch."
+      ],
+      "exclusions": [
+        "Cancellation after the scheduled addition is incorporated uses a different state transition."
+      ],
+      "facets": [
+        "operation:position-cancellation",
+        "mechanism:scheduled-delta-ordering",
+        "mode:unapplied-schedule-cancellation"
+      ],
+      "sources": [
+        "audit:infinifi-cancel-unwinding"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:partial-settlement-rounding-credit",
+      "kind": "failure_mode",
+      "summary": "Partial settlement rounds liability reduction down.",
+      "definition": "A partial fill consumes an exact amount of assets but rounds down the receipt or claim amount removed. The remaining claim is overstated, and repeated fills can accumulate unbacked value. Choose rounding direction to ensure consumed assets reduce liability by at least their corresponding amount.",
+      "applicability": [
+        "Claims are partially fulfilled through a fixed-point conversion ratio."
+      ],
+      "exclusions": [
+        "Rounding dust explicitly charged to the claimant under a bounded policy is distinct."
+      ],
+      "facets": [
+        "operation:partial-settlement",
+        "mechanism:rounding-direction",
+        "mode:partial-settlement-rounding-credit"
+      ],
+      "sources": [
+        "audit:infinifi-partial-redemption-rounding"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:delegation-recipient-bypass",
+      "kind": "failure_mode",
+      "summary": "A privileged operator bypasses delegated beneficiary routing.",
+      "definition": "A payout or unstake path defaults its recipient to the operator and resolves the delegated beneficiary only for other callers. The operator can therefore redirect principal or rewards supplied by the beneficiary. Derive the economic recipient from stake ownership independently of caller authorization.",
+      "applicability": [
+        "One party operates a position funded by another party.",
+        "Both parties may call claim or unstake functions."
+      ],
+      "exclusions": [
+        "A documented arrangement that assigns the operator the funds is a different beneficiary policy."
+      ],
+      "facets": [
+        "protocol:staking",
+        "operation:reward-claim",
+        "operation:unstake",
+        "mechanism:caller-recipient-confusion",
+        "mode:delegation-recipient-bypass"
+      ],
+      "sources": [
+        "audit:telcoin-delegation-payout"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:sparse-id-enumeration",
+      "kind": "failure_mode",
+      "summary": "Live-count bounds skip sparse monotonic identifiers.",
+      "definition": "Enumeration scans identifiers from one through the current live item count even though burns create gaps without reusing later identifiers. Existing records above the reduced count disappear from registry-derived operations. Enumerate live IDs directly or bound scans by the highest allocated identifier.",
+      "applicability": [
+        "Identifiers increase monotonically and records can be burned.",
+        "Registry scans use live supply as the maximum identifier."
+      ],
+      "exclusions": [
+        "Dense identifiers that are reassigned on deletion do not have this gap."
+      ],
+      "facets": [
+        "operation:enumeration",
+        "mechanism:sparse-identifier",
+        "mode:sparse-id-enumeration"
+      ],
+      "sources": [
+        "audit:telcoin-validator-enumeration"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:terminal-penalty-refund",
+      "kind": "failure_mode",
+      "summary": "A terminal penalty path refunds an uncleared balance.",
+      "definition": "A penalty branch ejects and unstakes a participant when the penalty reaches their full balance, but does not clear that balance before the generic unstake routine pays it out. The terminal branch therefore refunds value intended to be slashed. Apply the penalty to canonical balance state before invoking shared exit logic.",
+      "applicability": [
+        "A full penalty enters a separate ejection or burn path.",
+        "That path reuses a routine that returns the recorded balance."
+      ],
+      "exclusions": [
+        "An explicitly documented lenient force-exit policy is distinct from penalty enforcement."
+      ],
+      "facets": [
+        "protocol:staking",
+        "operation:slashing",
+        "mechanism:terminal-branch-state",
+        "mode:terminal-penalty-refund"
+      ],
+      "sources": [
+        "audit:telcoin-terminal-slash"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:mixed-epoch-config-version",
+      "kind": "failure_mode",
+      "summary": "Epoch settlement mixes parameters from different versions.",
+      "definition": "A configuration update changes one parameter read at settlement immediately, while a related parameter was snapshotted from the old version at epoch start. The epoch is settled under neither complete policy and can overpay or underpay. Snapshot all coupled parameters under one version at the same boundary.",
+      "applicability": [
+        "Epoch economics depend on multiple coupled configuration fields.",
+        "Fields are read at different points in the epoch lifecycle."
+      ],
+      "exclusions": [
+        "Independent parameters intentionally activated at different times require separate policy analysis."
+      ],
+      "facets": [
+        "protocol:staking",
+        "operation:epoch-settlement",
+        "mechanism:mixed-config-version",
+        "mode:mixed-epoch-config-version"
+      ],
+      "sources": [
+        "audit:telcoin-epoch-config"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "mode:validator-key-aliasing",
+      "kind": "failure_mode",
+      "summary": "Validator registration accepts a reused consensus key.",
+      "definition": "The registry creates multiple validator identities for the same consensus public key. Committee membership can then overstate independent participation, while duplicate signatures or discovery records conflict. Reserve each consensus key to one live validator identity at registration.",
+      "applicability": [
+        "Onchain registration accepts a consensus public key.",
+        "Committee security assumes distinct signing identities."
+      ],
+      "exclusions": [
+        "Key rotation that atomically retires the old association is not duplicate live registration."
+      ],
+      "facets": [
+        "protocol:consensus",
+        "operation:validator-registration",
+        "mechanism:identity-aliasing",
+        "mode:validator-key-aliasing"
+      ],
+      "sources": [
+        "audit:telcoin-bls-uniqueness"
+      ],
+      "mappings": [],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:infinifi-mint-restriction",
+      "kind": "finding",
+      "summary": "InfiniFi arbitrary minting could repeatedly restrict a target.",
+      "definition": "Cantina reported that minting a minimal amount to an arbitrary address refreshed its action restriction, allowing repeated denial of user and protocol-contract transfers. The review assigns High severity, marks the finding fixed, and records Cantina's fix as OK.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments beyond the report disposition."
+      ],
+      "facets": [
+        "mode:recipient-triggered-restriction-griefing",
+        "project:infinifi",
+        "severity:high",
+        "report-status:fixed-fix-ok"
+      ],
+      "sources": [
+        "audit:infinifi-mint-restriction"
+      ],
+      "mappings": [
+        "https://github.com/InfiniFi-Labs/infinifi-contracts/commit/e893df478688e26e406729df21187a1f8047599d"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:infinifi-double-reward",
+      "kind": "finding",
+      "summary": "InfiniFi same-epoch unwinding could claim one reward distribution twice.",
+      "definition": "Cantina reported that a position rewarded in LockingController could enter UnwindingModule later in the same epoch and be counted again for that epoch. The review assigns High severity, marks the finding fixed, and records Cantina's fix as OK.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments beyond the report disposition."
+      ],
+      "facets": [
+        "mode:cross-state-epoch-double-reward",
+        "project:infinifi",
+        "severity:high",
+        "report-status:fixed-fix-ok"
+      ],
+      "sources": [
+        "audit:infinifi-double-reward"
+      ],
+      "mappings": [
+        "https://github.com/InfiniFi-Labs/infinifi-contracts/commit/d683c302965e07c559cbb29e7c12637b7cc33d82"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:infinifi-loss-denominator",
+      "kind": "finding",
+      "summary": "InfiniFi loss allocation used a progressively smaller denominator.",
+      "definition": "Cantina reported that LockingController decremented its local global-receipt total while using it as each epoch bucket's allocation denominator, over-allocating losses and corrupting totals. The review assigns High severity, marks the finding fixed, and records Cantina's fix as OK.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments beyond the report disposition."
+      ],
+      "facets": [
+        "mode:shrinking-allocation-denominator",
+        "project:infinifi",
+        "severity:high",
+        "report-status:fixed-fix-ok"
+      ],
+      "sources": [
+        "audit:infinifi-loss-denominator"
+      ],
+      "mappings": [
+        "https://github.com/InfiniFi-Labs/infinifi-contracts/commit/b9af8df1cc3ac41ae53927c4010390f64a0b2c9f"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:infinifi-cancel-unwinding",
+      "kind": "finding",
+      "summary": "InfiniFi first-epoch unwinding cancellation could corrupt reward slopes.",
+      "definition": "Cantina reported that cancelUnwinding could subtract a reward-weight decrease in its first effective epoch before the scheduled decrease had been processed, corrupting rewards and potentially causing underflow denial of service. The review assigns High severity, marks the finding fixed, and records Cantina's fix as OK.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments beyond the report disposition."
+      ],
+      "facets": [
+        "mode:unapplied-schedule-cancellation",
+        "project:infinifi",
+        "severity:high",
+        "report-status:fixed-fix-ok"
+      ],
+      "sources": [
+        "audit:infinifi-cancel-unwinding"
+      ],
+      "mappings": [
+        "https://github.com/InfiniFi-Labs/infinifi-contracts/commit/a7657448ffbb531f9544e0d898fb945c2a0187a1"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:infinifi-partial-redemption-rounding",
+      "kind": "finding",
+      "summary": "InfiniFi partial redemption rounded the receipt burn down.",
+      "definition": "Cantina reported that partial funding consumed available assets while rounding down the corresponding receipt-token burn, overstating the remaining redemption request. The review assigns Medium severity, marks the finding fixed, and records Cantina's fix as OK.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments beyond the report disposition."
+      ],
+      "facets": [
+        "mode:partial-settlement-rounding-credit",
+        "project:infinifi",
+        "severity:medium",
+        "report-status:fixed-fix-ok"
+      ],
+      "sources": [
+        "audit:infinifi-partial-redemption-rounding"
+      ],
+      "mappings": [
+        "https://github.com/InfiniFi-Labs/infinifi-contracts/commit/2d84c513621fa21754eda603eada1920a5f597f3"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:telcoin-delegation-payout",
+      "kind": "finding",
+      "summary": "Telcoin validators could redirect delegated stake and rewards to themselves.",
+      "definition": "Cantina reported that claim and unstake defaulted the recipient to the validator and checked delegation only for non-validator callers, bypassing the stake originator. The review assigns High severity and marks the finding fixed.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or independent reproduction."
+      ],
+      "facets": [
+        "mode:delegation-recipient-bypass",
+        "project:telcoin",
+        "severity:high",
+        "report-status:fixed-reported"
+      ],
+      "sources": [
+        "audit:telcoin-delegation-payout"
+      ],
+      "mappings": [
+        "https://github.com/Telcoin-Association/tn-contracts/commit/b3d8116094e67fdbc5977725eea3e7cf577866bd"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:telcoin-validator-enumeration",
+      "kind": "finding",
+      "summary": "Telcoin token ID gaps could hide active validators from enumeration.",
+      "definition": "Cantina reported that validator scans stopped at live totalSupply even though burns left gaps below later token IDs, omitting active validators from lifecycle and committee operations. The review assigns High severity and marks the finding fixed.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or independent reproduction."
+      ],
+      "facets": [
+        "mode:sparse-id-enumeration",
+        "project:telcoin",
+        "severity:high",
+        "report-status:fixed-reported"
+      ],
+      "sources": [
+        "audit:telcoin-validator-enumeration"
+      ],
+      "mappings": [
+        "https://github.com/Telcoin-Association/tn-contracts/commit/2e3343d121b70bcdf23ff527d95894b58844e8f2"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:telcoin-terminal-slash",
+      "kind": "finding",
+      "summary": "Telcoin terminal slashing could return the balance intended to be penalized.",
+      "definition": "Cantina reported that the full-slash ejection path did not zero the validator balance before generic unstaking returned it. Telcoin stated that the behavior had been intentional but changed the policy; the review assigns High severity and marks the finding fixed.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or independent reproduction."
+      ],
+      "facets": [
+        "mode:terminal-penalty-refund",
+        "project:telcoin",
+        "severity:high",
+        "report-status:fixed-after-policy-change"
+      ],
+      "sources": [
+        "audit:telcoin-terminal-slash"
+      ],
+      "mappings": [
+        "https://github.com/Telcoin-Association/tn-contracts/commit/41d4a58432ef54ef53314af299dff77df5e684c9"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:telcoin-epoch-config",
+      "kind": "finding",
+      "summary": "Telcoin current-epoch rewards could combine new issuance with old duration.",
+      "definition": "Cantina reported that a StakeConfig update changed issuance immediately while epoch duration remained the value captured for the current epoch, producing a mixed reward policy. The review assigns Medium severity and marks the finding fixed.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or independent reproduction."
+      ],
+      "facets": [
+        "mode:mixed-epoch-config-version",
+        "project:telcoin",
+        "severity:medium",
+        "report-status:fixed-reported"
+      ],
+      "sources": [
+        "audit:telcoin-epoch-config"
+      ],
+      "mappings": [
+        "https://github.com/Telcoin-Association/tn-contracts/commit/9f37cd1864d68460f5564218f426f26f7b8862bf"
+      ],
+      "review": "source_checked"
+    },
+    {
+      "id": "finding:cantina:telcoin-bls-uniqueness",
+      "kind": "finding",
+      "summary": "Telcoin allowed multiple validators to register one BLS key.",
+      "definition": "Cantina reported that validator registration did not enforce BLS public-key uniqueness, allowing duplicate committee identities that could reduce effective committee size and fault tolerance. The review assigns Medium severity and marks the finding fixed.",
+      "applicability": [
+        "Historical reviewed version only."
+      ],
+      "exclusions": [
+        "No claim about current deployments or independent reproduction."
+      ],
+      "facets": [
+        "mode:validator-key-aliasing",
+        "project:telcoin",
+        "severity:medium",
+        "report-status:fixed-reported"
+      ],
+      "sources": [
+        "audit:telcoin-bls-uniqueness"
+      ],
+      "mappings": [
+        "https://github.com/Telcoin-Association/tn-contracts/commit/e666901d8e6ff71420711a898c710879ae9ded96"
+      ],
+      "review": "source_checked"
     }
   ],
   "edges": [
@@ -1322,6 +1915,161 @@
       "from": "finding:cantina:silo-irm-pending",
       "relation": "instance_of",
       "to": "mode:pending-rate-config-leak"
+    },
+    {
+      "from": "protocol:validator-registry",
+      "relation": "specializes",
+      "to": "protocol:availability"
+    },
+    {
+      "from": "mode:recipient-triggered-restriction-griefing",
+      "relation": "specializes",
+      "to": "protocol:availability"
+    },
+    {
+      "from": "mode:recipient-triggered-restriction-griefing",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "mode:cross-state-epoch-double-reward",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:cross-state-epoch-double-reward",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:shrinking-allocation-denominator",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:shrinking-allocation-denominator",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:unapplied-schedule-cancellation",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:unapplied-schedule-cancellation",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:partial-settlement-rounding-credit",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:partial-settlement-rounding-credit",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:delegation-recipient-bypass",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:delegation-recipient-bypass",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:sparse-id-enumeration",
+      "relation": "specializes",
+      "to": "protocol:validator-registry"
+    },
+    {
+      "from": "mode:sparse-id-enumeration",
+      "relation": "violates",
+      "to": "property:protocol-progress"
+    },
+    {
+      "from": "mode:terminal-penalty-refund",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:terminal-penalty-refund",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:mixed-epoch-config-version",
+      "relation": "specializes",
+      "to": "protocol:accounting"
+    },
+    {
+      "from": "mode:mixed-epoch-config-version",
+      "relation": "violates",
+      "to": "property:protocol-accounting"
+    },
+    {
+      "from": "mode:validator-key-aliasing",
+      "relation": "specializes",
+      "to": "protocol:validator-registry"
+    },
+    {
+      "from": "mode:validator-key-aliasing",
+      "relation": "violates",
+      "to": "property:validator-key-uniqueness"
+    },
+    {
+      "from": "finding:cantina:infinifi-mint-restriction",
+      "relation": "instance_of",
+      "to": "mode:recipient-triggered-restriction-griefing"
+    },
+    {
+      "from": "finding:cantina:infinifi-double-reward",
+      "relation": "instance_of",
+      "to": "mode:cross-state-epoch-double-reward"
+    },
+    {
+      "from": "finding:cantina:infinifi-loss-denominator",
+      "relation": "instance_of",
+      "to": "mode:shrinking-allocation-denominator"
+    },
+    {
+      "from": "finding:cantina:infinifi-cancel-unwinding",
+      "relation": "instance_of",
+      "to": "mode:unapplied-schedule-cancellation"
+    },
+    {
+      "from": "finding:cantina:infinifi-partial-redemption-rounding",
+      "relation": "instance_of",
+      "to": "mode:partial-settlement-rounding-credit"
+    },
+    {
+      "from": "finding:cantina:telcoin-delegation-payout",
+      "relation": "instance_of",
+      "to": "mode:delegation-recipient-bypass"
+    },
+    {
+      "from": "finding:cantina:telcoin-validator-enumeration",
+      "relation": "instance_of",
+      "to": "mode:sparse-id-enumeration"
+    },
+    {
+      "from": "finding:cantina:telcoin-terminal-slash",
+      "relation": "instance_of",
+      "to": "mode:terminal-penalty-refund"
+    },
+    {
+      "from": "finding:cantina:telcoin-epoch-config",
+      "relation": "instance_of",
+      "to": "mode:mixed-epoch-config-version"
+    },
+    {
+      "from": "finding:cantina:telcoin-bls-uniqueness",
+      "relation": "instance_of",
+      "to": "mode:validator-key-aliasing"
     }
   ]
 }

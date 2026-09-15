@@ -56,12 +56,12 @@ The corpus is separately selectable; `owasp.json` remains the pinned OWASP impor
 
 ## Protocol audit findings
 
-`protocols.json` contains original factual summaries of sixteen published findings
-and sixteen generalized failure modes, five broader categories, and three properties.
+`protocols.json` contains original factual summaries of twenty-six published findings
+and twenty-six generalized failure modes, six broader categories, and four properties.
 Sources are Code4rena's Size (2024-06), INIT Capital (2023-12), and prePO (2022-12)
 reports; Morpho Midnight's Blackthorn and Cantina reports (2026); Morpho Vault V2's
 Cantina competition report (2025); Cantina's Bitcorn OFT report (2025); and Cantina's
-Silo Finance Dynamic Kink review (2025). Each
+Silo Finance Dynamic Kink, InfiniFi, and Telcoin Tn Contracts reviews (2025). Each
 source entry identifies the finding section, credits the named researchers or
 review team, and records the SHA-256 of the observed HTML or complete PDF. The
 Morpho PDFs are linked at pinned GitHub commits. The sources supply final severity
